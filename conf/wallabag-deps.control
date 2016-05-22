@@ -1,0 +1,16 @@
+Section: misc
+Priority: optional
+Homepage: https://www.wallabag.org/
+Standards-Version: 3.9.2
+
+Package: wallabag-deps
+Version: 2.0-1
+Depends: php5-cli, php5-mysql, php5-json, php5-gd, php5-tidy, php5-curl
+ , php-gettext
+Architecture: all
+Description: meta package for wallabag dependencies
+ Wallabag is a self hostable application allowing you to not miss
+ any content anymore. Click, save, read it when you can. It extracts
+ content so that you can read it when you have time.
+ .
+ This meta-package is only responsible of installing its dependencies.

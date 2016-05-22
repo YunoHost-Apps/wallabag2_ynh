@@ -1,0 +1,48 @@
+{
+    "packaging_format": 1,
+    "id": "wallabag2",
+    "name": "Wallabag",
+    "description": {
+        "en": "A self hostable read-it-later app",
+        "fr": "Une application de lecture-plus-tard auto-hébergeable"
+    },
+    "url": "https://www.wallabag.org",
+    "license": "MIT",
+    "version": "2.0.4",
+    "maintainer": {
+        "name": "jerome",
+        "email": "jerome@yunohost.org"
+    },
+    "multi_instance": false,
+    "requirements": {
+        "yunohost": ">= 2.4.0"
+    },
+    "services": [
+        "nginx",
+        "php5-fpm",
+        "mysql"
+    ],
+    "arguments": {
+        "install" : [
+            {
+                "name": "domain",
+                "type": "domain",
+                "ask": {
+                    "en": "Choose a domain for Wallabag",
+                    "fr": "Choisissez un domaine pour Wallabag"
+                },
+                "example": "domain.org"
+            },
+            {
+                "name": "path",
+                "type": "path",
+                "ask": {
+                    "en": "Choose a path for Wallabag",
+                    "fr": "Choisissez un chemin pour Wallabag"
+                },
+                "example": "/wallabag",
+                "default": "/wallabag"
+            }
+        ]
+    }
+}

@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+# Retrieve app id
+app=$YNH_APP_INSTANCE_NAME
+
+# Retrieve arguments
+domain=$1
+path=${2%/}
+
+# Load common variables and helpers
+. ./_common.sh
+
+# Set app specific variables
+dbname=$app
+dbuser=$app
+
+# Check domain/path availability
+sudo yunohost app checkurl "${domain}${path}" -a "$app" \
+  || exit 1
+
+# Check destination directory
+DESTDIR="/var/www/${app}"
+[[ -d "$DESTDIR" ]] && ynh_die \
+"The destination directory '${DESTDIR}' already exists.\
+ You should safely delete it before installing this app."
+
+# Install dependencies
+ynh_package_install_from_equivs ../conf/${DEPS_PKG_NAME}.control \
+  || ynh_die "Unable to install dependencies"
+
+# Create tmp directory and fetch app inside
+TMPDIR=$(ynh_mkdir_tmp)
+#clone_wallabag "$TMPDIR"
+extract_wallabag "$TMPDIR"
+
+# Generate random DES key & password
+deskey=$(ynh_string_random 24)
+dbpass=$(ynh_string_random)
+ynh_app_setting_set "$app" mysqlpwd "$dbpass"
+
+# Initialize database
+ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
+
+# Copy and set Wallabag dist configuration
+wb_conf="${TMPDIR}/app/config/parameters.yml"
+cp ../conf/parameters.yml "$wb_conf"
+sed -i "s@{DBNAME}@${dbname}@g" "$wb_conf"
+sed -i "s@{DBUSER}@${dbuser}@g" "$wb_conf"
+sed -i "s@{DBPASS}@${dbpass}@g" "$wb_conf"
+sed -i "s@{DESKEY}@${deskey}@g" "$wb_conf"
+
+# Install files and set permissions
+sudo mv "$TMPDIR" "$DESTDIR"
+sudo chown -R www-data: "$DESTDIR"
+
+# Install dependencies and Wallabag
+#init_composer "$DESTDIR" www-data
+exec_console www-data "$DESTDIR" wallabag:install
+
+# Copy and set nginx configuration
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
+sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
+sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
+sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
+sudo cp ../conf/nginx.conf "$nginx_conf"
+
+# Copy and set php-fpm configuration
+phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
+sed -i "s@{POOLNAME}@${app}@g"     ../conf/php-fpm.conf
+sed -i "s@{DESTDIR}@${DESTDIR}/@g" ../conf/php-fpm.conf
+sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
+
+# Set SSOwat rules
+ynh_app_setting_set "$app" unprotected_uris "/"
+
+# Reload services
+sudo service php5-fpm restart || true
+sudo service nginx reload || true
