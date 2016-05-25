@@ -42,6 +42,15 @@
                 },
                 "example": "/wallabag",
                 "default": "/wallabag"
+            },
+            {
+                "name": "admin",
+                "type": "user",
+                "ask": {
+                    "en": "Choose the Wallabag administrator",
+                    "fr": "Choisissez l'administrateur de Wallabag"
+                },
+                "example": "homer"
             }
         ]
     }

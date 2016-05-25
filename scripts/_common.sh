@@ -8,14 +8,17 @@ VERSION=2.0.4
 # Package name for Wallabag dependencies
 DEPS_PKG_NAME="wallabag-deps"
 
-# Wallabag git repository URL
-WALLABAG_GIT_URL="https://github.com/wallabag/wallabag.git"
+## Wallabag git repository URL
+#WALLABAG_GIT_URL="https://github.com/wallabag/wallabag.git"
 
 # Full Wallabag sources tarball URL
 WALLABAG_SOURCE_URL="https://framabag.org/wallabag-release-${VERSION}.tar.gz"
 
 # Full Wallabag sources tarball checksum
 WALLABAG_SOURCE_SHA256="ffc19e6875463ce7407934acbd98ce6c66e6feb9de0314ea47cf88e4ab007897"
+
+# App package root directory should be the parent folder
+PKGDIR=$(cd ../; pwd)
 
 #
 # Common helpers
@@ -105,4 +108,9 @@ extract_wallabag() {
   exec_as "$AS_USER" tar xf "$wb_tarball" -C "$DESTDIR" --strip-components 1 \
     || ynh_die "Unable to extract Wallabag tarball"
   rm -f "$wb_tarball"
+
+  # apply patches
+  (cd "$DESTDIR" \
+   && for p in ${PKGDIR}/patches/*.patch; do patch -p1 < $p; done) \
+    || ynh_die "Unable to apply patches to Wallabag"
 }

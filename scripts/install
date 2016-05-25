@@ -9,6 +9,7 @@ app=$YNH_APP_INSTANCE_NAME
 # Retrieve arguments
 domain=$1
 path=${2%/}
+admin=$3
 
 # Load common variables and helpers
 . ./_common.sh
@@ -20,6 +21,11 @@ dbuser=$app
 # Check domain/path availability
 sudo yunohost app checkurl "${domain}${path}" -a "$app" \
   || exit 1
+
+# Check admin user parameter
+ynh_user_exists "$admin" \
+  || ynh_die "The chosen admin user does not exist"
+ynh_app_setting_set "$app" admin_user "$admin"
 
 # Check destination directory
 DESTDIR="/var/www/${app}"
@@ -59,6 +65,18 @@ sudo chown -R www-data: "$DESTDIR"
 # Install dependencies and Wallabag
 #init_composer "$DESTDIR" www-data
 exec_console www-data "$DESTDIR" wallabag:install
+
+# Add users to Wallabag
+for username in $(ynh_user_list); do
+  user_email=$(sudo yunohost user info "$username" --output-as plain \
+                 | ynh_get_plain_key mail)
+  user_pass=$(ynh_string_random)
+  exec_console www-data "$DESTDIR" fos:user:create \
+      "$username" "$user_email" "$user_pass"
+done
+
+# Set admin user
+exec_console www-data "$DESTDIR" fos:user:promote --super "$admin"
 
 # Copy and set nginx configuration
 nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"

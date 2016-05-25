@@ -17,10 +17,9 @@ extracts content so that you can read it when you have time.
  * Consider using composer to fetch dependencies and retrieve Wallabag sources
    from the git repository - as suggested in the
    [official documentation](http://doc.wallabag.org/en/master/user/installation.html#on-a-dedicated-web-server-recommended-way)
- * Add YunoHost users and connect authentication to the SSO
+ * Add a `post_user_create` hook to create new YunoHost users in Wallabag -
+   or considering to do that dynamically
  * Write the upgrade / backup / restore scripts
-
-**Current state:** it only installs Wallabag yet without any user.
 
 ## Upgrade from v1
 
