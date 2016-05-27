@@ -14,12 +14,13 @@ extracts content so that you can read it when you have time.
 
 ## TODO
 
+ * Improve the LDAP integration, see [#1](https://github.com/YunoHost-Apps/wallabag2_ynh/issues/1)
+ * Add a `post_user_create` hook to create new YunoHost users in Wallabag -
+   or consider to do that dynamically
+ * Write the `upgrade` / `backup` / `restore` scripts
  * Consider using composer to fetch dependencies and retrieve Wallabag sources
    from the git repository - as suggested in the
    [official documentation](http://doc.wallabag.org/en/master/user/installation.html#on-a-dedicated-web-server-recommended-way)
- * Add a `post_user_create` hook to create new YunoHost users in Wallabag -
-   or considering to do that dynamically
- * Write the upgrade / backup / restore scripts
 
 ## Upgrade from v1
 
@@ -27,16 +28,6 @@ The upgrade from the [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh
 app requires a manual operation, that's why it's provided as a new package.
 For the migration process, please refer to the
 [official documentation](http://doc.wallabag.org/en/master/user/migration.html).
-
-## Limitation
-
-This application does not connect to the LDAP yet which is needed to retrieve
-users information - such as the password. One consequence is that you will
-not be able to use third-party applications which are not Web browser add-on -
-i.e. the Android application. Conversely, the add-ons for Firefox and Chrome
-will work as long as you're connected to the SSO.
-It is nevertheless a [planned feature](https://github.com/wallabag/wallabag/issues/966)
-for the v2.1 and will be provided by this package as soon as it's implemented.
 
 ## Links
 
