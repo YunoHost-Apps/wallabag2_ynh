@@ -6,7 +6,7 @@ to see what's not done yet. Also, note that you should install this app
 for testing purpose only since there is no guarantee that the upgrade works
 at the current state.**
 
-**Shipped version:** 2.0.4
+**Shipped version:** 2.0.5
 
 [Wallabag](https://www.wallabag.org/) is a self hostable application allowing
 you to not miss any content anymore. Click, save, read it when you can. It

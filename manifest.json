@@ -8,7 +8,7 @@
     },
     "url": "https://www.wallabag.org",
     "license": "MIT",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "maintainer": {
         "name": "jerome",
         "email": "jerome@yunohost.org"
