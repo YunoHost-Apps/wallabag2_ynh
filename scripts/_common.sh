@@ -8,9 +8,6 @@ VERSION=2.0.5
 # Package name for Wallabag dependencies
 DEPS_PKG_NAME="wallabag-deps"
 
-## Wallabag git repository URL
-#WALLABAG_GIT_URL="https://github.com/wallabag/wallabag.git"
-
 # Full Wallabag sources tarball URL
 WALLABAG_SOURCE_URL="https://framabag.org/wallabag-release-${VERSION}.tar.gz"
 
@@ -41,34 +38,6 @@ exec_as() {
   fi
 }
 
-## Execute a composer command from a given directory
-## usage: exec_composer AS_USER WORKDIR COMMAND [ARG ...]
-#exec_composer() {
-#  local AS_USER=$1
-#  local WORKDIR=$2
-#  shift 2
-#
-#  exec_as "$AS_USER" COMPOSER_HOME="${WORKDIR}/.composer" SYMFONY_ENV=prod \
-#    php "${WORKDIR}/composer.phar" $@ \
-#      -d "${WORKDIR}" --no-interaction
-#}
-
-## Install and initialize Composer in the given directory
-## usage: init_composer DESTDIR [AS_USER]
-#init_composer() {
-#  local DESTDIR=$1
-#  local AS_USER=${2:-$USER}
-#
-#  # install composer
-#  curl -sS https://getcomposer.org/installer \
-#    | COMPOSER_HOME="${DESTDIR}/.composer" \
-#        php -- --quiet --install-dir="$DESTDIR" \
-#    || die "Unable to install Composer"
-# 
-#  # install dependencies
-#  exec_composer "$AS_USER" "$DESTDIR" install --no-dev --prefer-dist
-#}
-
 # Execute a command through the wallabag console
 # usage: exec_console AS_USER WORKDIR COMMAND [ARG ...]
 exec_console() {
@@ -79,18 +48,6 @@ exec_console() {
   (cd "$WORKDIR" && \
    exec_as "$AS_USER" php "bin/console" --no-interaction --env=prod $@)
 }
-
-## Fetch git repository and checkout Wallabag version to the given directory
-## usage: clone_wallabag DESTDIR
-#clone_wallabag() {
-#  local DESTDIR=$1
-#
-#  # clone git repository
-#  git clone -q "$WALLABAG_GIT_URL" "$DESTDIR" \
-#    || ynh_die "Unable to fetch Wallabag sources"
-#  (cd "$DESTDIR" && git checkout -q "$VERSION") \
-#    || ynh_die "Unable to retrieve Wallabag version"
-#}
 
 # Download and extract Wallabag sources to the given directory
 # usage: extract_wallabag DESTDIR [AS_USER]

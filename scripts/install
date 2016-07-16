@@ -12,7 +12,7 @@ path=${2%/}
 admin=$3
 
 # Load common variables and helpers
-. ./_common.sh
+source ./_common.sh
 
 # Set app specific variables
 dbname=$app
@@ -39,7 +39,6 @@ ynh_package_install_from_equivs ../conf/${DEPS_PKG_NAME}.control \
 
 # Create tmp directory and fetch app inside
 TMPDIR=$(ynh_mkdir_tmp)
-#clone_wallabag "$TMPDIR"
 extract_wallabag "$TMPDIR"
 
 # Generate random DES key & password
@@ -63,7 +62,6 @@ sudo mv "$TMPDIR" "$DESTDIR"
 sudo chown -R www-data: "$DESTDIR"
 
 # Install dependencies and Wallabag
-#init_composer "$DESTDIR" www-data
 exec_console www-data "$DESTDIR" wallabag:install
 
 # Add users to Wallabag
