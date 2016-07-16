@@ -95,5 +95,5 @@ sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
 ynh_app_setting_set "$app" unprotected_uris "/"
 
 # Reload services
-sudo service php5-fpm restart || true
-sudo service nginx reload || true
+sudo service php5-fpm restart
+sudo service nginx reload
