@@ -1,0 +1,18 @@
+#!/bin/bash
+
+app="wallabag2"
+
+# Retrieve arguments
+username=$1
+user_email=$2
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+# Generate a random password
+user_pass=$(ynh_string_random)
+
+# Create the new user in Wallabag
+(cd "/var/www/$app" && \
+ sudo sudo -u "www-data" php "bin/console" --no-interaction --env=prod \
+    fos:user:create "$username" "$user_email" "$user_pass")
