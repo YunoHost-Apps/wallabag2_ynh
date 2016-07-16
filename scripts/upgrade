@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+# Load common variables and helpers
+source ./_common.sh
+
+# Set app specific variables
+app=$YNH_APP_INSTANCE_NAME
+dbname=$app
+dbuser=$app
+
+# Retrieve arguments
+domain=$(ynh_app_setting_get "$app" domain)
+path=$(ynh_app_setting_get "$app" path)
+path=${path%/}
+dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
+deskey=$(ynh_app_setting_get "$app" deskey)
+
+# Check destination directory
+DESTDIR="/var/www/$app"
+[[ ! -d $DESTDIR ]] && ynh_die \
+"The destination directory '$DESTDIR' does not exist.\
+ The app is not correctly installed, you should remove it first."
+
+# Install dependencies
+ynh_package_install_from_equivs ../conf/${DEPS_PKG_NAME}.control \
+  || ynh_die "Unable to install dependencies"
+
+# Create tmp directory and fetch app inside
+TMPDIR=$(ynh_mkdir_tmp)
+extract_wallabag "$TMPDIR"
+
+# Copy and set Wallabag dist configuration
+wb_conf="${TMPDIR}/app/config/parameters.yml"
+cp ../conf/parameters.yml "$wb_conf"
+sed -i "s@{DBNAME}@${dbname}@g" "$wb_conf"
+sed -i "s@{DBUSER}@${dbuser}@g" "$wb_conf"
+sed -i "s@{DBPASS}@${dbpass}@g" "$wb_conf"
+sed -i "s@{DESKEY}@${deskey}@g" "$wb_conf"
+
+# Replace files and set permissions
+sudo rm -rf "$DESTDIR"
+sudo mv "$TMPDIR" "$DESTDIR"
+sudo chown -R www-data: "$DESTDIR"
+
+# Clear Wallabag cache
+exec_console www-data "$DESTDIR" cache:clear
+
+# Copy and set nginx configuration
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
+sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
+sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
+sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
+sudo cp ../conf/nginx.conf "$nginx_conf"
+
+# Copy and set php-fpm configuration
+phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
+sed -i "s@{POOLNAME}@${app}@g"     ../conf/php-fpm.conf
+sed -i "s@{DESTDIR}@${DESTDIR}/@g" ../conf/php-fpm.conf
+sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
+
+# Set SSOwat rules
+ynh_app_setting_set "$app" unprotected_uris "/"
+
+# Reload services
+sudo service php5-fpm restart
+sudo service nginx reload

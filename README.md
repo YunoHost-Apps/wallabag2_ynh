@@ -15,12 +15,7 @@ extracts content so that you can read it when you have time.
 ## TODO
 
  * Improve the LDAP integration, see [#1](https://github.com/YunoHost-Apps/wallabag2_ynh/issues/1)
- * Add a `post_user_create` hook to create new YunoHost users in Wallabag -
-   or consider to do that dynamically
- * Write the `upgrade` / `backup` / `restore` scripts
- * Consider using composer to fetch dependencies and retrieve Wallabag sources
-   from the git repository - as suggested in the
-   [official documentation](http://doc.wallabag.org/en/master/user/installation.html#on-a-dedicated-web-server-recommended-way)
+ * Write the `backup` / `restore` scripts
 
 ## Upgrade from v1
 
