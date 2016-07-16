@@ -1,16 +1,23 @@
 Wallabag v2 for Yunohost
 ------------------------
 
-**Warning! This is a work-in-process package... Please read the TODO below
-to see what's not done yet. Also, note that you should install this app
-for testing purpose only since there is no guarantee that the upgrade works
-at the current state.**
+**This is a work-in-progress Wallabag v2 package for YunoHost.**
 
 **Shipped version:** 2.0.5
 
 [Wallabag](https://www.wallabag.org/) is a self hostable application allowing
 you to not miss any content anymore. Click, save, read it when you can. It
 extracts content so that you can read it when you have time.
+
+![](https://www.wallabag.org/images/screenshots/homepage.png)
+
+## Features
+
+In addition to Wallabag core features, the following are made available with
+this package:
+
+ * Integrate with YunoHost users and SSO - i.e. logout button
+ * Allow one user to be the administrator (set at the installation)
 
 ## TODO
 
@@ -26,6 +33,6 @@ For the migration process, please refer to the
 
 ## Links
 
-**Wallabag**: https://www.wallabag.org/
-
-**YunoHost**: https://yunohost.org/
+ * Report a bug: https://dev.yunohost.org/projects/apps/issues
+ * Wallabag website: https://www.wallabag.org/
+ * YunoHost website: https://yunohost.org/
