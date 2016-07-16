@@ -45,6 +45,7 @@ extract_wallabag "$TMPDIR"
 deskey=$(ynh_string_random 24)
 dbpass=$(ynh_string_random)
 ynh_app_setting_set "$app" mysqlpwd "$dbpass"
+ynh_app_setting_set "$app" deskey "$deskey"
 
 # Initialize database
 ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
