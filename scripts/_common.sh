@@ -3,7 +3,7 @@
 #
 
 # Wallabag version
-VERSION=2.0.5
+VERSION="2.0.7"
 
 # Package name for Wallabag dependencies
 DEPS_PKG_NAME="wallabag-deps"
@@ -12,7 +12,7 @@ DEPS_PKG_NAME="wallabag-deps"
 WALLABAG_SOURCE_URL="https://framabag.org/wallabag-release-${VERSION}.tar.gz"
 
 # Full Wallabag sources tarball checksum
-WALLABAG_SOURCE_SHA256="c3df0fe67782538cc7fbdeedb48845a8a23eceb11b58888fbd8ee3b97f8842fc"
+WALLABAG_SOURCE_SHA256="0fc5f954028be08fb78528ca473f2a73778f24689d6365eb458ae3e8ac240f94"
 
 # App package root directory should be the parent folder
 PKGDIR=$(cd ../; pwd)
