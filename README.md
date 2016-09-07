@@ -3,7 +3,7 @@ Wallabag v2 for Yunohost
 
 **This is a work-in-progress Wallabag v2 package for YunoHost.**
 
-**Shipped version:** 2.0.7
+**Shipped version:** 2.0.8
 
 [Wallabag](https://www.wallabag.org/) is a self hostable application allowing
 you to not miss any content anymore. Click, save, read it when you can. It
