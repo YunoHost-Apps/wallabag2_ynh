@@ -3,7 +3,7 @@ Wallabag v2 for Yunohost
 
 **This is a work-in-progress Wallabag v2 package for YunoHost.**
 
-**Shipped version:** 2.0.8
+**Shipped version:** 2.1.1
 
 [Wallabag](https://www.wallabag.org/) is a self hostable application allowing
 you to not miss any content anymore. Click, save, read it when you can. It
@@ -18,6 +18,7 @@ this package:
 
  * Integrate with YunoHost users and SSO - i.e. logout button
  * Allow one user to be the administrator (set at the installation)
+ * Asynchronous import using Redis (need to be enabled in the *Internal Settings*)
 
 ## TODO
 

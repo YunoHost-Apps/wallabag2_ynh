@@ -45,7 +45,8 @@ sudo rm -rf "$DESTDIR"
 sudo mv "$TMPDIR" "$DESTDIR"
 sudo chown -R www-data: "$DESTDIR"
 
-# Clear Wallabag cache
+# Upgrade database and clear the cache
+exec_console www-data "$DESTDIR" doctrine:migrations:migrate
 exec_console www-data "$DESTDIR" cache:clear
 
 # Copy and set nginx configuration

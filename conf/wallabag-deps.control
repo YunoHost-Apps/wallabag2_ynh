@@ -4,9 +4,9 @@ Homepage: https://www.wallabag.org/
 Standards-Version: 3.9.2
 
 Package: wallabag-deps
-Version: 2.0-1
+Version: 2.1-1
 Depends: php5-cli, php5-mysql, php5-json, php5-gd, php5-tidy, php5-curl
- , php-gettext
+ , php-gettext, redis-server
 Architecture: all
 Description: meta package for wallabag dependencies
  Wallabag is a self hostable application allowing you to not miss
