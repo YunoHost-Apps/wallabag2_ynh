@@ -1,7 +1,7 @@
 Wallabag v2 for Yunohost
 ------------------------
 
-**This is a work-in-progress Wallabag v2 package for YunoHost.**
+**This is a work-in-progress Wallabag v2 package for YunoHost. It's currently looking for new maintainer(s), so feel free to give a shout if you're interested in!**
 
 **Shipped version:** 2.1.4
 
