@@ -1,15 +1,17 @@
 Wallabag v2 for Yunohost
 ------------------------
 
-**This is a work-in-progress Wallabag v2 package for YunoHost. It's currently looking for new maintainer(s), so feel free to give a shout if you're interested in!**
+This is a work-in-progress Wallabag v2 package for YunoHost.
+
+---
+
+**NB: Since @jeromelebleu is no longer maintaining this package, I (@lapineige) take over this repository. But I have limited time and experience, so feel free to help !**
 
 **Shipped version:** 2.1.4
 
-[Wallabag](https://www.wallabag.org/) is a self hostable application allowing
-you to not miss any content anymore. Click, save, read it when you can. It
-extracts content so that you can read it when you have time.
-
-![](https://www.wallabag.org/images/screenshots/homepage.png)
+[Wallabag](https://www.wallabag.org/) is a self hostable Read-It-Later application allowing
+you to not miss any content anymore. Click, save, read it when you can.
+It extracts content so that you can read it when you have time.
 
 ## Features
 
@@ -23,7 +25,7 @@ this package:
 ## TODO
 
  * Improve the LDAP integration, see [#1](https://github.com/YunoHost-Apps/wallabag2_ynh/issues/1)
- * Write the `backup` / `restore` scripts
+ * Write the `backup` / `restore` scripts (meanfile please make your own backup, e.g. with the export tool)
 
 ## Upgrade from v1
 
