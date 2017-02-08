@@ -60,6 +60,8 @@ sed -i "s@{DESKEY}@${deskey}@g" "$wb_conf"
 
 # Install files and set permissions
 sudo mv "$TMPDIR" "$DESTDIR"
+
+cd $DESTDIR
 sudo chown -R www-data: "$DESTDIR"
 
 # Install dependencies and Wallabag
@@ -79,17 +81,17 @@ exec_console www-data "$DESTDIR" fos:user:promote --super "$admin"
 
 # Copy and set nginx configuration
 nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
-sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
-sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
-sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
-sudo cp ../conf/nginx.conf "$nginx_conf"
+sed -i "s@{LOCATION}@${path:-/}@g" $PKGDIR/conf/nginx.conf
+sed -i "s@{PATH}@${path}@g"        $PKGDIR/conf/nginx.conf
+sed -i "s@{DESTDIR}@${DESTDIR}@g"  $PKGDIR/conf/nginx.conf
+sed -i "s@{POOLNAME}@${app}@g"     $PKGDIR/conf/nginx.conf
+sudo cp $PKGDIR/conf/nginx.conf "$nginx_conf"
 
 # Copy and set php-fpm configuration
 phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
-sed -i "s@{POOLNAME}@${app}@g"     ../conf/php-fpm.conf
-sed -i "s@{DESTDIR}@${DESTDIR}/@g" ../conf/php-fpm.conf
-sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
+sed -i "s@{POOLNAME}@${app}@g"     $PKGDIR/conf/php-fpm.conf
+sed -i "s@{DESTDIR}@${DESTDIR}/@g" $PKGDIR/conf/php-fpm.conf
+sudo cp $PKGDIR/conf/php-fpm.conf "$phpfpm_conf"
 
 # Set SSOwat rules
 ynh_app_setting_set "$app" unprotected_uris "/"
