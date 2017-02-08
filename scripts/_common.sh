@@ -44,9 +44,7 @@ exec_console() {
   local AS_USER=$1
   local WORKDIR=$2
   shift 2
-
-  (cd "$WORKDIR" && \
-   exec_as "$AS_USER" php "bin/console" --no-interaction --env=prod $@)
+  exec_as "$AS_USER" php "bin/console" --no-interaction --env=prod $@
 }
 
 # Download and extract Wallabag sources to the given directory
