@@ -3,16 +3,16 @@
 # Exit on command errors and treat unset variables as an error
 set -eu
 
+# Load common variables and helpers
+source ./_common.sh
+
 # Retrieve app id
 app=$YNH_APP_INSTANCE_NAME
 
 # Retrieve arguments
-domain=$1
-path=${2%/}
-admin=$3
-
-# Load common variables and helpers
-source ./_common.sh
+domain=$YNH_APP_ARG_DOMAIN
+path=$(ynh_normalize_url_path $YNH_APP_ARG_PATH)
+admin=$YNH_APP_ARG_ADMIN
 
 # Set app specific variables
 dbname=$app
@@ -80,12 +80,16 @@ done
 exec_console www-data "$DESTDIR" fos:user:promote --super "$admin"
 
 # Copy and set nginx configuration
-nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sed -i "s@{LOCATION}@${path:-/}@g" $PKGDIR/conf/nginx.conf
-sed -i "s@{PATH}@${path}@g"        $PKGDIR/conf/nginx.conf
-sed -i "s@{DESTDIR}@${DESTDIR}@g"  $PKGDIR/conf/nginx.conf
-sed -i "s@{POOLNAME}@${app}@g"     $PKGDIR/conf/nginx.conf
-sudo cp $PKGDIR/conf/nginx.conf "$nginx_conf"
+if [[ "$path" == "/" ]] ; then
+  nginx_conf=$PKGDIR/conf/nginx_root.conf
+else
+  nginx_conf=$PKGDIR/conf/nginx_sub_dir.conf
+fi
+sed -i "s@{LOCATION}@${path:-/}@g" "$nginx_conf"
+sed -i "s@{PATH}@${path}@g"        "$nginx_conf"
+sed -i "s@{DESTDIR}@${DESTDIR}@g"  "$nginx_conf"
+sed -i "s@{POOLNAME}@${app}@g"     "$nginx_conf"
+sudo cp "$nginx_conf" "/etc/nginx/conf.d/${domain}.d/${app}.conf"
 
 # Copy and set php-fpm configuration
 phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"

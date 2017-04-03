@@ -3,16 +3,16 @@
 #
 
 # Wallabag version
-VERSION="2.1.4"
+VERSION="2.2.2"
 
 # Package name for Wallabag dependencies
 DEPS_PKG_NAME="wallabag-deps"
 
 # Full Wallabag sources tarball URL
-WALLABAG_SOURCE_URL="https://framabag.org/wallabag-release-${VERSION}.tar.gz"
+WALLABAG_SOURCE_URL="https://static.wallabag.org/releases/wallabag-release-${VERSION}.tar.gz"
 
 # Full Wallabag sources tarball checksum
-WALLABAG_SOURCE_SHA256="eb64205a4d7c161527edd08bed22e8dd9799fe8a4130c5964c18cba3a94c9768"
+WALLABAG_SOURCE_SHA256="40d98bd556116dbc28f92339f0e5b93836ece87dcb01e7aaa628ea98855a1f51"
 
 # App package root directory should be the parent folder
 PKGDIR=$(cd ../; pwd)
@@ -34,7 +34,7 @@ exec_as() {
     eval $@
   else
     # use sudo twice to be root and be allowed to use another user
-    sudo sudo -u "$USER" $@
+    sudo sudo -u "$USER" "$@"
   fi
 }
 
@@ -44,7 +44,7 @@ exec_console() {
   local AS_USER=$1
   local WORKDIR=$2
   shift 2
-  exec_as "$AS_USER" php "bin/console" --no-interaction --env=prod $@
+  exec_as "$AS_USER" php "$WORKDIR/bin/console" --no-interaction --env=prod "$@"
 }
 
 # Download and extract Wallabag sources to the given directory
@@ -68,4 +68,28 @@ extract_wallabag() {
   (cd "$DESTDIR" \
    && for p in ${PKGDIR}/patches/*.patch; do patch -p1 < $p; done) \
     || ynh_die "Unable to apply patches to Wallabag"
+}
+
+# Normalize the url path syntax
+# Handle the slash at the beginning of path and its absence at ending
+# Return a normalized url path
+#
+# example: url_path=$(ynh_normalize_url_path $url_path)
+#          ynh_normalize_url_path example -> /example
+#          ynh_normalize_url_path /example -> /example
+#          ynh_normalize_url_path /example/ -> /example
+#          ynh_normalize_url_path / -> /
+#
+# usage: ynh_normalize_url_path path_to_normalize
+# | arg: url_path_to_normalize - URL path to normalize before using it
+ynh_normalize_url_path () {
+	path_url=$1
+	test -n "$path_url" || ynh_die "ynh_normalize_url_path expect a URL path as first argument and received nothing."
+	if [ "${path_url:0:1}" != "/" ]; then    # If the first character is not a /
+		path_url="/$path_url"    # Add / at begin of path variable
+	fi
+	if [ "${path_url:${#path_url}-1}" == "/" ] && [ ${#path_url} -gt 1 ]; then    # If the last character is a / and that not the only character.
+		path_url="${path_url:0:${#path_url}-1}"	# Delete the last character
+	fi
+	echo $path_url
 }
