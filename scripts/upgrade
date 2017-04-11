@@ -13,8 +13,7 @@ dbuser=$app
 
 # Retrieve arguments
 domain=$(ynh_app_setting_get "$app" domain)
-path=$(ynh_app_setting_get "$app" path)
-path=${path%/}
+path=$(ynh_normalize_url_path $(ynh_app_setting_get "$app" path))
 dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
 deskey=$(ynh_app_setting_get "$app" deskey)
 
@@ -50,12 +49,16 @@ exec_console www-data "$DESTDIR" doctrine:migrations:migrate
 exec_console www-data "$DESTDIR" cache:clear
 
 # Copy and set nginx configuration
-nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
-sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
-sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
-sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
-sudo cp ../conf/nginx.conf "$nginx_conf"
+if [[ "$path" == "/" ]] ; then
+  nginx_conf=$PKGDIR/conf/nginx_root.conf
+else
+  nginx_conf=$PKGDIR/conf/nginx_sub_dir.conf
+fi
+sed -i "s@{LOCATION}@${path:-/}@g" "$nginx_conf"
+sed -i "s@{PATH}@${path}@g"        "$nginx_conf"
+sed -i "s@{DESTDIR}@${DESTDIR}@g"  "$nginx_conf"
+sed -i "s@{POOLNAME}@${app}@g"     "$nginx_conf"
+sudo cp "$nginx_conf" "/etc/nginx/conf.d/${domain}.d/${app}.conf"
 
 # Copy and set php-fpm configuration
 phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"

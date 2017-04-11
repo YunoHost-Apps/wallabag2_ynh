@@ -7,7 +7,7 @@ This is a work-in-progress Wallabag v2 package for YunoHost.
 
 **NB: Since @jeromelebleu is no longer maintaining this package, I (@lapineige) take over this repository. But I have limited time and experience, so feel free to help !**
 
-**Shipped version:** 2.1.4
+**Shipped version:** 2.2.2
 
 [Wallabag](https://www.wallabag.org/) is a self hostable Read-It-Later application allowing
 you to not miss any content anymore. Click, save, read it when you can.
@@ -24,8 +24,11 @@ this package:
 
 ## TODO
 
- * Improve the LDAP integration, see [#1](https://github.com/YunoHost-Apps/wallabag2_ynh/issues/1)
- * Write the `backup` / `restore` scripts (meanfile please make your own backup, e.g. with the export tool)
+ * Improve the LDAP integration, see [#1](https://github.com/YunoHost-Apps/wallabag2_ynh/issues/1). At the moment you have to apply a workaround to connect via OAuth (iOS, Chrome/Firefox plugin, etc.) by changing your user password:
+   * via the user interface and the recovery e-mail
+   * via CLI on the server: `cd /var/www/wallabag2 ;  sudo -u www-data ./bin/console --env=prod fos:user:change-password`
+ * Write the `backup` / `restore` scripts (meanwhile please make your own backup, e.g. with the export tool)
+ * Refactor the application to apply for replacing wallabag v1 official application!
 
 ## Upgrade from v1
 

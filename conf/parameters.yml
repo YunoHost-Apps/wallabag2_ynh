@@ -8,6 +8,7 @@ parameters:
     database_path: null
     database_table_prefix: null
     database_socket: null
+    database_charset: utf8mb4
 
     mailer_transport:  smtp
     mailer_host:       127.0.0.1
@@ -36,9 +37,14 @@ parameters:
     rabbitmq_port: 5672
     rabbitmq_user: guest
     rabbitmq_password: guest
+    rabbitmq_prefetch_count: 10
 
     # Redis processing
     redis_scheme: tcp
     redis_host: localhost
     redis_port: 6379
     redis_path: null
+    redis_password: null
+ 
+    # sites credentials
+    sites_credentials: {}
