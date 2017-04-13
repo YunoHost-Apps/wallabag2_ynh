@@ -24,9 +24,6 @@ this package:
 
 ## TODO
 
- * Improve the LDAP integration, see [#1](https://github.com/YunoHost-Apps/wallabag2_ynh/issues/1). At the moment you have to apply a workaround to connect via OAuth (iOS, Chrome/Firefox plugin, etc.) by changing your user password:
-   * via the user interface and the recovery e-mail
-   * via CLI on the server: `cd /var/www/wallabag2 ;  sudo -u www-data ./bin/console --env=prod fos:user:change-password`
  * Write the `backup` / `restore` scripts (meanwhile please make your own backup, e.g. with the export tool)
  * Refactor the application to apply for replacing wallabag v1 official application!
 
