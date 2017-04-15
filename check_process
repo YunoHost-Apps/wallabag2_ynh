@@ -1,5 +1,4 @@
 ;; Complete test
-	auto_remove=1
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -12,8 +11,8 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
-		backup_restore=0
-		multi_instance=0
+		backup_restore=1
+		multi_instance=1
 		wrong_user=1
 		wrong_path=1
 		incorrect_path=1
@@ -25,8 +24,10 @@
 	Level 1=auto
 	Level 2=auto
 	Level 3=auto
-	Level 4=0
-  Level 5=auto
+# https://github.com/YunoHost-Apps/wallabag2_ynh/issues/26
+	Level 4=1
+# https://github.com/YunoHost-Apps/wallabag2_ynh/issues/27
+  Level 5=1
 	Level 6=auto
 	Level 7=auto
 	Level 8=0

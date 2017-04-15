@@ -5,8 +5,8 @@
 # Wallabag version
 VERSION="2.2.2"
 
-# Package name for Wallabag dependencies
-DEPS_PKG_NAME="wallabag-deps"
+# Package dependencies
+PKG_DEPENDENCIES="php5-cli php5-mysql php5-json php5-gd php5-tidy php5-curl php-gettext redis-server"
 
 # Full Wallabag sources tarball URL
 WALLABAG_SOURCE_URL="https://static.wallabag.org/releases/wallabag-release-${VERSION}.tar.gz"
@@ -70,6 +70,44 @@ extract_wallabag() {
     || ynh_die "Unable to apply patches to Wallabag"
 }
 
+
+HUMAN_SIZE () {	# Transforms a Kb-based size to a human-readable size
+	human=$(numfmt --to=iec --from-unit=1K $1)
+	echo $human
+}
+
+CHECK_SIZE () {	# Check if enough disk space available on backup storage
+	file_to_analyse=$1
+	backup_size=$(sudo du --summarize "$file_to_analyse" | cut -f1)
+	free_space=$(sudo df --output=avail "/home/yunohost.backup" | sed 1d)
+
+	if [ $free_space -le $backup_size ]
+	then
+		WARNING echo "Not enough backup disk space for: $file_to_analyse."
+		WARNING echo "Space available: $(HUMAN_SIZE $free_space)"
+		ynh_die "Space needed: $(HUMAN_SIZE $backup_size)"
+	fi
+}
+
+CHECK_USER () {	# Check user validity
+# $1 = User
+	ynh_user_exists "$1" || ynh_die "Wrong user"
+}
+
+CHECK_DOMAINPATH () {	# Check domain/path availability
+	sudo yunohost app checkurl $domain$path_url -a $app
+}
+
+CHECK_FINALPATH () {	# Check if destination directory already exists
+	final_path="/var/www/$app"
+	test ! -e "$final_path" || ynh_die "This path already contains a folder"
+}
+
+
+#=================================================
+# FUTURE YUNOHOST HELPERS - TO BE REMOVED LATER
+#=================================================
+ 
 # Normalize the url path syntax
 # Handle the slash at the beginning of path and its absence at ending
 # Return a normalized url path
@@ -92,4 +130,148 @@ ynh_normalize_url_path () {
 		path_url="${path_url:0:${#path_url}-1}"	# Delete the last character
 	fi
 	echo $path_url
+}
+
+# Manage a fail of the script
+#
+# Print a warning to inform that the script was failed
+# Execute the ynh_clean_setup function if used in the app script
+#
+# usage of ynh_clean_setup function
+# This function provide a way to clean some residual of installation that not managed by remove script.
+# To use it, simply add in your script:
+# ynh_clean_setup () {
+#        instructions...
+# }
+# This function is optionnal.
+#
+# Usage: ynh_exit_properly is used only by the helper ynh_abort_if_errors.
+# You must not use it directly.
+ynh_exit_properly () {
+	exit_code=$?
+	if [ "$exit_code" -eq 0 ]; then
+			exit 0	# Exit without error if the script ended correctly
+	fi
+
+	trap '' EXIT	# Ignore new exit signals
+	set +eu	# Do not exit anymore if a command fail or if a variable is empty
+
+	echo -e "!!\n  $app's script has encountered an error. Its execution was cancelled.\n!!" >&2
+
+	if type -t ynh_clean_setup > /dev/null; then	# Check if the function exist in the app script.
+		ynh_clean_setup	# Call the function to do specific cleaning for the app.
+	fi
+
+	ynh_die	# Exit with error status
+}
+
+# Exit if an error occurs during the execution of the script.
+#
+# Stop immediatly the execution if an error occured or if a empty variable is used.
+# The execution of the script is derivate to ynh_exit_properly function before exit.
+#
+# Usage: ynh_abort_if_errors
+ynh_abort_if_errors () {
+	set -eu	# Exit if a command fail, and if a variable is used unset.
+	trap ynh_exit_properly EXIT	# Capturing exit signals on shell script
+}
+
+# Define and install dependencies with a equivs control file
+# This helper can/should only be called once per app
+#
+# usage: ynh_install_app_dependencies dep [dep [...]]
+# | arg: dep - the package name to install in dependence
+ynh_install_app_dependencies () {
+    dependencies=$@
+    manifest_path="../manifest.json"
+    if [ ! -e "$manifest_path" ]; then
+    	manifest_path="../settings/manifest.json"	# Into the restore script, the manifest is not at the same place
+    fi
+    version=$(sudo python3 -c "import sys, json;print(json.load(open(\"$manifest_path\"))['version'])")	# Retrieve the version number in the manifest file.
+    dep_app=${app//_/-}	# Replace all '_' by '-'
+
+    if ynh_package_is_installed "${dep_app}-ynh-deps"; then
+		echo "A package named ${dep_app}-ynh-deps is already installed" >&2
+    else
+        cat > ./${dep_app}-ynh-deps.control << EOF	# Make a control file for equivs-build
+Section: misc
+Priority: optional
+Package: ${dep_app}-ynh-deps
+Version: ${version}
+Depends: ${dependencies// /, }
+Architecture: all
+Description: Fake package for ${app} (YunoHost app) dependencies
+ This meta-package is only responsible of installing its dependencies.
+EOF
+        ynh_package_install_from_equivs ./${dep_app}-ynh-deps.control \
+            || ynh_die "Unable to install dependencies"	# Install the fake package and its dependencies
+        ynh_app_setting_set $app apt_dependencies $dependencies
+    fi
+}
+
+# Remove fake package and its dependencies
+#
+# Dependencies will removed only if no other package need them.
+#
+# usage: ynh_remove_app_dependencies
+ynh_remove_app_dependencies () {
+    dep_app=${app//_/-}	# Replace all '_' by '-'
+    ynh_package_autoremove ${dep_app}-ynh-deps	# Remove the fake package and its dependencies if they not still used.
+}
+
+
+# Correct the name given in argument for mariadb
+# Avoid invalid characters in your database name
+#
+# Exemple: dbname=$(ynh_sanitize_dbid $app)
+#
+# usage: ynh_sanitize_dbid name
+# | arg: name - name to correct/sanitize
+# | ret: the corrected name
+ynh_sanitize_dbid () {
+	dbid=${1//[-.]/_}	# Mariadb doesn't support - and . in the name of databases. It will be replace by _
+	echo $dbid
+}
+
+# Substitute/replace a string by another in a file
+#
+# usage: ynh_replace_string match_string replace_string target_file
+# | arg: match_string - String to be searched and replaced in the file
+# | arg: replace_string - String that will replace matches
+# | arg: target_file - File in which the string will be replaced.
+ynh_replace_string () {
+	delimit=@
+	match_string=${1//${delimit}/"\\${delimit}"}	# Escape the delimiter if it's in the string.
+	replace_string=${2//${delimit}/"\\${delimit}"}
+	workfile=$3
+
+	sudo sed --in-place "s${delimit}${match_string}${delimit}${replace_string}${delimit}g" "$workfile"
+}
+
+# Remove a file or a directory securely
+#
+# usage: ynh_secure_remove path_to_remove
+# | arg: path_to_remove - File or directory to remove
+ynh_secure_remove () {
+	path_to_remove=$1
+	forbidden_path=" \
+	/var/www \
+	/home/yunohost.app"
+
+	if [[ "$forbidden_path" =~ "$path_to_remove" \
+		# Match all paths or subpaths in $forbidden_path
+		|| "$path_to_remove" =~ ^/[[:alnum:]]+$ \
+		# Match all first level paths from / (Like /var, /root, etc...)
+		|| "${path_to_remove:${#path_to_remove}-1}" = "/" ]]
+		# Match if the path finishes by /. Because it seems there is an empty variable
+	then
+		echo "Avoid deleting $path_to_remove." >&2
+	else
+		if [ -e "$path_to_remove" ]
+		then
+			sudo rm -R "$path_to_remove"
+		else
+			echo "$path_to_remove wasn't deleted because it doesn't exist." >&2
+		fi
+	fi
 }

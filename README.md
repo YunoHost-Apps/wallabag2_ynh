@@ -1,7 +1,7 @@
 Wallabag v2 for Yunohost
 ------------------------
 
-This is a work-in-progress Wallabag v2 package for YunoHost.
+This is a Wallabag v2 package for YunoHost.
 
 ---
 
@@ -22,20 +22,16 @@ this package:
  * Allow one user to be the administrator (set at the installation)
  * Asynchronous import using Redis (need to be enabled in the *Internal Settings*)
 
-## TODO
-
- * Write the `backup` / `restore` scripts (meanwhile please make your own backup, e.g. with the export tool)
- * Refactor the application to apply for replacing wallabag v1 official application!
 
 ## Upgrade from v1
 
-The upgrade from the [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh)
+The upgrade from the YunoHost [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh)
 app requires a manual operation, that's why it's provided as a new package.
 For the migration process, please refer to the
-[official documentation](http://doc.wallabag.org/en/master/user/import.html#id6).
+[Wallabag official documentation](http://doc.wallabag.org/en/master/user/import.html#id6).
 
 ## Links
 
- * Report a bug: https://dev.yunohost.org/projects/apps/issues
+ * Report a bug: https://github.com/YunoHost-Apps/wallabag2_ynh/issues
  * Wallabag website: https://www.wallabag.org/
  * YunoHost website: https://yunohost.org/
