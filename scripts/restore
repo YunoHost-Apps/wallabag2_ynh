@@ -60,12 +60,17 @@ db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 ynh_mysql_create_db $db_name $db_name $db_pwd
 ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
+#=================================================
+# RECREATE OF THE DEDICATED USER
+#=================================================
+
+ynh_system_user_create $app	# Recreate the dedicated user, if not existing
 
 #=================================================
 # RESTORE USER RIGHTS
 #=================================================
 
-sudo chown -R www-data: $final_path
+sudo chown -R $app: $final_path
 
 #=================================================
 # RESTORE PHP-FPM CONFIGURATION

@@ -104,6 +104,35 @@ CHECK_FINALPATH () {	# Check if destination directory already exists
 }
 
 
+BACKUP_FAIL_UPGRADE () {
+	WARNING echo "Upgrade failed."
+	app_bck=${app//_/-}	# Replace all '_' by '-'
+	if sudo yunohost backup list | grep -q $app_bck-pre-upgrade$backup_number; then	# Check if existing archive before removing app and restoring
+		sudo yunohost app remove $app	# Remove app before restoring it
+		sudo yunohost backup restore --ignore-hooks $app_bck-pre-upgrade$backup_number --apps $app --force	# Restore the backup if upgrade failed
+		ynh_die "The app was restored to the way it was before the failed upgrade."
+	fi
+}
+
+BACKUP_BEFORE_UPGRADE () {	# Backup the current version of the app, restore it if the upgrade fails
+	backup_number=1
+	old_backup_number=2
+	app_bck=${app//_/-}	# Replace all '_' by '-'
+	if sudo yunohost backup list | grep -q $app_bck-pre-upgrade1; then	# Check for existing archive numbered 1
+		backup_number=2	# And change archive number to 2
+		old_backup_number=1
+	fi
+
+	sudo yunohost backup create --ignore-hooks --apps $app --name $app_bck-pre-upgrade$backup_number	# Create a backup different from the existing one
+	if [ "$?" -eq 0 ]; then	# If backup succfessful, delete former archive
+		if sudo yunohost backup list | grep -q $app_bck-pre-upgrade$old_backup_number; then	# Check for existing archive before removing it
+			QUIET sudo yunohost backup delete $app_bck-pre-upgrade$old_backup_number
+		fi
+	else	# If backup failed
+		ynh_die "Backup failed, the upgrade process was aborted."
+	fi
+}
+
 #=================================================
 # FUTURE YUNOHOST HELPERS - TO BE REMOVED LATER
 #=================================================
@@ -274,4 +303,35 @@ ynh_secure_remove () {
 			echo "$path_to_remove wasn't deleted because it doesn't exist." >&2
 		fi
 	fi
+}
+
+# Create a system user
+#
+# usage: ynh_system_user_create user_name [home_dir]
+# | arg: user_name - Name of the system user that will be create
+# | arg: home_dir - Path of the home dir for the user. Usually the final path of the app. If this argument is omitted, the user will be created without home
+ynh_system_user_create () {
+	if ! ynh_system_user_exists "$1"	# Check if the user exists on the system
+	then	# If the user doesn't exist
+		if [ $# -ge 2 ]; then	# If a home dir is mentioned
+			user_home_dir="-d $2"
+		else
+			user_home_dir="--no-create-home"
+		fi
+		sudo useradd $user_home_dir --system --user-group $1 --shell /usr/sbin/nologin || ynh_die "Unable to create $1 system account"
+	fi
+}
+
+# Delete a system user
+#
+# usage: ynh_system_user_delete user_name
+# | arg: user_name - Name of the system user that will be create
+ynh_system_user_delete () {
+    if ynh_system_user_exists "$1"	# Check if the user exists on the system
+    then
+		echo "Remove the user $1" >&2
+		sudo userdel $1
+	else
+		echo "The user $1 was not found" >&2
+    fi
 }

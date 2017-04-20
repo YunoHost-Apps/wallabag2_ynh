@@ -61,3 +61,9 @@ ynh_remove_app_dependencies
 # The following command is keeped as a matter of transition with the previous way
 # of managing dependencies
 ynh_package_autoremove "wallabag-deps" || true
+
+#=================================================
+# REMOVE DEDICATED USER
+#=================================================
+
+ynh_system_user_delete $app
