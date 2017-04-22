@@ -99,8 +99,9 @@ ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 # Install files and set permissions
 sudo mv "$TMPDIR" "$final_path"
 
-# Set rights for www-data
+# Set rights on directory
 sudo chown -R $app: $final_path
+sudo chmod 755 $final_path
 
 # Install dependencies and Wallabag
 exec_console $app "$final_path" wallabag:install

@@ -76,7 +76,7 @@ extract_wallabag "$TMPDIR"
 # CREATE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $app # Create dedicated  user if not existing
+ynh_system_user_create $app # Create dedicated user if not existing
 
 #=================================================
 # SPECIFIC SETUP
@@ -94,6 +94,7 @@ ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 ynh_secure_remove "${final_path}"
 sudo mv "$TMPDIR" "${final_path}"
 sudo chown -R $app: "${final_path}"
+sudo chmod 755 $final_path
 
 # Upgrade database and clear the cache
 exec_console $app "${final_path}" doctrine:migrations:migrate
