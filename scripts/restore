@@ -35,16 +35,18 @@ CHECK_DOMAINPATH	# Check domain and path availability
 CHECK_FINALPATH # Check if destination directory is not already in use
 
 #=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
+#=================================================
 # STANDARD RESTORE STEPS
 #=================================================
 # RESTORE NGINX CONFIGURATION
 #=================================================
 
-conf=/etc/nginx/conf.d/$domain.d/$app.conf
-if [ -f $conf ]; then
-	ynh_die "There is already a nginx conf file at this path: $conf "
-fi
-sudo cp -a ./nginx.conf $conf
+sudo cp -a ./nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
 
 #=================================================
 # RESTORE APP MAIN DIR

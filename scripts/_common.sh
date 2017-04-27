@@ -70,6 +70,13 @@ extract_wallabag() {
     || ynh_die "Unable to apply patches to Wallabag"
 }
 
+WARNING () {	# Print on error output
+	$@ >&2
+}
+
+QUIET () {	# redirect standard output to /dev/null
+	$@ > /dev/null
+}
 
 HUMAN_SIZE () {	# Transforms a Kb-based size to a human-readable size
 	human=$(numfmt --to=iec --from-unit=1K $1)
