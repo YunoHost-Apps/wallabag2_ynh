@@ -118,6 +118,9 @@ done
 # Set admin user
 exec_console $app "$final_path" fos:user:promote --super "$admin"
 
+# Configure Wallabag instance URL
+ynh_mysql_connect_as "$db_name" "$dbpass" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================

@@ -47,6 +47,7 @@ if [ -z "$db_name" ] ; then
   db_name=$app
   ynh_app_setting_set "$app" db_name "$db_name"
 fi
+db_user="$db_name"
 
 #=================================================
 # MANAGE SCRIPT FAILURE
@@ -86,7 +87,7 @@ ynh_system_user_create $app # Create dedicated user if not existing
 wb_conf="${TMPDIR}/app/config/parameters.yml"
 cp ../conf/parameters.yml "$wb_conf"
 ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
-ynh_replace_string "{DBUSER}" "${db_name}" "$wb_conf"
+ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
 ynh_replace_string "{DBPASS}" "${dbpass}" "$wb_conf"
 ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 
@@ -99,6 +100,9 @@ sudo chmod 755 $final_path
 # Upgrade database and clear the cache
 exec_console $app "${final_path}" doctrine:migrations:migrate
 exec_console $app "${final_path}" cache:clear
+
+# Configure Wallabag instance URL
+ynh_mysql_connect_as "$db_name" "$dbpass" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 
 #=================================================
 # NGINX CONFIGURATION
