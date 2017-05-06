@@ -31,7 +31,6 @@ admin=$YNH_APP_ARG_ADMIN
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 
-CHECK_USER "$admin"	# Check if admin user exists
 path_url=$(ynh_normalize_url_path $path_url)	# Check and normalize path
 CHECK_DOMAINPATH	# Check domain and path availability
 CHECK_FINALPATH # Check if destination directory is not already in use
@@ -76,7 +75,7 @@ ynh_mysql_create_db "$db_name" "$db_user" "$dbpass"
 ynh_app_setting_set $app final_path "$final_path"
 # Create tmp directory and fetch app inside
 TMPDIR=$(mktemp -d)
-extract_wallabag "$TMPDIR"
+ynh_setup_source "$TMPDIR"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -125,25 +124,21 @@ ynh_mysql_connect_as "$db_name" "$dbpass" "$db_user"  <<< "UPDATE craue_config_s
 # NGINX CONFIGURATION
 #=================================================
 
-# Copy and set nginx configuration
-if [[ "$path_url" == "/" ]] ; then
-  nginx_conf=$PKGDIR/conf/nginx_root.conf
+ynh_add_nginx_config
+if [ "$path_url" = "/" ]
+then
+  # Remove prefix on #noroot lines
+	sudo sed --in-place '/#noroot*/d' /etc/nginx/conf.d/$domain.d/$app.conf
+  # Replace "//" location (due to nginx template)
+  ynh_replace_string " // " " / " /etc/nginx/conf.d/$domain.d/$app.conf
 else
-  nginx_conf=$PKGDIR/conf/nginx_sub_dir.conf
+  # Remove #noroot lines
+	ynh_replace_string "#noroot" "" /etc/nginx/conf.d/$domain.d/$app.conf
 fi
-ynh_replace_string "{LOCATION}" "${path_url:-/}" "$nginx_conf"
-ynh_replace_string "{PATH}" "$path_url" "$nginx_conf"
-ynh_replace_string "{DESTDIR}" "$final_path" "$nginx_conf"
-ynh_replace_string "{POOLNAME}" "$app" "$nginx_conf"
-ynh_replace_string "{APP}" "$app" "$nginx_conf"
-sudo cp "$nginx_conf" "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 # Copy and set php-fpm configuration
-phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
-ynh_replace_string "{POOLNAME}" "${app}" "$PKGDIR/conf/php-fpm.conf"
-ynh_replace_string "{DESTDIR}" "${final_path}" "$PKGDIR/conf/php-fpm.conf"
-ynh_replace_string "{USER}" "${app}" "$PKGDIR/conf/php-fpm.conf"
-sudo cp $PKGDIR/conf/php-fpm.conf "$phpfpm_conf"
+ynh_add_fpm_config
 
 # Set SSOwat rules
 ynh_app_setting_set "$app" unprotected_uris "/"

@@ -45,10 +45,9 @@ ynh_secure_remove "/var/www/$app"
 #=================================================
 # REMOVE NGINX AND PHP-FPM CONFIGURATION
 #=================================================
-# Delete app directory and configurations
-sudo rm -rf "/var/www/${app}"
-sudo rm -f "/etc/php5/fpm/pool.d/${app}.conf"
-[[ -n $domain ]] && sudo rm -f "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+
+ynh_remove_fpm_config
+ynh_remove_nginx_config
 
 # Reload services
 sudo systemctl restart php5-fpm

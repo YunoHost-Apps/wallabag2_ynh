@@ -2,27 +2,8 @@
 # Common variables
 #
 
-# Wallabag version
-VERSION="2.2.2"
-
 # Package dependencies
 PKG_DEPENDENCIES="php5-cli php5-mysql php5-json php5-gd php5-tidy php5-curl php-gettext redis-server"
-
-# Full Wallabag sources tarball URL
-WALLABAG_SOURCE_URL="https://static.wallabag.org/releases/wallabag-release-${VERSION}.tar.gz"
-
-# Full Wallabag sources tarball checksum
-WALLABAG_SOURCE_SHA256="40d98bd556116dbc28f92339f0e5b93836ece87dcb01e7aaa628ea98855a1f51"
-
-# App package root directory should be the parent folder
-PKGDIR=$(cd ../; pwd)
-
-#
-# Common helpers
-#
-
-# Source app helpers
-. /usr/share/yunohost/helpers
 
 # Execute a command as another user
 # usage: exec_as USER COMMAND [ARG ...]
@@ -45,29 +26,6 @@ exec_console() {
   local WORKDIR=$2
   shift 2
   exec_as "$AS_USER" php "$WORKDIR/bin/console" --no-interaction --env=prod "$@"
-}
-
-# Download and extract Wallabag sources to the given directory
-# usage: extract_wallabag DESTDIR [AS_USER]
-extract_wallabag() {
-  local DESTDIR=$1
-  local AS_USER=${2:-$USER}
-
-  # retrieve and extract Roundcube tarball
-  wb_tarball="/tmp/wallabag.tar.gz"
-  rm -f "$wb_tarball"
-  wget -q -O "$wb_tarball" "$WALLABAG_SOURCE_URL" \
-    || ynh_die "Unable to download Wallabag tarball"
-  echo "$WALLABAG_SOURCE_SHA256 $wb_tarball" | sha256sum -c >/dev/null \
-    || ynh_die "Invalid checksum of downloaded tarball"
-  exec_as "$AS_USER" tar xf "$wb_tarball" -C "$DESTDIR" --strip-components 1 \
-    || ynh_die "Unable to extract Wallabag tarball"
-  rm -f "$wb_tarball"
-
-  # apply patches
-  (cd "$DESTDIR" \
-   && for p in ${PKGDIR}/patches/*.patch; do patch -p1 < $p; done) \
-    || ynh_die "Unable to apply patches to Wallabag"
 }
 
 WARNING () {	# Print on error output
@@ -96,11 +54,6 @@ CHECK_SIZE () {	# Check if enough disk space available on backup storage
 	fi
 }
 
-CHECK_USER () {	# Check user validity
-# $1 = User
-	ynh_user_exists "$1" || ynh_die "Wrong user"
-}
-
 CHECK_DOMAINPATH () {	# Check domain/path availability
 	sudo yunohost app checkurl $domain$path_url -a $app
 }
@@ -108,36 +61,6 @@ CHECK_DOMAINPATH () {	# Check domain/path availability
 CHECK_FINALPATH () {	# Check if destination directory already exists
 	final_path="/var/www/$app"
 	test ! -e "$final_path" || ynh_die "This path already contains a folder"
-}
-
-
-BACKUP_FAIL_UPGRADE () {
-	WARNING echo "Upgrade failed."
-	app_bck=${app//_/-}	# Replace all '_' by '-'
-	if sudo yunohost backup list | grep -q $app_bck-pre-upgrade$backup_number; then	# Check if existing archive before removing app and restoring
-		sudo yunohost app remove $app	# Remove app before restoring it
-		sudo yunohost backup restore --ignore-hooks $app_bck-pre-upgrade$backup_number --apps $app --force	# Restore the backup if upgrade failed
-		ynh_die "The app was restored to the way it was before the failed upgrade."
-	fi
-}
-
-BACKUP_BEFORE_UPGRADE () {	# Backup the current version of the app, restore it if the upgrade fails
-	backup_number=1
-	old_backup_number=2
-	app_bck=${app//_/-}	# Replace all '_' by '-'
-	if sudo yunohost backup list | grep -q $app_bck-pre-upgrade1; then	# Check for existing archive numbered 1
-		backup_number=2	# And change archive number to 2
-		old_backup_number=1
-	fi
-
-	sudo yunohost backup create --ignore-hooks --apps $app --name $app_bck-pre-upgrade$backup_number	# Create a backup different from the existing one
-	if [ "$?" -eq 0 ]; then	# If backup succfessful, delete former archive
-		if sudo yunohost backup list | grep -q $app_bck-pre-upgrade$old_backup_number; then	# Check for existing archive before removing it
-			QUIET sudo yunohost backup delete $app_bck-pre-upgrade$old_backup_number
-		fi
-	else	# If backup failed
-		ynh_die "Backup failed, the upgrade process was aborted."
-	fi
 }
 
 #=================================================
@@ -341,4 +264,295 @@ ynh_system_user_delete () {
 	else
 		echo "The user $1 was not found" >&2
     fi
+}
+
+# Restore a previous backup if the upgrade process failed
+#
+# usage:
+# ynh_backup_before_upgrade
+# ynh_clean_setup () {
+# 	ynh_backup_after_failed_upgrade
+# }
+# ynh_abort_if_errors
+#
+ynh_backup_after_failed_upgrade () {
+	echo "Upgrade failed." >&2
+	app_bck=${app//_/-}	# Replace all '_' by '-'
+    # Check if a existing backup can be found before remove and restore the application.
+	if sudo yunohost backup list | grep -q $app_bck-pre-upgrade$backup_number
+    then
+    	# Remove the application then restore it
+		sudo yunohost app remove $app
+        # Restore the backup if the upgrade failed
+		sudo yunohost backup restore --ignore-hooks $app_bck-pre-upgrade$backup_number --apps $app --force
+		ynh_die "The app was restored to the way it was before the failed upgrade."
+	fi
+}
+
+# Make a backup in case of failed upgrade
+#
+# usage:
+# ynh_backup_before_upgrade
+# ynh_clean_setup () {
+# 	ynh_backup_after_failed_upgrade
+# }
+# ynh_abort_if_errors
+#
+ynh_backup_before_upgrade () {
+	backup_number=1
+	old_backup_number=2
+	app_bck=${app//_/-}	# Replace all '_' by '-'
+    # Check if a backup already exist with the prefix 1.
+	if sudo yunohost backup list | grep -q $app_bck-pre-upgrade1
+    then
+        # Prefix become 2 to preserve the previous backup
+		backup_number=2
+		old_backup_number=1
+	fi
+
+	# Create another backup
+	sudo yunohost backup create --ignore-hooks --apps $app --name $app_bck-pre-upgrade$backup_number
+	if [ "$?" -eq 0 ]
+    then
+       	# If the backup succedded, remove the previous backup
+		if sudo yunohost backup list | grep -q $app_bck-pre-upgrade$old_backup_number
+        then
+            # Remove the previous backup only if it exists
+			sudo yunohost backup delete $app_bck-pre-upgrade$old_backup_number > /dev/null
+		fi
+	else
+		ynh_die "Backup failed, the upgrade process was aborted."
+	fi
+}
+
+# Create a dedicated nginx config
+#
+# usage: ynh_add_nginx_config
+ynh_add_nginx_config () {
+	finalnginxconf="/etc/nginx/conf.d/$domain.d/$app.conf"
+	ynh_backup_if_checksum_is_different "$finalnginxconf" 1
+	sudo cp ../conf/nginx.conf "$finalnginxconf"
+
+	# To avoid a break by set -u, use a void substitution ${var:-}. If the variable is not set, it's simply set with an empty variable.
+	# Substitute in a nginx config file only if the variable is not empty
+	if test -n "${path_url:-}"; then
+		ynh_replace_string "__PATH__" "$path_url" "$finalnginxconf"
+	fi
+	if test -n "${domain:-}"; then
+		ynh_replace_string "__DOMAIN__" "$domain" "$finalnginxconf"
+	fi
+	if test -n "${port:-}"; then
+		ynh_replace_string "__PORT__" "$port" "$finalnginxconf"
+	fi
+	if test -n "${app:-}"; then
+		ynh_replace_string "__NAME__" "$app" "$finalnginxconf"
+	fi
+	if test -n "${final_path:-}"; then
+		ynh_replace_string "__FINALPATH__" "$final_path" "$finalnginxconf"
+	fi
+	ynh_store_file_checksum "$finalnginxconf"
+
+	sudo systemctl reload nginx
+}
+
+# Remove the dedicated nginx config
+#
+# usage: ynh_remove_nginx_config
+ynh_remove_nginx_config () {
+	ynh_secure_remove "/etc/nginx/conf.d/$domain.d/$app.conf"
+	sudo systemctl reload nginx
+}
+
+# Create a dedicated php-fpm config
+#
+# usage: ynh_add_fpm_config
+ynh_add_fpm_config () {
+	finalphpconf="/etc/php5/fpm/pool.d/$app.conf"
+	ynh_backup_if_checksum_is_different "$finalphpconf" 1
+	sudo cp ../conf/php-fpm.conf "$finalphpconf"
+	ynh_replace_string "__NAMETOCHANGE__" "$app" "$finalphpconf"
+	ynh_replace_string "__FINALPATH__" "$final_path" "$finalphpconf"
+	ynh_replace_string "__USER__" "$app" "$finalphpconf"
+	sudo chown root: "$finalphpconf"
+	ynh_store_file_checksum "$finalphpconf"
+
+	if [ -e "../conf/php-fpm.ini" ]
+	then
+		finalphpini="/etc/php5/fpm/conf.d/20-$app.ini"
+		ynh_backup_if_checksum_is_different "$finalphpini" 1
+		sudo cp ../conf/php-fpm.ini "$finalphpini"
+		sudo chown root: "$finalphpini"
+		ynh_store_file_checksum "$finalphpini"
+	fi
+
+	sudo systemctl reload php5-fpm
+}
+
+# Remove the dedicated php-fpm config
+#
+# usage: ynh_remove_fpm_config
+ynh_remove_fpm_config () {
+	ynh_secure_remove "/etc/php5/fpm/pool.d/$app.conf"
+	ynh_secure_remove "/etc/php5/fpm/conf.d/20-$app.ini" 2>&1
+	sudo systemctl reload php5-fpm
+}
+
+# Calculate and store a file checksum into the app settings
+#
+# $app should be defined when calling this helper
+#
+# usage: ynh_store_file_checksum file
+# | arg: file - The file on which the checksum will performed, then stored.
+ynh_store_file_checksum () {
+	local checksum_setting_name=checksum_${1//[\/ ]/_}	# Replace all '/' and ' ' by '_'
+	ynh_app_setting_set $app $checksum_setting_name $(sudo md5sum "$1" | cut -d' ' -f1)
+}
+
+# Verify the checksum and backup the file if it's different
+# This helper is primarily meant to allow to easily backup personalised/manually 
+# modified config files.
+#
+# $app should be defined when calling this helper
+#
+# usage: ynh_backup_if_checksum_is_different file [compress]
+# | arg: file - The file on which the checksum test will be perfomed.
+# | arg: compress - 1 to compress the backup instead of a simple copy
+# A compression is needed for a file which will be analyzed even if its name is different.
+#
+# | ret: Return the name a the backup file, or nothing
+ynh_backup_if_checksum_is_different () {
+	local file=$1
+	local compress_backup=${2:-0}	# If $2 is empty, compress_backup will set at 0
+	local checksum_setting_name=checksum_${file//[\/ ]/_}	# Replace all '/' and ' ' by '_'
+	local checksum_value=$(ynh_app_setting_get $app $checksum_setting_name)
+	if [ -n "$checksum_value" ]
+	then	# Proceed only if a value was stored into the app settings
+		if ! echo "$checksum_value $file" | sudo md5sum -c --status
+		then	# If the checksum is now different
+			backup_file="$file.backup.$(date '+%d.%m.%y_%Hh%M,%Ss')"
+			if [ $compress_backup -eq 1 ]
+			then
+				sudo tar --create --gzip --file "$backup_file.tar.gz" "$file"	# Backup the current file and compress
+				backup_file="$backup_file.tar.gz"
+			else
+				sudo cp -a "$file" "$backup_file"	# Backup the current file
+			fi
+			echo "File $file has been manually modified since the installation or last upgrade. So it has been duplicated in $backup_file" >&2
+			echo "$backup_file"	# Return the name of the backup file
+		fi
+	fi
+}
+
+YNH_EXECUTION_DIR=$(pwd)
+# Download, check integrity, uncompress and patch the source from app.src
+#
+# The file conf/app.src need to contains:
+# 
+# SOURCE_URL=Address to download the app archive
+# SOURCE_SUM=Control sum
+# # (Optional) Programm to check the integrity (sha256sum, md5sum$YNH_EXECUTION_DIR/...)
+# # default: sha256
+# SOURCE_SUM_PRG=sha256
+# # (Optional) Archive format
+# # default: tar.gz
+# SOURCE_FORMAT=tar.gz
+# # (Optional) Put false if source are directly in the archive root
+# # default: true
+# SOURCE_IN_SUBDIR=false
+# # (Optionnal) Name of the local archive (offline setup support)
+# # default: ${src_id}.${src_format}
+# SOURCE_FILENAME=example.tar.gz 
+#
+# Details:
+# This helper download sources from SOURCE_URL if there is no local source
+# archive in /opt/yunohost-apps-src/APP_ID/SOURCE_FILENAME
+# 
+# Next, it check the integrity with "SOURCE_SUM_PRG -c --status" command.
+# 
+# If it's ok, the source archive will be uncompress in $dest_dir. If the
+# SOURCE_IN_SUBDIR is true, the first level directory of the archive will be
+# removed.
+#
+# Finally, patches named sources/patches/${src_id}-*.patch and extra files in
+# sources/extra_files/$src_id will be applyed to dest_dir
+#
+#
+# usage: ynh_setup_source dest_dir [source_id]
+# | arg: dest_dir  - Directory where to setup sources
+# | arg: source_id - Name of the app, if the package contains more than one app
+ynh_setup_source () {
+    local dest_dir=$1
+    local src_id=${2:-app} # If the argument is not given, source_id equal "app"
+    
+    # Load value from configuration file (see above for a small doc about this file
+    # format)
+    local src_url=$(grep 'SOURCE_URL=' "$YNH_EXECUTION_DIR/../conf/${src_id}.src" | cut -d= -f2-)
+    local src_sum=$(grep 'SOURCE_SUM=' "$YNH_EXECUTION_DIR/../conf/${src_id}.src" | cut -d= -f2-)
+    local src_sumprg=$(grep 'SOURCE_SUM_PRG=' "$YNH_EXECUTION_DIR/../conf/${src_id}.src" | cut -d= -f2-)
+    local src_format=$(grep 'SOURCE_FORMAT=' "$YNH_EXECUTION_DIR/../conf/${src_id}.src" | cut -d= -f2-)
+    local src_in_subdir=$(grep 'SOURCE_IN_SUBDIR=' "$YNH_EXECUTION_DIR/../conf/${src_id}.src" | cut -d= -f2-)
+    local src_filename=$(grep 'SOURCE_FILENAME=' "$YNH_EXECUTION_DIR/../conf/${src_id}.src" | cut -d= -f2-)
+    
+    # Default value
+    src_sumprg=${src_sumprg:-sha256sum}
+    src_in_subdir=${src_in_subdir:-true}
+    src_format=${src_format:-tar.gz}
+    src_format=$(echo "$src_format" | tr '[:upper:]' '[:lower:]')
+    if [ "$src_filename" = "" ] ; then
+        src_filename="${src_id}.${src_format}"
+    fi
+    local local_src="/opt/yunohost-apps-src/${YNH_APP_ID}/${src_filename}"
+
+    if test -e "$local_src"
+    then    # Use the local source file if it is present
+        cp $local_src $src_filename
+    else    # If not, download the source
+        wget -nv -O $src_filename $src_url
+    fi
+
+    # Check the control sum
+    echo "${src_sum} ${src_filename}" | ${src_sumprg} -c --status \
+        || ynh_die "Corrupt source"
+
+    # Extract source into the app dir
+    mkdir -p "$dest_dir"
+    if [ "$src_format" = "zip" ]
+    then 
+        # Zip format
+        # Using of a temp directory, because unzip doesn't manage --strip-components
+        if $src_in_subdir ; then
+            local tmp_dir=$(mktemp -d)
+            unzip -quo $src_filename -d "$tmp_dir"
+            cp -a $tmp_dir/*/. "$dest_dir"
+            ynh_secure_remove "$tmp_dir"
+        else
+            unzip -quo $src_filename -d "$dest_dir"
+        fi
+    else
+        local strip=""
+        if $src_in_subdir ; then
+            strip="--strip-components 1"
+        fi
+        if [[ "$src_format" =~ ^tar.gz|tar.bz2|tar.xz$ ]] ; then
+            tar -xf $src_filename -C "$dest_dir" $strip
+        else
+            ynh_die "Archive format unrecognized."
+        fi
+    fi
+
+    # Apply patches
+    if (( $(find $YNH_EXECUTION_DIR/../sources/patches/ -type f -name "${src_id}-*.patch" 2> /dev/null | wc -l) > "0" )); then
+        local old_dir=$(pwd)
+        (cd "$dest_dir" \
+            && for p in $YNH_EXECUTION_DIR/../sources/patches/${src_id}-*.patch; do \
+                patch -p1 < $p; done) \
+            || ynh_die "Unable to apply patches"
+        cd $old_dir
+    fi
+
+    # Add supplementary files
+    if test -e "$YNH_EXECUTION_DIR/../sources/extra_files/${src_id}"; then
+        cp -a $YNH_EXECUTION_DIR/../sources/extra_files/$src_id/. "$dest_dir"
+    fi
+
 }
