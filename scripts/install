@@ -60,14 +60,11 @@ db_user="$db_name"
 
 # Generate random DES key & password
 deskey=$(ynh_string_random 24)
-dbpass=$(ynh_string_random)
-ynh_app_setting_set "$app" mysqlpwd "$dbpass"
 ynh_app_setting_set "$app" deskey "$deskey"
 ynh_app_setting_set "$app" db_name "$db_name"
 
 # Initialize database
-ynh_mysql_create_db "$db_name" "$db_user" "$dbpass"
-
+ynh_mysql_setup_db "$db_user" "$db_name"
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -92,7 +89,7 @@ wb_conf="${TMPDIR}/app/config/parameters.yml"
 cp ../conf/parameters.yml "$wb_conf"
 ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
 ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
-ynh_replace_string "{DBPASS}" "${dbpass}" "$wb_conf"
+ynh_replace_string "{DBPASS}" "${db_pwd}" "$wb_conf"
 ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 
 # Install files and set permissions
@@ -118,7 +115,7 @@ done
 exec_console $app "$final_path" fos:user:promote --super "$admin"
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as "$db_name" "$dbpass" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 
 #=================================================
 # NGINX CONFIGURATION

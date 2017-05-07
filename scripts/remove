@@ -33,8 +33,7 @@ ynh_remove_app_dependencies
 # REMOVE THE MYSQL DB
 #=================================================
 
-ynh_mysql_drop_db "$db_name"
-ynh_mysql_drop_user "$app"
+ynh_mysql_remove_db "$app" "$db_name"
 
 #=================================================
 # REMOVE APP MAIN DIR

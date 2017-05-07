@@ -32,7 +32,7 @@ if [ -z "$path_url" ] ; then
   ynh_app_setting_set $app path_url "$path_url"
 fi
 path_url=$(ynh_normalize_url_path $path_url)
-dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
+db_pwd=$(ynh_app_setting_get "$app" mysqlpwd)
 deskey=$(ynh_app_setting_get "$app" deskey)
 final_path=$(ynh_app_setting_get "$app" final_path)
 # Compatibility with previous version
@@ -53,11 +53,15 @@ db_user="$db_name"
 # MANAGE SCRIPT FAILURE
 #=================================================
 
-ynh_backup_before_upgrade # Backup the current version of the app
-ynh_clean_setup () {
-    ynh_backup_after_failed_upgrade
-}
-ynh_abort_if_errors	# Stop script if an error is detected
+# Use prior backup and restore on error only if backup feature
+# exists on installed instance
+if [ -f "/etc/yunohost/apps/$app/scripts/backup" ] ; then
+  ynh_backup_before_upgrade # Backup the current version of the app
+  ynh_clean_setup () {
+      ynh_backup_after_failed_upgrade
+  }
+  ynh_abort_if_errors	# Stop script if an error is detected
+fi
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -88,7 +92,7 @@ wb_conf="${TMPDIR}/app/config/parameters.yml"
 cp ../conf/parameters.yml "$wb_conf"
 ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
 ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
-ynh_replace_string "{DBPASS}" "${dbpass}" "$wb_conf"
+ynh_replace_string "{DBPASS}" "${db_pwd}" "$wb_conf"
 ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 
 # Replace files and set permissions
@@ -103,7 +107,7 @@ exec_console $app "${final_path}" doctrine:migrations:migrate
 exec_console $app "${final_path}" cache:clear
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as "$db_name" "$dbpass" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 
 #=================================================
 # NGINX CONFIGURATION

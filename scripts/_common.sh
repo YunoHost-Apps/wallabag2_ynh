@@ -178,9 +178,61 @@ ynh_remove_app_dependencies () {
     ynh_package_autoremove ${dep_app}-ynh-deps	# Remove the fake package and its dependencies if they not still used.
 }
 
+# Check if a mysql user exists
+#
+# usage: ynh_mysql_user_exists user
+# | arg: user - the user for which to check existence
+function ynh_mysql_user_exists()
+{
+   local user=$1
+   if [[ -z $(ynh_mysql_execute_as_root "SELECT User from mysql.user WHERE User = '$user';") ]]
+   then
+      return 1
+   else
+      return 0
+   fi
+}
 
-# Correct the name given in argument for mariadb
-# Avoid invalid characters in your database name
+# Create a database, an user and its password. Then store the password in the app's config
+#
+# After executing this helper, the password of the created database will be available in $db_pwd
+# It will also be stored as "mysqlpwd" into the app settings.
+#
+# usage: ynh_mysql_setup_db user name
+# | arg: user - Owner of the database
+# | arg: name - Name of the database
+ynh_mysql_setup_db () {
+	local db_user="$1"
+	local db_name="$2"
+	db_pwd=$(ynh_string_random)	# Generate a random password
+	ynh_mysql_create_db "$db_name" "$db_user" "$db_pwd"	# Create the database
+	ynh_app_setting_set $app mysqlpwd $db_pwd	# Store the password in the app's config
+}
+
+# Remove a database if it exists, and the associated user
+#
+# usage: ynh_mysql_remove_db user name
+# | arg: user - Owner of the database
+# | arg: name - Name of the database
+ynh_mysql_remove_db () {
+	local db_user="$1"
+	local db_name="$2"
+	local mysql_root_password=$(sudo cat $MYSQL_ROOT_PWD_FILE)
+	if mysqlshow -u root -p$mysql_root_password | grep -q "^| $db_name"; then	# Check if the database exists
+		echo "Removing database $db_name" >&2
+		ynh_mysql_drop_db $db_name	# Remove the database	
+	else
+		echo "Database $db_name not found" >&2
+	fi
+
+	# Remove mysql user if it exists
+        if $(ynh_mysql_user_exists $db_user); then
+		ynh_mysql_drop_user $db_user
+	fi
+}
+
+# Sanitize a string intended to be the name of a database
+# (More specifically : replace - and . by _)
 #
 # Exemple: dbname=$(ynh_sanitize_dbid $app)
 #
@@ -188,7 +240,7 @@ ynh_remove_app_dependencies () {
 # | arg: name - name to correct/sanitize
 # | ret: the corrected name
 ynh_sanitize_dbid () {
-	dbid=${1//[-.]/_}	# Mariadb doesn't support - and . in the name of databases. It will be replace by _
+	dbid=${1//[-.]/_}	# We should avoid having - and . in the name of databases. They are replaced by _
 	echo $dbid
 }
 
