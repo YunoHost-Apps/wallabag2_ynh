@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+if [ ! -e _common.sh ]; then
+	# Fetch helpers file if not in current directory
+	sudo cp ../settings/scripts/_common.sh ./_common.sh
+	sudo chmod a+rx _common.sh
+fi
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get $app domain)
+path_url=$(ynh_app_setting_get $app path)
+is_public=$(ynh_app_setting_get $app is_public)
+final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
+
+#=================================================
+# CHECK IF THE APP CAN BE RESTORED
+#=================================================
+
+CHECK_DOMAINPATH	# Check domain and path availability
+CHECK_FINALPATH # Check if destination directory is not already in use
+
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
+#=================================================
+# STANDARD RESTORE STEPS
+#=================================================
+# RESTORE NGINX CONFIGURATION
+#=================================================
+
+sudo cp -a ./nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+
+#=================================================
+# RESTORE APP MAIN DIR
+#=================================================
+
+sudo cp -a ./sources/. $final_path
+
+#=================================================
+# RESTORE MYSQL DB
+#=================================================
+
+db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+ynh_mysql_create_db $db_name $db_name $db_pwd
+ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
+
+#=================================================
+# RECREATE OF THE DEDICATED USER
+#=================================================
+
+ynh_system_user_create $app	# Recreate the dedicated user, if not existing
+
+#=================================================
+# RESTORE USER RIGHTS
+#=================================================
+
+sudo chown -R $app: $final_path
+
+#=================================================
+# RESTORE PHP-FPM CONFIGURATION
+#=================================================
+
+sudo cp -a ./php-fpm.conf /etc/php5/fpm/pool.d/$app.conf
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# RELOAD NGINX AND PHP-FPM
+#=================================================
+
+sudo systemctl reload php5-fpm
+sudo systemctl reload nginx

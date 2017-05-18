@@ -10,10 +10,10 @@
     "license": "MIT",
     "version": "2.2.3",
     "maintainer": {
-        "name": "jerome",
-        "email": "jerome@yunohost.org"
+        "name": "lapineige",
+        "email": ""
     },
-    "multi_instance": false,
+    "multi_instance": true,
     "requirements": {
         "yunohost": ">= 2.4.0"
     },

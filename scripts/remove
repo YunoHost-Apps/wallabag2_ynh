@@ -1,30 +1,67 @@
 #!/bin/bash
 
-# Retrieve app id
+# Treat unset variables as an error
+set -u
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
 app=$YNH_APP_INSTANCE_NAME
 
-# Load common variables and helpers
-. ./_common.sh
-
-# Set app specific variables
-dbname=$app
-dbuser=$app
-
-# Drop MySQL database and user
-ynh_mysql_drop_db "$dbname" 2>/dev/null || true
-ynh_mysql_drop_user "$dbuser" 2>/dev/null || true
-
-# Retrieve domain from app settings
+domain=$(ynh_app_setting_get $app domain)
+db_name=$(ynh_app_setting_get $app db_name)
 domain=$(ynh_app_setting_get "$app" domain)
 
-# Delete app directory and configurations
-sudo rm -rf "/var/www/${app}"
-sudo rm -f "/etc/php5/fpm/pool.d/${app}.conf"
-[[ -n $domain ]] && sudo rm -f "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+#=================================================
+# STANDARD REMOVE
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+
+ynh_remove_app_dependencies
+
+#=================================================
+# REMOVE THE MYSQL DB
+#=================================================
+
+ynh_mysql_remove_db "$app" "$db_name"
+
+#=================================================
+# REMOVE APP MAIN DIR
+#=================================================
+
+ynh_secure_remove "/var/www/$app"
+
+#=================================================
+# REMOVE NGINX AND PHP-FPM CONFIGURATION
+#=================================================
+
+ynh_remove_fpm_config
+ynh_remove_nginx_config
 
 # Reload services
-sudo service php5-fpm restart || true
-sudo service nginx reload || true
+sudo systemctl restart php5-fpm
+sudo systemctl reload nginx
 
-# Remove app dependencies
-ynh_package_autoremove "$DEPS_PKG_NAME" || true
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+ynh_remove_app_dependencies
+# The following command is keeped as a matter of transition with the previous way
+# of managing dependencies
+ynh_package_autoremove "wallabag-deps" || true
+
+#=================================================
+# REMOVE DEDICATED USER
+#=================================================
+
+ynh_system_user_delete $app
