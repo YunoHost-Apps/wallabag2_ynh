@@ -1,105 +1,147 @@
 #!/bin/bash
 
-# Exit on command errors and treat unset variables as an error
-set -eu
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Load common variables and helpers
-source ./_common.sh
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+ynh_abort_if_errors	# Stop script if an error is detected
+
+#=================================================
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+#=================================================
 
 # Retrieve app id
 app=$YNH_APP_INSTANCE_NAME
 
 # Retrieve arguments
 domain=$YNH_APP_ARG_DOMAIN
-path=$(ynh_normalize_url_path $YNH_APP_ARG_PATH)
+path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
 
-# Set app specific variables
-dbname=$app
-dbuser=$app
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+#=================================================
 
-# Check domain/path availability
-sudo yunohost app checkurl "${domain}${path}" -a "$app" \
-  || exit 1
+path_url=$(ynh_normalize_url_path $path_url)	# Check and normalize path
+CHECK_DOMAINPATH	# Check domain and path availability
+CHECK_FINALPATH # Check if destination directory is not already in use
 
-# Check admin user parameter
-ynh_user_exists "$admin" \
-  || ynh_die "The chosen admin user does not exist"
-ynh_app_setting_set "$app" admin_user "$admin"
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
 
-# Check destination directory
-DESTDIR="/var/www/${app}"
-[[ -d "$DESTDIR" ]] && ynh_die \
-"The destination directory '${DESTDIR}' already exists.\
- You should safely delete it before installing this app."
+ynh_app_setting_set $app domain "$domain"
+ynh_app_setting_set $app path_url "$path_url"
+ynh_app_setting_set $app admin "$admin"
 
-# Install dependencies
-ynh_package_install_from_equivs ../conf/${DEPS_PKG_NAME}.control \
-  || ynh_die "Unable to install dependencies"
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
 
-# Create tmp directory and fetch app inside
-TMPDIR=$(ynh_mkdir_tmp)
-extract_wallabag "$TMPDIR"
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
+#=================================================
+# CREATE A MYSQL DB
+#=================================================
+
+db_name=$(ynh_sanitize_dbid $app)
+db_user="$db_name"
 
 # Generate random DES key & password
 deskey=$(ynh_string_random 24)
-dbpass=$(ynh_string_random)
-ynh_app_setting_set "$app" mysqlpwd "$dbpass"
 ynh_app_setting_set "$app" deskey "$deskey"
+ynh_app_setting_set "$app" db_name "$db_name"
 
 # Initialize database
-ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
+ynh_mysql_setup_db "$db_user" "$db_name"
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+ynh_app_setting_set $app final_path "$final_path"
+# Create tmp directory and fetch app inside
+TMPDIR=$(mktemp -d)
+ynh_setup_source "$TMPDIR"
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+ynh_system_user_create $app	# Create a dedicated system user
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
 
 # Copy and set Wallabag dist configuration
 wb_conf="${TMPDIR}/app/config/parameters.yml"
 cp ../conf/parameters.yml "$wb_conf"
-sed -i "s@{DBNAME}@${dbname}@g" "$wb_conf"
-sed -i "s@{DBUSER}@${dbuser}@g" "$wb_conf"
-sed -i "s@{DBPASS}@${dbpass}@g" "$wb_conf"
-sed -i "s@{DESKEY}@${deskey}@g" "$wb_conf"
+ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
+ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
+ynh_replace_string "{DBPASS}" "${db_pwd}" "$wb_conf"
+ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 
 # Install files and set permissions
-sudo mv "$TMPDIR" "$DESTDIR"
+sudo mv "$TMPDIR" "$final_path"
 
-cd $DESTDIR
-sudo chown -R www-data: "$DESTDIR"
+# Set rights on directory
+sudo chown -R $app: $final_path
+sudo chmod 755 $final_path
 
 # Install dependencies and Wallabag
-exec_console www-data "$DESTDIR" wallabag:install
+exec_console $app "$final_path" wallabag:install
 
 # Add users to Wallabag
 for username in $(ynh_user_list); do
   user_email=$(sudo yunohost user info "$username" --output-as plain \
                  | ynh_get_plain_key mail)
   user_pass=$(ynh_string_random)
-  exec_console www-data "$DESTDIR" fos:user:create \
+  exec_console $app "$final_path" fos:user:create \
       "$username" "$user_email" "$user_pass"
 done
 
 # Set admin user
-exec_console www-data "$DESTDIR" fos:user:promote --super "$admin"
+exec_console $app "$final_path" fos:user:promote --super "$admin"
 
-# Copy and set nginx configuration
-if [[ "$path" == "/" ]] ; then
-  nginx_conf=$PKGDIR/conf/nginx_root.conf
+# Configure Wallabag instance URL
+ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+ynh_add_nginx_config
+if [ "$path_url" = "/" ]
+then
+  # Remove prefix on #noroot lines
+	sudo sed --in-place '/#noroot*/d' /etc/nginx/conf.d/$domain.d/$app.conf
+  # Replace "//" location (due to nginx template)
+  ynh_replace_string " // " " / " /etc/nginx/conf.d/$domain.d/$app.conf
 else
-  nginx_conf=$PKGDIR/conf/nginx_sub_dir.conf
+  # Remove #noroot lines
+	ynh_replace_string "#noroot" "" /etc/nginx/conf.d/$domain.d/$app.conf
 fi
-sed -i "s@{LOCATION}@${path:-/}@g" "$nginx_conf"
-sed -i "s@{PATH}@${path}@g"        "$nginx_conf"
-sed -i "s@{DESTDIR}@${DESTDIR}@g"  "$nginx_conf"
-sed -i "s@{POOLNAME}@${app}@g"     "$nginx_conf"
-sudo cp "$nginx_conf" "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 # Copy and set php-fpm configuration
-phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
-sed -i "s@{POOLNAME}@${app}@g"     $PKGDIR/conf/php-fpm.conf
-sed -i "s@{DESTDIR}@${DESTDIR}/@g" $PKGDIR/conf/php-fpm.conf
-sudo cp $PKGDIR/conf/php-fpm.conf "$phpfpm_conf"
+ynh_add_fpm_config
 
 # Set SSOwat rules
 ynh_app_setting_set "$app" unprotected_uris "/"
 
-# Reload services
-sudo service php5-fpm restart
-sudo service nginx reload
+#=================================================
+# RELOAD NGINX
+#=================================================
+sudo systemctl restart php5-fpm
+sudo systemctl reload nginx

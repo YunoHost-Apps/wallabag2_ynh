@@ -2,20 +2,20 @@
 
 # Exit on command errors and treat unset variables as an error
 set -eu
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Load common variables and helpers
-source ./_common.sh
+source _common.sh
+source /usr/share/yunohost/helpers
 
+#=================================================
+# LOAD SETTINGS
+#=================================================
 # Set app specific variables
 app=$YNH_APP_INSTANCE_NAME
-dbname=$app
-dbuser=$app
-
-# Retrieve arguments
-domain=$(ynh_app_setting_get "$app" domain)
-path=$(ynh_normalize_url_path $(ynh_app_setting_get "$app" path))
-dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
-deskey=$(ynh_app_setting_get "$app" deskey)
 
 # Check destination directory
 DESTDIR="/var/www/$app"
@@ -23,52 +23,117 @@ DESTDIR="/var/www/$app"
 "The destination directory '$DESTDIR' does not exist.\
  The app is not correctly installed, you should remove it first."
 
-# Install dependencies
-ynh_package_install_from_equivs ../conf/${DEPS_PKG_NAME}.control \
-  || ynh_die "Unable to install dependencies"
+# Retrieve arguments
+domain=$(ynh_app_setting_get "$app" domain)
+path_url=$(ynh_app_setting_get "$app" path_url)
+# Compatibility with previous version
+if [ -z "$path_url" ] ; then
+  path_url=$(ynh_app_setting_get "$app" path)
+  ynh_app_setting_set $app path_url "$path_url"
+fi
+path_url=$(ynh_normalize_url_path $path_url)
+db_pwd=$(ynh_app_setting_get "$app" mysqlpwd)
+deskey=$(ynh_app_setting_get "$app" deskey)
+final_path=$(ynh_app_setting_get "$app" final_path)
+# Compatibility with previous version
+if [ -z "$final_path" ] ; then
+  final_path="/var/www/$app"
+  ynh_app_setting_set $app final_path "$final_path"
+fi
+
+db_name=$(ynh_app_setting_get "$app" db_name)
+# Compatibility with previous version
+if [ -z "$db_name" ] ; then
+  db_name=$app
+  ynh_app_setting_set "$app" db_name "$db_name"
+fi
+db_user="$db_name"
+
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+# Use prior backup and restore on error only if backup feature
+# exists on installed instance
+if [ -f "/etc/yunohost/apps/$app/scripts/backup" ] ; then
+  ynh_backup_before_upgrade # Backup the current version of the app
+  ynh_clean_setup () {
+      ynh_backup_after_failed_upgrade
+  }
+  ynh_abort_if_errors	# Stop script if an error is detected
+fi
+
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
 
 # Create tmp directory and fetch app inside
 TMPDIR=$(ynh_mkdir_tmp)
-extract_wallabag "$TMPDIR"
+ynh_setup_source "$TMPDIR"
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+ynh_system_user_create $app # Create dedicated user if not existing
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
 
 # Copy and set Wallabag dist configuration
 wb_conf="${TMPDIR}/app/config/parameters.yml"
 cp ../conf/parameters.yml "$wb_conf"
-sed -i "s@{DBNAME}@${dbname}@g" "$wb_conf"
-sed -i "s@{DBUSER}@${dbuser}@g" "$wb_conf"
-sed -i "s@{DBPASS}@${dbpass}@g" "$wb_conf"
-sed -i "s@{DESKEY}@${deskey}@g" "$wb_conf"
+ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
+ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
+ynh_replace_string "{DBPASS}" "${db_pwd}" "$wb_conf"
+ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 
 # Replace files and set permissions
-sudo rm -rf "$DESTDIR"
-sudo mv "$TMPDIR" "$DESTDIR"
-sudo chown -R www-data: "$DESTDIR"
+ynh_secure_remove "${final_path}/var/cache"
+sudo mkdir "${final_path}/var/cache"
+sudo rsync -a $TMPDIR/* "${final_path}"
+sudo chown -R $app: "${final_path}"
+sudo chmod 755 $final_path
 
 # Upgrade database and clear the cache
-exec_console www-data "$DESTDIR" doctrine:migrations:migrate
-exec_console www-data "$DESTDIR" cache:clear
+exec_console $app "${final_path}" doctrine:migrations:migrate
+exec_console $app "${final_path}" cache:clear
 
-# Copy and set nginx configuration
-if [[ "$path" == "/" ]] ; then
-  nginx_conf=$PKGDIR/conf/nginx_root.conf
+# Configure Wallabag instance URL
+ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+ynh_add_nginx_config
+if [ "$path_url" = "/" ]
+then
+  # Remove prefix on #noroot lines
+	sudo sed --in-place '/#noroot*/d' /etc/nginx/conf.d/$domain.d/$app.conf
+  # Replace "//" location (due to nginx template)
+  ynh_replace_string " // " " / " /etc/nginx/conf.d/$domain.d/$app.conf
 else
-  nginx_conf=$PKGDIR/conf/nginx_sub_dir.conf
+  # Remove #noroot lines
+	ynh_replace_string "#noroot" "" /etc/nginx/conf.d/$domain.d/$app.conf
 fi
-sed -i "s@{LOCATION}@${path:-/}@g" "$nginx_conf"
-sed -i "s@{PATH}@${path}@g"        "$nginx_conf"
-sed -i "s@{DESTDIR}@${DESTDIR}@g"  "$nginx_conf"
-sed -i "s@{POOLNAME}@${app}@g"     "$nginx_conf"
-sudo cp "$nginx_conf" "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 # Copy and set php-fpm configuration
-phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
-sed -i "s@{POOLNAME}@${app}@g"     ../conf/php-fpm.conf
-sed -i "s@{DESTDIR}@${DESTDIR}/@g" ../conf/php-fpm.conf
-sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
+ynh_add_fpm_config
 
 # Set SSOwat rules
 ynh_app_setting_set "$app" unprotected_uris "/"
 
-# Reload services
-sudo service php5-fpm restart
-sudo service nginx reload
+#=================================================
+# RELOAD NGINX
+#=================================================
+sudo systemctl restart php5-fpm
+sudo systemctl reload nginx
