@@ -28,7 +28,7 @@ this package:
 The upgrade from the YunoHost [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh)
 app requires a manual operation, that's why it's provided as a new package.
 For the migration process, please refer to the
-[Wallabag official documentation](http://doc.wallabag.org/en/master/user/import.html#id6).
+[Wallabag official documentation](https://doc.wallabag.org/fr/user/import/wallabagv1.html).
 
 ## Links
 
