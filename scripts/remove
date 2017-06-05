@@ -28,6 +28,9 @@ domain=$(ynh_app_setting_get "$app" domain)
 #=================================================
 
 ynh_remove_app_dependencies
+# The following command is kept as a matter of transition with the previous way
+# of managing dependencies
+ynh_package_autoremove "wallabag-deps" || true
 
 #=================================================
 # REMOVE THE MYSQL DB
@@ -51,14 +54,6 @@ ynh_remove_nginx_config
 # Reload services
 sudo systemctl restart php5-fpm
 sudo systemctl reload nginx
-
-#=================================================
-# REMOVE DEPENDENCIES
-#=================================================
-ynh_remove_app_dependencies
-# The following command is keeped as a matter of transition with the previous way
-# of managing dependencies
-ynh_package_autoremove "wallabag-deps" || true
 
 #=================================================
 # REMOVE DEDICATED USER

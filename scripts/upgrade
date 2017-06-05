@@ -98,7 +98,7 @@ ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 # Replace files and set permissions
 ynh_secure_remove "${final_path}/var/cache"
 sudo mkdir "${final_path}/var/cache"
-sudo rsync -a $TMPDIR/* "${final_path}"
+sudo cp -a $TMPDIR/. "${final_path}"
 sudo chown -R $app: "${final_path}"
 sudo chmod 755 $final_path
 
