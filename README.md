@@ -13,6 +13,9 @@ This is a Wallabag v2 package for YunoHost.
 you to not miss any content anymore. Click, save, read it when you can.
 It extracts content so that you can read it when you have time.
 
+[![Install Wallabag v2 with 
+YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wallabag2)
+
 ## Features
 
 In addition to Wallabag core features, the following are made available with
