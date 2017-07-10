@@ -23,8 +23,7 @@ this package:
 
  * Integrate with YunoHost users and SSO - i.e. logout button
  * Allow one user to be the administrator (set at the installation)
- * Asynchronous import using Redis (need to be enabled in the *Internal Settings*)
-
+ * Asynchronous import using Redis (need to be enabled in the *Internal Settings*). RabbitMQ import not supported (yet ?)
 
 ## Upgrade from v1
 
@@ -37,4 +36,5 @@ For the migration process, please refer to the
 
  * Report a bug: https://github.com/YunoHost-Apps/wallabag2_ynh/issues
  * Wallabag website: https://www.wallabag.org/
+ * Wallabag documentation : https://doc.wallabag.org/ (fr/en/it/de)
  * YunoHost website: https://yunohost.org/
