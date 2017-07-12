@@ -13,6 +13,8 @@ This is a Wallabag v2 package for YunoHost.
 you to not miss any content anymore. Click, save, read it when you can.
 It extracts content so that you can read it when you have time.
 
+It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile apps (Android / iOS / Windows Phone) and even on e-reader (PocketBook / Kobo).
+
 [![Install Wallabag v2 with 
 YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wallabag2)
 
@@ -54,6 +56,7 @@ Paquet Wallabag v2 pour Yunohost.
 **Version actuelle:** 2.2.3
 
 [Wallabag](https://www.wallabag.org/) est une application de lecture différée : elle  permet simplement d’archiver une page web en ne conservant que le contenu. Les éléments superflus (menus, publicités, etc.) sont supprimés.
+Sont disponibles: une interface web, des add-ons pour navigateurs (Firefox / Chrome / Opera), des applications pour mobile (Android / iOS / Windows Phone) et même sur liseuse (PocketBook / Kobo).
 
 [![Install Wallabag v2 with 
 YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wallabag2)
