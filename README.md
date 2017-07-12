@@ -40,7 +40,7 @@ For the migration process, please refer to the
  * Wallabag website: https://www.wallabag.org/
  * Wallabag documentation: https://doc.wallabag.org/ (fr/en/it/de)
  * YunoHost website: https://yunohost.org/
- * Demo: https://player.vimeo.com/video/167435064
+ * [Video demo](https://player.vimeo.com/video/167435064)
  
  
 ---
@@ -56,6 +56,7 @@ Paquet Wallabag v2 pour Yunohost.
 **Version actuelle:** 2.2.3
 
 [Wallabag](https://www.wallabag.org/) est une application de lecture différée : elle  permet simplement d’archiver une page web en ne conservant que le contenu. Les éléments superflus (menus, publicités, etc.) sont supprimés.
+
 Sont disponibles: une interface web, des add-ons pour navigateurs (Firefox / Chrome / Opera), des applications pour mobile (Android / iOS / Windows Phone) et même sur liseuse (PocketBook / Kobo).
 
 [![Install Wallabag v2 with 
@@ -80,5 +81,5 @@ Pour le processus de migration, merci de vous référer à [la documentation off
  * Site web de Wallabag: https://www.wallabag.org/
  * Documentation de Wallabag: https://doc.wallabag.org/ (fr/en/it/de)
  * Site web de YunoHost: https://yunohost.org/
- * Demo: https://player.vimeo.com/video/167435064
+ * [Demo vidéo](https://player.vimeo.com/video/167435064)
 
