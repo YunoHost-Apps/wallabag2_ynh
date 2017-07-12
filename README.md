@@ -1,4 +1,4 @@
-[English version] - Wallabag v2 for Yunohost
+ Wallabag v2 for Yunohost - [English Version]
 ------------------------
 
 This is a Wallabag v2 package for YunoHost.
@@ -42,7 +42,7 @@ For the migration process, please refer to the
  
  
 ---
-[Version française] - Wallabag pour Yunohost
+Wallabag pour Yunohost - [Version Française]
 ---
 
 Paquet Wallabag v2 pour Yunohost.
