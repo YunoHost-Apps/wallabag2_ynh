@@ -27,6 +27,9 @@ this package:
  * Allow one user to be the administrator (set at the installation)
  * Asynchronous import using Redis (need to be enabled in the *Internal Settings*). RabbitMQ import not supported (yet ?)
 
+## Known issue(s)
+- Removing a Yunohost's user won't delete the related wallabag user, but only desactivate it. You need to manualy remove it from wallabag before. See: https://github.com/YunoHost-Apps/wallabag2_ynh/issues/39
+
 ## Upgrade from v1
 
 The upgrade from the YunoHost [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh)
@@ -69,6 +72,10 @@ En plus des fonctionnalités principales de Wallabag, ce paquet propose égaleme
  * Une intégration avec le système de gestion des utilisateurs et le SSO de Yunohost - e.g. un bouton de déconnexion
  * De permettre à un utilisateur d'être administrateur (réglage lors de l'installation)
  * Un import asynchrone utilisant Redis (à activer dans les *Paramètres Internes*). L'import via RabbitMQ n'est pas (encore ?) supporté.
+
+
+## Problème(s) connu(s)
+- Supprimer un utilisateur Yunohost ne supprimera pas l'utilisateur Wallabag lié, il sera seulement désactivé. Vous devez le supprimer manuellement avant. Voir: https://github.com/YunoHost-Apps/wallabag2_ynh/issues/39
 
 ## Mettre à niveau depuis la v1
 
