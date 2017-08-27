@@ -52,8 +52,8 @@ ynh_remove_fpm_config
 ynh_remove_nginx_config
 
 # Reload services
-sudo systemctl restart php5-fpm
-sudo systemctl reload nginx
+systemctl restart php5-fpm
+systemctl reload nginx
 
 #=================================================
 # REMOVE DEDICATED USER

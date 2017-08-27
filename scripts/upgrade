@@ -97,10 +97,10 @@ ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 
 # Replace files and set permissions
 ynh_secure_remove "${final_path}/var/cache"
-sudo mkdir "${final_path}/var/cache"
-sudo cp -a $TMPDIR/. "${final_path}"
-sudo chown -R $app: "${final_path}"
-sudo chmod 755 $final_path
+mkdir "${final_path}/var/cache"
+cp -a $TMPDIR/. "${final_path}"
+chown -R $app: "${final_path}"
+chmod 755 $final_path
 
 # Upgrade database and clear the cache
 exec_console $app "${final_path}" doctrine:migrations:migrate
@@ -118,10 +118,10 @@ if [ "$path_url" = "/" ]
 then
   # Replace "//" location (due to nginx template)
   # Prevent from replacing in "http://" expressions by excluding ":" as preceding character
-  sudo sed --in-place "s@\([^:]\)//@\1/@g" /etc/nginx/conf.d/$domain.d/$app.conf
+  sed --in-place "s@\([^:]\)//@\1/@g" /etc/nginx/conf.d/$domain.d/$app.conf
 else
   # Move prefix comment #for-subdir at end of lines
-  sudo sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" /etc/nginx/conf.d/$domain.d/$app.conf
+  sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" /etc/nginx/conf.d/$domain.d/$app.conf
 fi
 ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
@@ -134,5 +134,5 @@ ynh_app_setting_set "$app" unprotected_uris "/"
 #=================================================
 # RELOAD NGINX
 #=================================================
-sudo systemctl restart php5-fpm
-sudo systemctl reload nginx
+systemctl restart php5-fpm
+systemctl reload nginx

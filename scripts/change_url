@@ -67,26 +67,26 @@ if [ $change_path -eq 1 ]
 then
   if [ "$new_path" = "/" ] && [ "$old_path" != "/" ] ; then
     # Replace path in several location occurrences based on different recognition patterns
-    sudo sed --in-place "s@location $old_path/ {\$@location / {@"  "$nginx_conf_path"
+    sed --in-place "s@location $old_path/ {\$@location / {@"  "$nginx_conf_path"
     ynh_replace_string "location ~ ^$old_path" "location ~ ^" "$nginx_conf_path"
     ynh_replace_string "location $old_path {" "location / {" "$nginx_conf_path"
     ynh_replace_string "rewrite ^ $old_path" "rewrite ^ " "$nginx_conf_path"
     
     # Move #for-subdir comment at the beginning of the line (line not needed for "/" path)
-    sudo sed --in-place "s/\(.*\) #for-subdir/#for-subdir \1/g" "$nginx_conf_path"
+    sed --in-place "s/\(.*\) #for-subdir/#for-subdir \1/g" "$nginx_conf_path"
     elif [ "$new_path" != "/" ] && [ "$old_path" = "/" ] ; then
     # Move #for-subdir comment at the end of the line (line needed for "/path" path)
-    sudo sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" "$nginx_conf_path"
+    sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" "$nginx_conf_path"
     
     # Replace path in several location occurrences based on different recognition patterns
-    sudo sed --in-place "s@location / {\$@location $new_path/ {@"  "$nginx_conf_path"
+    sed --in-place "s@location / {\$@location $new_path/ {@"  "$nginx_conf_path"
     ynh_replace_string "location ~ ^" "location ~ ^$new_path" "$nginx_conf_path"
     ynh_replace_string "location / {" "location $new_path {" "$nginx_conf_path"
     ynh_replace_string "rewrite ^ /" "rewrite ^ $new_path/" "$nginx_conf_path"
   else
     # Replace locations starting with old_path
     # Look for every possible patterns for location (see https://nginx.org/en/docs/http/ngx_http_core_module.html#location)
-    sudo sed --in-place "s@location\( \(=\|~\|~\*\|\^~\)\)\? \(\^\)\?$old_path@location\1 \3$new_path@"  "$nginx_conf_path"
+    sed --in-place "s@location\( \(=\|~\|~\*\|\^~\)\)\? \(\^\)\?$old_path@location\1 \3$new_path@"  "$nginx_conf_path"
     # Replace path in "rewrite" directive
     ynh_replace_string "rewrite ^ $old_path" "rewrite ^ $new_path" "$nginx_conf_path"
   fi
@@ -95,7 +95,7 @@ fi
 # Change the domain for nginx
 if [ $change_domain -eq 1 ]
 then
-	sudo mv $nginx_conf_path /etc/nginx/conf.d/$new_domain.d/$app.conf
+	mv $nginx_conf_path /etc/nginx/conf.d/$new_domain.d/$app.conf
 fi
 
 #=================================================
@@ -119,4 +119,4 @@ fi
 # RELOAD NGINX
 #=================================================
 
-sudo systemctl reload nginx
+systemctl reload nginx
