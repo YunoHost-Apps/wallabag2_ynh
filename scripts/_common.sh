@@ -36,6 +36,7 @@ QUIET () {	# redirect standard output to /dev/null
 	$@ > /dev/null
 }
 
+
 HUMAN_SIZE () {	# Transforms a Kb-based size to a human-readable size
 	human=$(numfmt --to=iec --from-unit=1K $1)
 	echo $human
@@ -61,4 +62,17 @@ CHECK_DOMAINPATH () {	# Check domain/path availability
 CHECK_FINALPATH () {	# Check if destination directory already exists
 	final_path="/var/www/$app"
 	test ! -e "$final_path" || ynh_die "This path already contains a folder"
+}
+
+
+# ============= FUTURE YUNOHOST HELPER =============
+# Delete a file checksum from the app settings
+#
+# $app should be defined when calling this helper
+#
+# usage: ynh_remove_file_checksum file
+# | arg: file - The file for which the checksum will be deleted
+ynh_delete_file_checksum () {
+	local checksum_setting_name=checksum_${1//[\/ ]/_}	# Replace all '/' and ' ' by '_'
+	ynh_app_setting_delete $app $checksum_setting_name
 }
