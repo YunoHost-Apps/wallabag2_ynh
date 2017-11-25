@@ -95,18 +95,18 @@ ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
 chmod 600 "$wb_conf"
 
 # Install files and set permissions
-sudo mv "$TMPDIR" "$final_path"
+mv "$TMPDIR" "$final_path"
 
 # Set rights on directory
-sudo chown -R $app: $final_path
-sudo chmod 755 $final_path
+chown -R $app: $final_path
+chmod 755 $final_path
 
 # Install dependencies and Wallabag
 exec_console $app "$final_path" wallabag:install
 
 # Add users to Wallabag
 for username in $(ynh_user_list); do
-  user_email=$(sudo yunohost user info "$username" --output-as plain \
+  user_email=$(yunohost user info "$username" --output-as plain \
                  | ynh_get_plain_key mail)
   user_pass=$(ynh_string_random)
   exec_console $app "$final_path" fos:user:create \
@@ -126,13 +126,12 @@ ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_s
 ynh_add_nginx_config
 if [ "$path_url" = "/" ]
 then
-  # Remove prefix on #noroot lines
-	sudo sed --in-place '/#noroot*/d' /etc/nginx/conf.d/$domain.d/$app.conf
   # Replace "//" location (due to nginx template)
-  ynh_replace_string " // " " / " /etc/nginx/conf.d/$domain.d/$app.conf
+  # Prevent from replacing in "http://" expressions by excluding ":" as preceding character
+  sed --in-place "s@\([^:]\)//@\1/@g" /etc/nginx/conf.d/$domain.d/$app.conf
 else
-  # Remove #noroot lines
-	ynh_replace_string "#noroot" "" /etc/nginx/conf.d/$domain.d/$app.conf
+  # Move prefix comment #for-subdir at end of lines
+  sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" /etc/nginx/conf.d/$domain.d/$app.conf
 fi
 ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
@@ -145,5 +144,5 @@ ynh_app_setting_set "$app" unprotected_uris "/"
 #=================================================
 # RELOAD NGINX
 #=================================================
-sudo systemctl restart php5-fpm
-sudo systemctl reload nginx
+systemctl restart php5-fpm
+systemctl reload nginx
