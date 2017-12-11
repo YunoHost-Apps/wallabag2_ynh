@@ -31,8 +31,10 @@ db_name=$(ynh_app_setting_get $app db_name)
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-CHECK_DOMAINPATH	# Check domain and path availability
-CHECK_FINALPATH # Check if destination directory is not already in use
+yunohost app checkurl "${domain}${path_url}" -a "$app" \
+	|| ynh_die "Path not available: ${domain}${path_url}"
+test ! -d $final_path \
+	|| ynh_die "There is already a directory: $final_path "
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -46,13 +48,13 @@ ynh_install_app_dependencies "$PKG_DEPENDENCIES"
 # RESTORE NGINX CONFIGURATION
 #=================================================
 
-cp -a ./nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # RESTORE APP MAIN DIR
 #=================================================
 
-cp -a ./sources/. $final_path
+ynh_restore_file "$final_path"
 
 #=================================================
 # RESTORE MYSQL DB
@@ -78,7 +80,8 @@ chown -R $app: $final_path
 # RESTORE PHP-FPM CONFIGURATION
 #=================================================
 
-cp -a ./php-fpm.conf /etc/php5/fpm/pool.d/$app.conf
+ynh_restore_file "/etc/php5/fpm/pool.d/$app.conf"
+ynh_restore_file "/etc/php5/fpm/conf.d/20-$app.ini"
 
 #=================================================
 # GENERIC FINALIZATION
