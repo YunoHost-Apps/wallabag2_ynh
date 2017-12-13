@@ -15,12 +15,13 @@ diff --git a/app/config/services.yml b/app/config/services.yml
 index 8a09fde..ee63e06 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
-@@ -37,6 +37,9 @@ services:
+@@ -43,6 +43,9 @@
          tags:
              - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
- 
+
 +    yunohost.logout_success_handler:
 +        class: Wallabag\YunoHostBundle\Security\LogoutSuccessHandler
++
 +
      yunohost.ldap:
          class: Symfony\Component\Ldap\LdapClient
