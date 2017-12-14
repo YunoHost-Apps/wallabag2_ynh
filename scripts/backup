@@ -9,8 +9,8 @@ set -eu
 
 if [ ! -e _common.sh ]; then
 	# Fetch helpers file if not in current directory
-	sudo cp ../settings/scripts/_common.sh ./_common.sh
-	sudo chmod a+rx _common.sh
+	cp ../settings/scripts/_common.sh ./_common.sh
+	chmod a+rx _common.sh
 fi
 source _common.sh
 source /usr/share/yunohost/helpers
