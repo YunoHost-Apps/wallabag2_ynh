@@ -3,7 +3,7 @@
 #
 
 # Package dependencies
-PKG_DEPENDENCIES="php5-cli php5-mysql php5-json php5-gd php5-tidy php5-curl php-gettext redis-server"
+PKG_DEPENDENCIES="php5-cli php5-mysql php5-json php5-gd php5-tidy php5-curl php-gettext php5-redis"
 
 # Execute a command as another user
 # usage: exec_as USER COMMAND [ARG ...]
