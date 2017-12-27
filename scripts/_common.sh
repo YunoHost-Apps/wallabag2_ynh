@@ -36,12 +36,6 @@ QUIET () {	# redirect standard output to /dev/null
 	$@ > /dev/null
 }
 
-
-HUMAN_SIZE () {	# Transforms a Kb-based size to a human-readable size
-	human=$(numfmt --to=iec --from-unit=1K $1)
-	echo $human
-}
-
 CHECK_SIZE () {	# Check if enough disk space available on backup storage
 	file_to_analyse=$1
 	backup_size=$(du --summarize "$file_to_analyse" | cut -f1)
