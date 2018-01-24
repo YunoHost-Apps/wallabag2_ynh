@@ -49,15 +49,6 @@ CHECK_SIZE () {	# Check if enough disk space available on backup storage
 	fi
 }
 
-CHECK_DOMAINPATH () {	# Check domain/path availability
-	yunohost app checkurl $domain$path_url -a $app
-}
-
-CHECK_FINALPATH () {	# Check if destination directory already exists
-	final_path="/var/www/$app"
-	test ! -e "$final_path" || ynh_die "This path already contains a folder"
-}
-
 
 # ============= FUTURE YUNOHOST HELPER =============
 # Delete a file checksum from the app settings

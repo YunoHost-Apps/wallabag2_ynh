@@ -31,9 +31,15 @@ admin=$YNH_APP_ARG_ADMIN
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die "This path already contains a folder"
+
 path_url=$(ynh_normalize_url_path $path_url)	# Check and normalize path
-CHECK_DOMAINPATH	# Check domain and path availability
-CHECK_FINALPATH # Check if destination directory is not already in use
+
+# Check web path availability
+ynh_webpath_available $domain $path_url
+# Register (book) web path
+ynh_webpath_register $app $domain $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST

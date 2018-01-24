@@ -31,8 +31,10 @@ db_name=$(ynh_app_setting_get $app db_name)
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-CHECK_DOMAINPATH	# Check domain and path availability
-CHECK_FINALPATH # Check if destination directory is not already in use
+ynh_webpath_available $domain $path_url \
+	|| ynh_die "Path not available: ${domain}${path_url}"
+test ! -d $final_path \
+	|| ynh_die "There is already a directory: $final_path "
 
 #=================================================
 # INSTALL DEPENDENCIES
