@@ -7,7 +7,7 @@ This is a Wallabag v2 package for YunoHost.
 
 **NB: Since @jeromelebleu is no longer maintaining this package, I (@lapineige) take over this repository. But I have limited time and experience, so feel free to help !**
 
-**Shipped version:** 2.3.1
+**Shipped version:** 2.3.2
 
 [Wallabag](https://www.wallabag.org/) is a self hostable Read-It-Later application allowing
 you to not miss any content anymore. Click, save, read it when you can.
