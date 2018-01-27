@@ -15,7 +15,7 @@
     },
     "multi_instance": true,
     "requirements": {
-        "yunohost": ">= 2.7.2"
+        "yunohost": ">= 2.7.12"
     },
     "services": [
         "nginx",
