@@ -89,11 +89,15 @@ ynh_system_user_create $app # Create dedicated user if not existing
 
 # Copy and set Wallabag dist configuration
 wb_conf="${TMPDIR}/app/config/parameters.yml"
-cp ../conf/parameters.yml "$wb_conf"
-ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
-ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
-ynh_replace_string "{DBPASS}" "${db_pwd}" "$wb_conf"
-ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
+cp ${TMPDIR}/app/config/parameters.yml.dist $wb_conf
+
+ynh_replace_string "fosuser_registration: true" "fosuser_registration: false" "$wb_conf"
+ynh_replace_string "database_name: wallabag" "database_name:  ${db_name}" "$wb_conf"
+ynh_replace_string "database_user: root" "database_user: ${db_user}" "$wb_conf"
+ynh_replace_string "database_password: ~" "database_password: ${db_pwd}" "$wb_conf"
+ynh_replace_string "database_table_prefix: wallabag_" "database_table_prefix: null" "$wb_conf"
+ynh_replace_string "secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" "secret: ${deskey}" "$wb_conf"
+ynh_replace_string "domain_name: https://your-wallabag-url-instance.com" "domain_name: https://$domain$path_url" "$wb_conf"
 
 # Replace files and set permissions
 ynh_secure_remove "${final_path}/var/cache"

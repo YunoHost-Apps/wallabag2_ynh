@@ -3,7 +3,7 @@
 #
 
 # Package dependencies
-PKG_DEPENDENCIES="php5-cli php5-mysql php5-json php5-gd php5-tidy php5-curl php-gettext redis-server"
+PKG_DEPENDENCIES="php5-cli php5-mysql php5-json php5-gd php5-tidy php5-curl php-gettext php5-redis"
 
 # Execute a command as another user
 # usage: exec_as USER COMMAND [ARG ...]
@@ -36,12 +36,6 @@ QUIET () {	# redirect standard output to /dev/null
 	$@ > /dev/null
 }
 
-
-HUMAN_SIZE () {	# Transforms a Kb-based size to a human-readable size
-	human=$(numfmt --to=iec --from-unit=1K $1)
-	echo $human
-}
-
 CHECK_SIZE () {	# Check if enough disk space available on backup storage
 	file_to_analyse=$1
 	backup_size=$(du --summarize "$file_to_analyse" | cut -f1)
@@ -53,15 +47,6 @@ CHECK_SIZE () {	# Check if enough disk space available on backup storage
 		WARNING echo "Space available: $(HUMAN_SIZE $free_space)"
 		ynh_die "Space needed: $(HUMAN_SIZE $backup_size)"
 	fi
-}
-
-CHECK_DOMAINPATH () {	# Check domain/path availability
-	yunohost app checkurl $domain$path_url -a $app
-}
-
-CHECK_FINALPATH () {	# Check if destination directory already exists
-	final_path="/var/www/$app"
-	test ! -e "$final_path" || ynh_die "This path already contains a folder"
 }
 
 

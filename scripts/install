@@ -31,9 +31,15 @@ admin=$YNH_APP_ARG_ADMIN
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die "This path already contains a folder"
+
 path_url=$(ynh_normalize_url_path $path_url)	# Check and normalize path
-CHECK_DOMAINPATH	# Check domain and path availability
-CHECK_FINALPATH # Check if destination directory is not already in use
+
+# Check web path availability
+ynh_webpath_available $domain $path_url
+# Register (book) web path
+ynh_webpath_register $app $domain $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -86,11 +92,16 @@ ynh_system_user_create $app	# Create a dedicated system user
 
 # Copy and set Wallabag dist configuration
 wb_conf="${TMPDIR}/app/config/parameters.yml"
-cp ../conf/parameters.yml "$wb_conf"
-ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
-ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
-ynh_replace_string "{DBPASS}" "${db_pwd}" "$wb_conf"
-ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
+cp ${TMPDIR}/app/config/parameters.yml.dist $wb_conf
+
+ynh_replace_string "fosuser_registration: true" "fosuser_registration: false" "$wb_conf"
+ynh_replace_string "database_name: wallabag" "database_name:  ${db_name}" "$wb_conf"
+ynh_replace_string "database_user: root" "database_user: ${db_user}" "$wb_conf"
+ynh_replace_string "database_password: ~" "database_password: ${db_pwd}" "$wb_conf"
+ynh_replace_string "database_table_prefix: wallabag_" "database_table_prefix: null" "$wb_conf"
+ynh_replace_string "secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" "secret: ${deskey}" "$wb_conf"
+ynh_replace_string "domain_name: https://your-wallabag-url-instance.com" "domain_name: https://$domain$path_url" "$wb_conf"
+
 # Restrict rights to Wallabag user only
 chmod 600 "$wb_conf"
 

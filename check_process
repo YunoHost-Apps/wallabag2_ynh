@@ -11,6 +11,7 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
+		upgrade=1 from_commit=f75d58cb32c51a0981333ea88974dc3199324e65
 		backup_restore=1
 		multi_instance=1
 		incorrect_path=1
@@ -32,3 +33,7 @@
 ;;; Options
 Email=
 Notification=none
+;;; Upgrade options
+	; commit=f75d58cb32c51a0981333ea88974dc3199324e65
+		name= Previous package version
+manifest_arg=domain=DOMAIN&path=PATH&admin=USER&
