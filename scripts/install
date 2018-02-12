@@ -31,9 +31,15 @@ admin=$YNH_APP_ARG_ADMIN
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die "This path already contains a folder"
+
 path_url=$(ynh_normalize_url_path $path_url)	# Check and normalize path
-CHECK_DOMAINPATH	# Check domain and path availability
-CHECK_FINALPATH # Check if destination directory is not already in use
+
+# Check web path availability
+ynh_webpath_available $domain $path_url
+# Register (book) web path
+ynh_webpath_register $app $domain $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -86,27 +92,32 @@ ynh_system_user_create $app	# Create a dedicated system user
 
 # Copy and set Wallabag dist configuration
 wb_conf="${TMPDIR}/app/config/parameters.yml"
-cp ../conf/parameters.yml "$wb_conf"
-ynh_replace_string "{DBNAME}" "${db_name}" "$wb_conf"
-ynh_replace_string "{DBUSER}" "${db_user}" "$wb_conf"
-ynh_replace_string "{DBPASS}" "${db_pwd}" "$wb_conf"
-ynh_replace_string "{DESKEY}" "${deskey}" "$wb_conf"
+cp ${TMPDIR}/app/config/parameters.yml.dist $wb_conf
+
+ynh_replace_string "fosuser_registration: true" "fosuser_registration: false" "$wb_conf"
+ynh_replace_string "database_name: wallabag" "database_name:  ${db_name}" "$wb_conf"
+ynh_replace_string "database_user: root" "database_user: ${db_user}" "$wb_conf"
+ynh_replace_string "database_password: ~" "database_password: ${db_pwd}" "$wb_conf"
+ynh_replace_string "database_table_prefix: wallabag_" "database_table_prefix: null" "$wb_conf"
+ynh_replace_string "secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" "secret: ${deskey}" "$wb_conf"
+ynh_replace_string "domain_name: https://your-wallabag-url-instance.com" "domain_name: https://$domain$path_url" "$wb_conf"
+
 # Restrict rights to Wallabag user only
 chmod 600 "$wb_conf"
 
 # Install files and set permissions
-sudo mv "$TMPDIR" "$final_path"
+mv "$TMPDIR" "$final_path"
 
 # Set rights on directory
-sudo chown -R $app: $final_path
-sudo chmod 755 $final_path
+chown -R $app: $final_path
+chmod 755 $final_path
 
 # Install dependencies and Wallabag
 exec_console $app "$final_path" wallabag:install
 
 # Add users to Wallabag
 for username in $(ynh_user_list); do
-  user_email=$(sudo yunohost user info "$username" --output-as plain \
+  user_email=$(yunohost user info "$username" --output-as plain \
                  | ynh_get_plain_key mail)
   user_pass=$(ynh_string_random)
   exec_console $app "$final_path" fos:user:create \
@@ -126,13 +137,12 @@ ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_s
 ynh_add_nginx_config
 if [ "$path_url" = "/" ]
 then
-  # Remove prefix on #noroot lines
-	sudo sed --in-place '/#noroot*/d' /etc/nginx/conf.d/$domain.d/$app.conf
   # Replace "//" location (due to nginx template)
-  ynh_replace_string " // " " / " /etc/nginx/conf.d/$domain.d/$app.conf
+  # Prevent from replacing in "http://" expressions by excluding ":" as preceding character
+  sed --in-place "s@\([^:]\)//@\1/@g" /etc/nginx/conf.d/$domain.d/$app.conf
 else
-  # Remove #noroot lines
-	ynh_replace_string "#noroot" "" /etc/nginx/conf.d/$domain.d/$app.conf
+  # Move prefix comment #for-subdir at end of lines
+  sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" /etc/nginx/conf.d/$domain.d/$app.conf
 fi
 ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
@@ -145,5 +155,5 @@ ynh_app_setting_set "$app" unprotected_uris "/"
 #=================================================
 # RELOAD NGINX
 #=================================================
-sudo systemctl restart php5-fpm
-sudo systemctl reload nginx
+systemctl restart php5-fpm
+systemctl reload nginx

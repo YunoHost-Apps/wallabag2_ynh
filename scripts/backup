@@ -9,8 +9,8 @@ set -eu
 
 if [ ! -e _common.sh ]; then
 	# Fetch helpers file if not in current directory
-	sudo cp ../settings/scripts/_common.sh ./_common.sh
-	sudo chmod a+rx _common.sh
+	cp ../settings/scripts/_common.sh ./_common.sh
+	chmod a+rx _common.sh
 fi
 source _common.sh
 source /usr/share/yunohost/helpers
@@ -22,7 +22,7 @@ source /usr/share/yunohost/helpers
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
-final_path="/var/www/${app}"
+final_path=$(ynh_app_setting_get $app final_path)
 db_name=$(ynh_app_setting_get $app db_name)
 
 #=================================================
@@ -32,24 +32,24 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 
 CHECK_SIZE "$final_path"
-ynh_backup "$final_path" "sources"
+ynh_backup "$final_path"
 
 #=================================================
 # BACKUP NGINX CONFIGURATION
 #=================================================
 
-ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf" "nginx.conf"
+ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # BACKUP PHP-FPM CONFIGURATION
 #=================================================
 
-ynh_backup "/etc/php5/fpm/pool.d/$app.conf" "php-fpm.conf"
+ynh_backup "/etc/php5/fpm/pool.d/$app.conf"
+ynh_backup "/etc/php5/fpm/conf.d/20-$app.ini"
 
 #=================================================
 # BACKUP MYSQL DB
 #=================================================
 
-ynh_mysql_dump_db "$db_name" > dump.sql
-CHECK_SIZE "dump.sql"
-ynh_backup "dump.sql" "db.sql"
+ynh_mysql_dump_db "$db_name" > db.sql
+CHECK_SIZE "db.sql"
