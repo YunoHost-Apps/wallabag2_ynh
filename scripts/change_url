@@ -109,6 +109,9 @@ if [ "$download_images_enabled" = "1" ] ; then
   ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE entry SET content = REPLACE(content, '$old_domain$old_path', '$new_domain$new_path');"
 fi
 
+# Clear assets cache
+ynh_secure_remove $final_path/var/cache
+
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
