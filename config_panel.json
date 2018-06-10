@@ -1,0 +1,25 @@
+{
+    "name": "Wallabag configuration panel",
+    "version": "0.1",
+    "panel": [{
+        "name": "Users registration",
+        "id": "users_registration",
+        "sections": [{
+            "name": "Users registration",
+            "id": "users_registration",
+            "options": [{
+                "name": "Public registration",
+                "id": "fosuser_registration",
+                "type": "bool",
+                "help": "True to enable public registration",
+                "default": false
+            }, {
+                "name": "Email confirmation",
+                "id": "fosuser_confirmation",
+                "type": "bool",
+                "help": "True to send a confirmation by email for each registration",
+                "default": true
+            }]
+        }]
+    }]
+}
