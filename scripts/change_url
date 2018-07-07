@@ -66,35 +66,25 @@ nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 # Change the path in the nginx config file
 if [ $change_path -eq 1 ]
 then
-  # Make a backup of the original nginx config file if modified
-  ynh_backup_if_checksum_is_different "$nginx_conf_path"
-  if [ "$new_path" = "/" ] && [ "$old_path" != "/" ] ; then
-    # Replace path in several location occurrences based on different recognition patterns
-    ynh_replace_string "location $old_path/ {\$" "location / {" "$nginx_conf_path"
-    ynh_replace_string "location ~ ^$old_path" "location ~ ^" "$nginx_conf_path"
-    ynh_replace_string "location $old_path {" "location / {" "$nginx_conf_path"
-    ynh_replace_string "rewrite ^ $old_path" "rewrite ^ " "$nginx_conf_path"
-    
-    # Move #for-subdir comment at the beginning of the line (line not needed for "/" path)
-    ynh_replace_string "\(.*\) #for-subdir" "#for-subdir \1" "$nginx_conf_path"
-  elif [ "$new_path" != "/" ] && [ "$old_path" = "/" ] ; then
-    # Move #for-subdir comment at the end of the line (line needed for "/path" path)
-    ynh_replace_string "#for-subdir\(.*\)" "\1 #for-subdir" "$nginx_conf_path"
-    
-    # Replace path in several location occurrences based on different recognition patterns
-    ynh_replace_string "location / {\$" "location $new_path/ {" "$nginx_conf_path"
-    ynh_replace_string "location ~ ^" "location ~ ^$new_path" "$nginx_conf_path"
-    ynh_replace_string "location / {" "location $new_path {" "$nginx_conf_path"
-    ynh_replace_string "rewrite ^ /" "rewrite ^ $new_path/" "$nginx_conf_path"
-  else
-    # Replace locations starting with old_path
-    # Look for every possible patterns for location directive (see https://nginx.org/en/docs/http/ngx_http_core_module.html#location)
-    ynh_replace_string "location\( \(=\|~\|~\*\|\^~\)\)\? \(\^\)\?$old_path" "location\1 \3$new_path" "$nginx_conf_path"
-    # Replace path in "rewrite" directive
-    ynh_replace_string "rewrite ^ $old_path" "rewrite ^ $new_path" "$nginx_conf_path"
-  fi
-  # Calculate and store the nginx config file checksum
-  ynh_store_file_checksum "$nginx_conf_path"
+	# Make a backup of the original nginx config file if modified
+	ynh_backup_if_checksum_is_different "$nginx_conf_path"
+	# Set global variables for nginx helper
+	domain="$old_domain"
+	path_url="$new_path"
+	# Store path_url setting
+	ynh_app_setting_set $app path_url "$path_url"
+	# Create a dedicated nginx config
+	ynh_add_nginx_config
+	if [ "$path_url" = "/" ]
+	then
+	  # Replace "//" location (due to nginx template)
+	  # Prevent from replacing in "http://" expressions by excluding ":" as preceding character
+	  sed --in-place "s@\([^:]\)//@\1/@g" "$nginx_conf_path"
+	else
+	  # Move prefix comment #for-subdir at end of lines
+	  sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" "$nginx_conf_path"
+	fi
+	ynh_store_file_checksum "$nginx_conf_path"
 fi
 
 # Change the domain for nginx
@@ -115,15 +105,18 @@ fi
 ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
 
 # Change domain name in parameters.yml
-ynh_replace_string "domain_name: https://$old_domain$old_path" "domain_name: https://$new_domain$new_path" $final_path/app/config/parameters.yml
+ynh_replace_string "domain_name: .*" "domain_name: https://$new_domain$new_path" $final_path/app/config/parameters.yml
 
 # If "Download images locally" option has been enabled in Internal Settings
 download_images_enabled=$(ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<<  "SELECT value from craue_config_setting WHERE name='download_images_enabled '" | tail -n 1)
 if [ "$download_images_enabled" = "1" ] ; then
   echo "Updating images URL; this operation may take a while..."
   # Query/replace the domain/path in every entry.content in mysql database
-  ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE entry SET content = REPLACE(content, '$old_domain$old_path', '$new_domain$new_path');" 
+  ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE entry SET content = REPLACE(content, '$old_domain$old_path', '$new_domain$new_path');"
 fi
+
+# Clear assets cache
+ynh_secure_remove $final_path/var/cache
 
 #=================================================
 # GENERIC FINALIZATION
