@@ -3,6 +3,9 @@
 
 This is a Wallabag v2 package for YunoHost.
 
+![wallabag start screen](https://www.linuxbabe.com/wp-content/uploads/2016/10/wallabag-quick-start-page.png)
+
+
 ---
 
 **NB: Since @jeromelebleu is no longer maintaining this package, I (@lapineige) take over this repository. But I have limited time and experience, so feel free to help !**
@@ -45,7 +48,7 @@ For the migration process, please refer to the
  * YunoHost website: https://yunohost.org/
  * [Video demo](https://player.vimeo.com/video/167435064)
  
- 
+--- 
 ---
 Wallabag pour Yunohost - [Version Française]
 ---
