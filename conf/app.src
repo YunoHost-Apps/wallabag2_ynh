@@ -1,3 +1,3 @@
-SOURCE_URL=https://static.wallabag.org/releases/wallabag-release-2.3.6.tar.gz
-SOURCE_SUM=018384e901a1ede2c8e3989726076d3c6f50757e6ba7e5bbbb454f92f2f00d54
+SOURCE_URL=https://static.wallabag.org/releases/wallabag-release-2.3.7.tar.gz
+SOURCE_SUM=e223de12d8ea9f889e8660df4555c37c965f5ae1ca77af3d3532ab76889762cf
 SOURCE_FORMAT=tar.gz
