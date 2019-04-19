@@ -56,7 +56,7 @@ Paquet Wallabag v2 pour Yunohost.
 
 **NB: Depuis que @jeromelebleu ne maintiens plus ce paquet, je (@lapineige) reprends la charge de ce dépôt. Mais j'ai un temps et une expérience limitées, donc n'hésitez pas à donner un coup de main :) !**
 
-**Version actuelle:** 2.3.6
+**Version actuelle:** 2.3.7
 
 [Wallabag](https://www.wallabag.org/) est une application de lecture différée : elle  permet simplement d’archiver une page web en ne conservant que le contenu. Les éléments superflus (menus, publicités, etc.) sont supprimés.
 
