@@ -1,0 +1,20 @@
+[{
+        "id": "clear_cache",
+        "name": "Clear the cache",
+        "command": "/bin/bash scripts/actions/clear_cache",
+        "user": "root",
+        "accepted_return_codes": [0],
+        "description": {
+            "en": "Clean the cache of wallabag"
+        }
+},
+{
+        "id": "clean_duplicate",
+        "name": "Clean duplicates",
+        "command": "/bin/bash scripts/actions/clean_duplicate",
+        "user": "root",
+        "accepted_return_codes": [0],
+        "description": {
+            "en": "Clean the articles list in case of duplicates."
+        }
+}]

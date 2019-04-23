@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+# source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+app=$YNH_APP_ID
+
+final_path=$(ynh_app_setting_get $app final_path)
+
+#=================================================
+# SPECIFIC CODE
+#=================================================
+# DECLARE GENERIC FUNCTION
+#=================================================
+
+wb_conf="$final_path/app/config/parameters.yml"
+
+get_config_value() {
+	option_name="$1"
+	# Get the value of this option in the config file
+	grep "$option_name:" "$wb_conf" | awk ' { print $2 } '
+}
+
+#=================================================
+# SHOW_CONFIG FUNCTION FOR 'SHOW' COMMAND
+#=================================================
+
+show_config() {
+	# here you are supposed to read some config file/database/other then print the values
+	# echo "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
+	echo "YNH_CONFIG_USERS_REGISTRATION_USERS_REGISTRATION_FOSUSER_REGISTRATION=$(get_config_value fosuser_registration)"
+	echo "YNH_CONFIG_USERS_REGISTRATION_USERS_REGISTRATION_FOSUSER_CONFIRMATION=$(get_config_value fosuser_confirmation)"
+}
+
+#=================================================
+# MODIFY THE CONFIGURATION
+#=================================================
+
+apply_config() {
+	old_fosuser_registration="$(get_config_value fosuser_registration)"
+	old_fosuser_confirmation="$(get_config_value fosuser_confirmation)"
+	new_fosuser_registration="${YNH_CONFIG_USERS_REGISTRATION_USERS_REGISTRATION_FOSUSER_REGISTRATION:-$old_fosuser_registration}"
+	new_fosuser_confirmation="${YNH_CONFIG_USERS_REGISTRATION_USERS_REGISTRATION_FOSUSER_CONFIRMATION:-$old_fosuser_confirmation}"
+
+	# If 'fosuser_registration' has been changed, modify the config file
+	if [ "$old_fosuser_registration" != "$new_fosuser_registration" ]
+	then
+		ynh_replace_string "fosuser_registration: .*" "fosuser_registration: $new_fosuser_registration" "$wb_conf"
+	fi
+
+	if [ "$old_fosuser_confirmation" != "$new_fosuser_confirmation" ]
+	then
+		ynh_replace_string "fosuser_confirmation: .*" "fosuser_confirmation: $new_fosuser_confirmation" "$wb_conf"
+	fi
+
+}
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SELECT THE ACTION FOLLOWING THE GIVEN ARGUMENT
+#=================================================
+
+case $1 in
+  show) show_config;;
+  apply) apply_config;;
+esac
