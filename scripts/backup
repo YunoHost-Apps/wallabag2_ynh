@@ -52,3 +52,10 @@ ynh_backup "/etc/php5/fpm/pool.d/$app.conf"
 
 ynh_mysql_dump_db "$db_name" > db.sql
 CHECK_SIZE "db.sql"
+
+#=================================================
+# BACKUP FAIL2BAN CONFIGURATION
+#=================================================
+
+ynh_backup "/etc/fail2ban/jail.d/$app.conf"
+ynh_backup "/etc/fail2ban/filter.d/$app.conf"
