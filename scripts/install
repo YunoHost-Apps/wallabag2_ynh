@@ -130,6 +130,11 @@ exec_console $app "$final_path" fos:user:promote --super "$admin"
 # Configure Wallabag instance URL
 ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 
+# Configure Fail2Ban
+
+ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex="app.ERROR: Authentication failure" --max_retry=5
+
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
