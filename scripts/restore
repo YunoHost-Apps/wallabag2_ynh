@@ -77,6 +77,14 @@ ynh_system_user_create $app	# Recreate the dedicated user, if not existing
 chown -R $app: $final_path
 
 #=================================================
+# RESTORE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
+ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
+
+systemctl reload fail2ban # Reload instead of restart for better performance
+
+#=================================================
 # RESTORE PHP-FPM CONFIGURATION
 #=================================================
 
