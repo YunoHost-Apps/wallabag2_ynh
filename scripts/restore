@@ -82,7 +82,7 @@ chown -R $app: $final_path
 ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
 ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
 
-ynh_systemd_action -a reload -n fail2ban # Reload instead of restart for better performance
+ynh_systemd_action --action=reload --service_name=fail2ban # Reload instead of restart for better performance
 
 #=================================================
 # RESTORE PHP-FPM CONFIGURATION
