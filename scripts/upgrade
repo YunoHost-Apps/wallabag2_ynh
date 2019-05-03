@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Exit on command errors and treat unset variables as an error
-set -eu
 #=================================================
-# GENERIC STARTING
+# GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
@@ -14,129 +12,186 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-# Set app specific variables
+ynh_script_progression --message="Loading installation settings..." --weight=2
+
 app=$YNH_APP_INSTANCE_NAME
 
-# Check destination directory
-DESTDIR="/var/www/$app"
-[[ ! -d $DESTDIR ]] && ynh_die \
-"The destination directory '$DESTDIR' does not exist.\
- The app is not correctly installed, you should remove it first."
-
-# Retrieve arguments
-domain=$(ynh_app_setting_get "$app" domain)
-path_url=$(ynh_app_setting_get "$app" path_url)
-# Compatibility with previous version
-if [ -z "$path_url" ] ; then
-  path_url=$(ynh_app_setting_get "$app" path)
-  ynh_app_setting_set $app path_url "$path_url"
-fi
-path_url=$(ynh_normalize_url_path $path_url)
-db_pwd=$(ynh_app_setting_get "$app" mysqlpwd)
-deskey=$(ynh_app_setting_get "$app" deskey)
-final_path=$(ynh_app_setting_get "$app" final_path)
-# Compatibility with previous version
-if [ -z "$final_path" ] ; then
-  final_path="/var/www/$app"
-  ynh_app_setting_set $app final_path "$final_path"
-fi
-
-db_name=$(ynh_app_setting_get "$app" db_name)
-# Compatibility with previous version
-if [ -z "$db_name" ] ; then
-  db_name=$app
-  ynh_app_setting_set "$app" db_name "$db_name"
-fi
-db_user="$db_name"
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+admin=$(ynh_app_setting_get --app=$app --key=admin)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
+db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+deskey=$(ynh_app_setting_get --app=$app --key=deskey)
 
 #=================================================
-# MANAGE SCRIPT FAILURE
+# CHECK VERSION
 #=================================================
 
-# Use prior backup and restore on error only if backup feature
-# exists on installed instance
-if [ -f "/etc/yunohost/apps/$app/scripts/backup" ] ; then
-  ynh_backup_before_upgrade # Backup the current version of the app
-  ynh_clean_setup () {
-      ynh_backup_after_failed_upgrade
-  }
-  ynh_abort_if_errors	# Stop script if an error is detected
+upgrade_type=$(ynh_check_app_version_changed)
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression --message="Ensuring downward compatibility..."
+
+# If db_name doesn't exist, create it
+if [ -z "$db_name" ]; then
+	db_name=$(ynh_sanitize_dbid --db_name=$app)
+	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+fi
+
+# If final_path doesn't exist, create it
+if [ -z "$final_path" ]; then
+	final_path=/var/www/$app
+	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+fi
+
+# If path_url doesn't exist, create it
+if [ -z "$path_url" ]; then
+	path_url=$(ynh_app_setting_get --app=$app --key=path_url)
+	ynh_app_setting_set --app=$app --key=path --value=$path_url
 fi
 
 #=================================================
-# INSTALL DEPENDENCIES
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=30
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# CHECK THE PATH
 #=================================================
 
-ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+path_url=$(ynh_normalize_url_path --path_url=$path_url)
 
+#=================================================
+# STANDARD UPGRADE STEPS
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-# Create tmp directory and fetch app inside
-TMPDIR=$(ynh_mkdir_tmp)
-ynh_setup_source "$TMPDIR"
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+	ynh_script_progression --message="Upgrading source files..." --weight=6
 
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
+	# Download, check integrity, uncompress and patch the source from app.src
+	ynh_setup_source --dest_dir="$final_path"
 
-ynh_system_user_create $app # Create dedicated user if not existing
-
-#=================================================
-# SPECIFIC SETUP
-#=================================================
-
-# Copy and set Wallabag dist configuration
-wb_conf="${TMPDIR}/app/config/parameters.yml"
-cp ${TMPDIR}/app/config/parameters.yml.dist $wb_conf
-
-ynh_replace_string "fosuser_registration: true" "fosuser_registration: false" "$wb_conf"
-ynh_replace_string "database_name: wallabag" "database_name:  ${db_name}" "$wb_conf"
-ynh_replace_string "database_user: root" "database_user: ${db_user}" "$wb_conf"
-ynh_replace_string "database_password: ~" "database_password: ${db_pwd}" "$wb_conf"
-ynh_replace_string "database_table_prefix: wallabag_" "database_table_prefix: null" "$wb_conf"
-ynh_replace_string "secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" "secret: ${deskey}" "$wb_conf"
-ynh_replace_string "domain_name: https://your-wallabag-url-instance.com" "domain_name: https://$domain$path_url" "$wb_conf"
-
-# Replace files and set permissions
-ynh_secure_remove "${final_path}/var/cache"
-mkdir "${final_path}/var/cache"
-cp -a $TMPDIR/. "${final_path}"
-chown -R $app: "${final_path}"
-chmod 755 $final_path
-
-# Upgrade database and clear the cache
-exec_console $app "${final_path}" doctrine:migrations:migrate
-exec_console $app "${final_path}" cache:clear
-
-# Configure Wallabag instance URL
-ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+	# Clear cache
+	ynh_secure_remove --file="$final_path/var/cache"
+	mkdir "$final_path/var/cache"
+fi
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Upgrading nginx web server configuration..."
 
+# Create a dedicated nginx config
 ynh_add_nginx_config
-if [ "$path_url" = "/" ]
-then
-  # Replace "//" location (due to nginx template)
-  # Prevent from replacing in "http://" expressions by excluding ":" as preceding character
-  sed --in-place "s@\([^:]\)//@\1/@g" /etc/nginx/conf.d/$domain.d/$app.conf
-else
-  # Move prefix comment #for-subdir at end of lines
-  sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" /etc/nginx/conf.d/$domain.d/$app.conf
-fi
-ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
-# Copy and set php-fpm configuration
+#=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Upgrading dependencies..." --weight=7
+
+ynh_install_app_dependencies $pkg_dependencies
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_script_progression --message="Upgrading php-fpm configuration..."
+
+# Create a dedicated php-fpm config
 ynh_add_fpm_config
 
-# Set SSOwat rules
+#=================================================
+# SPECIFIC UPGRADE
+#=================================================
+# CONFIGURE WALLABAG
+#=================================================
+
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+	ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
+
+	# Copy and set Wallabag dist configuration
+	wb_conf=$final_path/app/config/parameters.yml
+	cp $final_path/app/config/parameters.yml.dist $wb_conf
+
+	ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
+	ynh_replace_string --match_string="database_name: wallabag" --replace_string="database_name:  $db_name" --target_file=$wb_conf
+	ynh_replace_string --match_string="database_user: root" --replace_string="database_user: $db_user" --target_file=$wb_conf
+	ynh_replace_string --match_string="database_password: ~" --replace_string="database_password: $db_pwd" --target_file=$wb_conf
+	ynh_replace_string --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null" --target_file=$wb_conf
+	ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
+	ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
+
+	#=================================================
+	# UPGRADE WALLABAG
+	#=================================================
+
+	# Alias for php-cli execution command
+	php_exec="ynh_exec_as $app php "$final_path/bin/console" --no-interaction --env=prod"
+
+	# Set permissions to app files
+	chown -R $app: $final_path
+
+	# Upgrade database and clear the cache
+	$php_exec doctrine:migrations:migrate
+	$php_exec cache:clear
+
+	# Configure Wallabag instance URL
+	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+fi
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+# Restrict rights to Wallabag user only
+chmod 600 $wb_conf
+
+# Set permissions to app files
+chown -R $app: $final_path
+chmod 755 $final_path
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_script_progression --message="Upgrading SSOwat configuration..."
+
 ynh_app_setting_set "$app" unprotected_uris "/"
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-systemctl restart php5-fpm
-systemctl reload nginx
+ynh_script_progression --message="Reloading nginx web server..."
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Upgrade of $app completed" --last
