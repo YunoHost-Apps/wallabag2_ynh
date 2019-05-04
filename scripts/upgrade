@@ -114,6 +114,14 @@ exec_console $app "${final_path}" cache:clear
 ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 
 # Set-up fail2ban
+# Create the log file is not already existing
+if [ ! -f "/var/www/$app/var/logs/prod.log" ];
+then
+mkdir -p "/var/www/$app/var/logs/"
+touch "/var/www/$app/var/logs/prod.log"
+chown $app: "/var/www/$app/var/logs/prod.log"
+fi
+# Add fail2ban config
 ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
 
 #=================================================
