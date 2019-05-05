@@ -54,7 +54,7 @@ En plus des fonctionnalités principales de Wallabag, ce paquet propose égaleme
 
 ## Informations additionnelles
 
-**NB: Depuis que @jeromelebleu ne maintiens plus ce paquet, je (@lapineige) reprends la charge de ce dépôt. Mais j'ai un temps et une expérience limitées, donc n'hésitez pas à donner un coup de main :) !**
+**NB: Depuis que @jeromelebleu ne maintient plus ce paquet, je (@lapineige) reprends la charge de ce dépôt. Mais j'ai un temps et une expérience limitées, donc n'hésitez pas à donner un coup de main :) !**
 
 
 #### Mettre à niveau depuis la v1
@@ -76,9 +76,11 @@ Informations pour les développeurs
 **Seulement si vous voulez utiliser une branche de test pour le codage, au lieu de fusionner directement dans la banche principale.**
 Merci de faire vos pull request sur la [branche testing](https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing).
 
-Pour essayer la branche testing, procédez comme suit.
+Pour essayer la branche testing, procédez comme ceci:
 ```
 sudo yunohost app install https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing --debug
 ou
 sudo yunohost app upgrade wallabag2 -u https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing --debug
 ```
+Soyez concient que la branche testing *pourrait* contenir des bugs et n'est pas recommandée si vous recherchez la stabilité de votre application.
+Une mise à jour classique avec `sudo yunohost app upgrade wallabag2` (sans préciser l'URL) fera retourner votre application au niveau de la branche master.
