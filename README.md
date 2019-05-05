@@ -74,15 +74,17 @@ For the migration process, please refer to the
 
 ---
 
-Developers info
+Developers and testers info
 ----------------
 
 **Only if you want to use a testing branch for coding, instead of merging directly into master.**
 Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing).
 
-To try the testing branch, please proceed like that.
+To try the testing branch, please proceed like that:
 ```
 sudo yunohost app install https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade wallabag2 -u https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing --debug
 ```
+Please be aware that the testing branch *might* contains some bugs and is not recommended if you need a stable app.
+Doing a normal upgrade of the package avec `sudo yunohost app upgrade wallabag2` (without any URL specified) will revert you app to the master branch.
