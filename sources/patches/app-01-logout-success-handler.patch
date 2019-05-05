@@ -1,21 +1,21 @@
 diff --git a/app/config/security.yml b/app/config/security.yml
-index b07b509..62f2550 100644
+index 5a3f7a34..1720e741 100644
 --- a/app/config/security.yml
 +++ b/app/config/security.yml
-@@ -60,7 +60,7 @@ security:
- 
+@@ -62,7 +62,7 @@ security:
+
              logout:
                  path:   /logout
 -                target: /
 +                success_handler: yunohost.logout_success_handler
- 
+
      access_control:
          - { path: ^/api/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 diff --git a/app/config/services.yml b/app/config/services.yml
-index 8a09fde..ee63e06 100644
+index f23961c5..f266e6d1 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
-@@ -43,6 +43,10 @@
+@@ -43,6 +43,10 @@ services:
          tags:
              - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
 
@@ -28,7 +28,7 @@ index 8a09fde..ee63e06 100644
          arguments: ["localhost"]
 diff --git a/src/Wallabag/YunoHostBundle/Security/LogoutSuccessHandler.php b/src/Wallabag/YunoHostBundle/Security/LogoutSuccessHandler.php
 new file mode 100644
-index 0000000..b326824
+index 00000000..b3268243
 --- /dev/null
 +++ b/src/Wallabag/YunoHostBundle/Security/LogoutSuccessHandler.php
 @@ -0,0 +1,27 @@
@@ -59,3 +59,5 @@ index 0000000..b326824
 +        return new RedirectResponse($url);
 +    }
 +}
+--
+2.17.1
