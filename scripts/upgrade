@@ -115,14 +115,14 @@ ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_s
 
 # Set-up fail2ban
 # Create the log file is not already existing
-if [ ! -f "/var/www/$app/var/logs/prod.log" ];
+if [ ! -f "$final_path/var/logs/prod.log" ]
 then
-mkdir -p "/var/www/$app/var/logs/"
-touch "/var/www/$app/var/logs/prod.log"
-chown $app: "/var/www/$app/var/logs/prod.log"
+  mkdir -p "$final_path/var/logs/"
+  touch "$final_path/var/logs/prod.log"
+  chown $app: "$final_path/var/logs/prod.log"
 fi
 # Add fail2ban config
-ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
+ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
 
 #=================================================
 # NGINX CONFIGURATION
