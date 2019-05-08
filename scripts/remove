@@ -56,6 +56,12 @@ systemctl restart php5-fpm
 systemctl reload nginx
 
 #=================================================
+# REMOVE FAIL2BAN CONFIGURATION
+#=================================================
+
+ynh_remove_fail2ban_config
+
+#=================================================
 # REMOVE DEDICATED USER
 #=================================================
 

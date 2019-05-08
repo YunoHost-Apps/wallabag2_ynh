@@ -3,6 +3,9 @@
 
 This is a Wallabag v2 package for YunoHost.
 
+![wallabag start screen](https://www.linuxbabe.com/wp-content/uploads/2016/10/wallabag-quick-start-page.png)
+
+
 ---
 
 **NB: Since @jeromelebleu is no longer maintaining this package, I (@lapineige) take over this repository. But I have limited time and experience, so feel free to help !**
@@ -26,6 +29,7 @@ this package:
  * Integrate with YunoHost users and SSO - i.e. logout button
  * Allow one user to be the administrator (set at the installation)
  * Asynchronous import using Redis (need to be enabled in the *Internal Settings*). RabbitMQ import not supported (yet ?)
+ * Supports fail2ban - protects you from password brute force attacks.
 
 ## Known issue(s)
 - Removing a Yunohost's user won't delete the related wallabag user, but only desactivate it. You need to manualy remove it from wallabag before. See: https://github.com/YunoHost-Apps/wallabag2_ynh/issues/39
@@ -45,7 +49,7 @@ For the migration process, please refer to the
  * YunoHost website: https://yunohost.org/
  * [Video demo](https://player.vimeo.com/video/167435064)
  
- 
+--- 
 ---
 Wallabag pour Yunohost - [Version Française]
 ---
