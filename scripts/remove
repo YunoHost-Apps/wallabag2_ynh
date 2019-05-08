@@ -64,6 +64,11 @@ ynh_script_progression --message="Removing php-fpm configuration"
 ynh_remove_fpm_config
 
 #=================================================
+# REMOVE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_remove_fail2ban_config
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # REMOVE DEDICATED USER

@@ -149,6 +149,16 @@ $php_exec fos:user:promote --super "$admin"
 ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 
 #=================================================
+# CONFIGURE FAIL2BAN
+#=================================================
+# Create the log file is not already existing during install
+mkdir -p "/var/www/$app/var/logs/"
+touch "/var/www/$app/var/logs/prod.log"
+chown $app: "/var/www/$app/var/logs/prod.log"
+# Add fail2ban config
+ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES

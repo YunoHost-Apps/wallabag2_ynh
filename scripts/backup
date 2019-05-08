@@ -58,7 +58,12 @@ ynh_script_progression --message="Backing up the MySQL database..."
 ynh_mysql_dump_db --database="$db_name" > db.sql
 
 #=================================================
+# BACKUP FAIL2BAN CONFIGURATION
+#=================================================
+ynh_backup "/etc/fail2ban/jail.d/$app.conf"
+ynh_backup "/etc/fail2ban/filter.d/$app.conf"
+
+#=================================================
 # END OF SCRIPT
 #=================================================
-
 ynh_script_progression --message="Backup script completed for $app. (YunoHost will then actually copy those files to the archive)." --last
