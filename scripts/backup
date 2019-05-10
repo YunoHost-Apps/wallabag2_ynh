@@ -30,6 +30,8 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 # BACKUP APP MAIN DIR
 #=================================================
+# Clean cache files before backup (to save some storage space)
+ynh_secure_remove --file=${final_path}/var/cache/prod/
 
 CHECK_SIZE "$final_path"
 ynh_backup "$final_path"
