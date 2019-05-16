@@ -32,8 +32,9 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 #=================================================
 # BACKUP APP MAIN DIR
 #=================================================
+
 # Clean cache files before backup (saved some disk space)
-ynh_secure_remove --file=${final_path}/var/cache/prod
+ynh_secure_remove --file=$final_path/var/cache/prod
 
 ynh_script_progression --message="Backing up the main app directory..."
 ynh_backup --src_path="$final_path"
