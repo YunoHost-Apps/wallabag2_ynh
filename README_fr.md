@@ -44,9 +44,9 @@ En plus des fonctionnalités principales de Wallabag, ce paquet propose égaleme
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wallabag2%20%28Official%29.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/wallabag2%20%28Official%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/wallabag2/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/wallabag2%20%28Official%29.svg)](https://ci-stretch.nohost.me/ci/apps/wallabag2/)
+* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wallabag2%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/wallabag2%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/wallabag2/)
+* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/wallabag2%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/wallabag2/)
 
 ## Limitations
 
@@ -66,6 +66,7 @@ Pour le processus de migration, merci de vous référer à [la documentation off
 
  * Signaler un bug: https://github.com/YunoHost-Apps/wallabag2_ynh/issues
  * Site de l'application: https://www.wallabag.org/
+ * Dépôt de l'application principale: https://github.com/wallabag/wallabag
  * Site web YunoHost: https://yunohost.org/
 
 ---
