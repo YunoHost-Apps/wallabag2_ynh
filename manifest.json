@@ -1,22 +1,22 @@
 {
-    "packaging_format": 1,
-    "id": "wallabag2",
     "name": "Wallabag",
+    "id": "wallabag2",
+    "packaging_format": 1,
     "description": {
         "en": "A self hostable read-it-later app",
         "fr": "Une application de lecture-plus-tard auto-hébergeable"
     },
+    "version": "2.3.8~ynh1",
     "url": "https://www.wallabag.org",
     "license": "MIT",
-    "version": "2.3.2-1",
     "maintainer": {
         "name": "lapineige",
         "email": ""
     },
-    "multi_instance": true,
     "requirements": {
-        "yunohost": ">= 2.7.12"
+        "yunohost": ">= 3.5"
     },
+    "multi_instance": true,
     "services": [
         "nginx",
         "php5-fpm",

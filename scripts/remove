@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Treat unset variables as an error
-set -u
 #=================================================
 # GENERIC STARTING
 #=================================================
@@ -14,49 +12,74 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_script_progression --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get $app domain)
-db_name=$(ynh_app_setting_get $app db_name)
-domain=$(ynh_app_setting_get "$app" domain)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 #=================================================
 # STANDARD REMOVE
 #=================================================
+# REMOVE THE MYSQL DATABASE
+#=================================================
+ynh_script_progression --message="Removing the MySQL database" --weight=2
+
+# Remove a database if it exists, along with the associated user
+ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
+
+#=================================================
 # REMOVE DEPENDENCIES
 #=================================================
+ynh_script_progression --message="Removing dependencies" --weight=9
 
+# Remove metapackage and its dependencies
 ynh_remove_app_dependencies
-# The following command is kept as a matter of transition with the previous way
-# of managing dependencies
-ynh_package_autoremove "wallabag-deps" || true
-
-#=================================================
-# REMOVE THE MYSQL DB
-#=================================================
-
-ynh_mysql_remove_db "$app" "$db_name"
 
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
+ynh_script_progression --message="Removing app main directory" --weight=2
 
-ynh_secure_remove "/var/www/$app"
+# Remove the app directory securely
+ynh_secure_remove --file="$final_path"
 
 #=================================================
-# REMOVE NGINX AND PHP-FPM CONFIGURATION
+# REMOVE NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Removing nginx web server configuration"
 
-ynh_remove_fpm_config
+# Remove the dedicated nginx config
 ynh_remove_nginx_config
 
-# Reload services
-systemctl restart php5-fpm
-systemctl reload nginx
+#=================================================
+# REMOVE PHP-FPM CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing php-fpm configuration"
 
+# Remove the dedicated php-fpm config
+ynh_remove_fpm_config
+
+#=================================================
+# REMOVE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_remove_fail2ban_config
+
+#=================================================
+# GENERIC FINALIZATION
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Removing the dedicated system user"
 
-ynh_system_user_delete $app
+# Delete a system user
+ynh_system_user_delete --username=$app
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Removal of $app completed" --last

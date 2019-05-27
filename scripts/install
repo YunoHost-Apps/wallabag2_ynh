@@ -13,7 +13,8 @@ source /usr/share/yunohost/helpers
 # MANAGE SCRIPT FAILURE
 #=================================================
 
-ynh_abort_if_errors	# Stop script if an error is detected
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
@@ -30,130 +31,159 @@ admin=$YNH_APP_ARG_ADMIN
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
+ynh_script_progression --message="Validating installation parameters..." --weight=2
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
-path_url=$(ynh_normalize_url_path $path_url)	# Check and normalize path
-
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
-ynh_webpath_register $app $domain $path_url
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 
-ynh_app_setting_set $app domain "$domain"
-ynh_app_setting_set $app path_url "$path_url"
-ynh_app_setting_set $app admin "$admin"
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=admin --value=$admin
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
+ynh_script_progression --message="Installing dependencies..." --weight=12
 
-ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# CREATE A MYSQL DB
+# CREATE A MYSQL DATABASE
 #=================================================
+ynh_script_progression --message="Creating a MySQL database..."
 
 db_name=$(ynh_sanitize_dbid $app)
-db_user="$db_name"
+db_user=$db_name
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 
-# Generate random DES key & password
-deskey=$(ynh_string_random 24)
-ynh_app_setting_set "$app" deskey "$deskey"
-ynh_app_setting_set "$app" db_name "$db_name"
-
-# Initialize database
-ynh_mysql_setup_db "$db_user" "$db_name"
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Setting up source files..." --weight=6
 
-ynh_app_setting_set $app final_path "$final_path"
-# Create tmp directory and fetch app inside
-TMPDIR=$(mktemp -d)
-ynh_setup_source "$TMPDIR"
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-
-ynh_system_user_create $app	# Create a dedicated system user
-
-#=================================================
-# SPECIFIC SETUP
-#=================================================
-
-# Copy and set Wallabag dist configuration
-wb_conf="${TMPDIR}/app/config/parameters.yml"
-cp ${TMPDIR}/app/config/parameters.yml.dist $wb_conf
-
-ynh_replace_string "fosuser_registration: true" "fosuser_registration: false" "$wb_conf"
-ynh_replace_string "database_name: wallabag" "database_name:  ${db_name}" "$wb_conf"
-ynh_replace_string "database_user: root" "database_user: ${db_user}" "$wb_conf"
-ynh_replace_string "database_password: ~" "database_password: ${db_pwd}" "$wb_conf"
-ynh_replace_string "database_table_prefix: wallabag_" "database_table_prefix: null" "$wb_conf"
-ynh_replace_string "secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" "secret: ${deskey}" "$wb_conf"
-ynh_replace_string "domain_name: https://your-wallabag-url-instance.com" "domain_name: https://$domain$path_url" "$wb_conf"
-
-# Restrict rights to Wallabag user only
-chmod 600 "$wb_conf"
-
-# Install files and set permissions
-mv "$TMPDIR" "$final_path"
-
-# Set rights on directory
-chown -R $app: $final_path
-chmod 755 $final_path
-
-# Install dependencies and Wallabag
-exec_console $app "$final_path" wallabag:install
-
-# Add users to Wallabag
-for username in $(ynh_user_list); do
-  user_email=$(yunohost user info "$username" --output-as plain \
-                 | ynh_get_plain_key mail)
-  user_pass=$(ynh_string_random)
-  exec_console $app "$final_path" fos:user:create \
-      "$username" "$user_email" "$user_pass"
-done
-
-# Set admin user
-exec_console $app "$final_path" fos:user:promote --super "$admin"
-
-# Configure Wallabag instance URL
-ynh_mysql_connect_as "$db_name" "$db_pwd" "$db_user"  <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Configuring nginx web server..." --weight=2
 
+# Create a dedicated nginx config
 ynh_add_nginx_config
-if [ "$path_url" = "/" ]
-then
-  # Replace "//" location (due to nginx template)
-  # Prevent from replacing in "http://" expressions by excluding ":" as preceding character
-  sed --in-place "s@\([^:]\)//@\1/@g" /etc/nginx/conf.d/$domain.d/$app.conf
-else
-  # Move prefix comment #for-subdir at end of lines
-  sed --in-place "s/#for-subdir\(.*\)/\1 #for-subdir/g" /etc/nginx/conf.d/$domain.d/$app.conf
-fi
-ynh_store_file_checksum "/etc/nginx/conf.d/$domain.d/$app.conf"
 
-# Copy and set php-fpm configuration
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..." --weight=2
+
+# Create a system user
+ynh_system_user_create --username=$app
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring php-fpm..." --weight=2
+
+# Create a dedicated php-fpm config
 ynh_add_fpm_config
 
+#=================================================
+# SPECIFIC SETUP
+#=================================================
+# CONFIGURE WALLABAG
+#=================================================
+ynh_script_progression --message="Configuring wallabag..." --weight=35
+
+# Copy and set Wallabag dist configuration
+wb_conf=$final_path/app/config/parameters.yml
+cp $final_path/app/config/parameters.yml.dist $wb_conf
+
+ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
+ynh_replace_string --match_string="database_name: wallabag" --replace_string="database_name:  $db_name" --target_file=$wb_conf
+ynh_replace_string --match_string="database_user: root" --replace_string="database_user: $db_user" --target_file=$wb_conf
+ynh_replace_string --match_string="database_password: ~" --replace_string="database_password: $db_pwd" --target_file=$wb_conf
+ynh_replace_string --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null" --target_file=$wb_conf
+# Generate random DES key & password
+deskey=$(ynh_string_random --length=24)
+ynh_app_setting_set --app=$app --key=deskey --value=$deskey
+ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
+ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
+
+# Alias for php-cli execution command
+php_exec="ynh_exec_as $app php "$final_path/bin/console" --no-interaction --env=prod"
+
+# Set permissions to app files
+chown -R $app: $final_path
+
+# Install dependencies and Wallabag
+$php_exec wallabag:install
+
+# Add users to Wallabag
+for username in $(ynh_user_list)
+do
+	user_email=$(ynh_user_get_info --username="$username" --key=mail)
+	user_pass=$(ynh_string_random)
+	$php_exec fos:user:create "$username" "$user_email" "$user_pass"
+done
+
+# Set admin user
+$php_exec fos:user:promote --super "$admin"
+
+# Configure Wallabag instance URL
+ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+
+#=================================================
+# CONFIGURE FAIL2BAN
+#=================================================
+# Create the log file is not already existing during install
+mkdir -p "/var/www/$app/var/logs/"
+touch "/var/www/$app/var/logs/prod.log"
+chown $app: "/var/www/$app/var/logs/prod.log"
+# Add fail2ban config
+ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+# Restrict rights to Wallabag user only
+chmod 600 $wb_conf
+
+# Set permissions to app files
+chown -R $app: $final_path
+chmod 755 $final_path
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_script_progression --message="Configuring SSOwat..."
+
 # Set SSOwat rules
-ynh_app_setting_set "$app" unprotected_uris "/"
+ynh_app_setting_set $app unprotected_uris "/"
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-systemctl restart php5-fpm
-systemctl reload nginx
+ynh_script_progression --message="Reloading nginx web server..."
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation of $app completed" --last
