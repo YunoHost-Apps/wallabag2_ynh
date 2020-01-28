@@ -1,6 +1,7 @@
 #!/bin/bash
 
 app="wallabag2"
+user="wallabag2"
 
 # Retrieve arguments
 username=$1
@@ -14,5 +15,5 @@ user_pass=$(ynh_string_random)
 
 # Create the new user in Wallabag
 (cd "/var/www/$app" && \
- sudo sudo -u "www-data" php "bin/console" --no-interaction --env=prod \
+ sudo -u "$user" php "bin/console" --no-interaction --env=prod \
     fos:user:create "$username" "$user_email" "$user_pass")

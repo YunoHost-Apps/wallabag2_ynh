@@ -1,6 +1,7 @@
 #!/bin/bash
 
 app="wallabag2"
+user="wallabag2"
 
 # Retrieve arguments
 username=$1
@@ -8,5 +9,5 @@ purge=$2
 
 # Deactivate the user from Wallabg
 (cd "/var/www/$app" && \
- sudo sudo -u "www-data" php "bin/console" --no-interaction --env=prod \
+ sudo -u "$user" php "bin/console" --no-interaction --env=prod \
     fos:user:deactivate "$username")
