@@ -180,11 +180,8 @@ fi
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	# Restrict rights to Wallabag user only
-	chmod 600 $wb_conf
-fi
+# Restrict rights to Wallabag user only
+chmod 600 $wb_conf
 
 # Set permissions to app files
 chown -R $app: $final_path
