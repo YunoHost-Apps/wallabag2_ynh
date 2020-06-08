@@ -168,6 +168,13 @@ chown -R $app: $final_path
 chmod 755 $final_path
 
 #=================================================
+# SETUP HOOKS
+#=================================================
+
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
+
+#=================================================
 # SETUP SSOWAT
 #=================================================
 ynh_script_progression --message="Configuring SSOwat..."
