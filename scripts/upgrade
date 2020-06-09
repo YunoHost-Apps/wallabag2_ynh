@@ -140,12 +140,13 @@ ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='a
 # CONFIGURE WALLABAG
 #=================================================
 
+wb_conf=$final_path/app/config/parameters.yml
+
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
 
 	# Copy and set Wallabag dist configuration
-	wb_conf=$final_path/app/config/parameters.yml
 	cp $final_path/app/config/parameters.yml.dist $wb_conf
 
 	ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
