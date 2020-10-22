@@ -1,6 +1,6 @@
 # Wallabag for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2)  
+[![Integration level](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)  
 [![Install Wallabag with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wallabag2)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -10,8 +10,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 
 ## Overview
 
-[Wallabag](https://www.wallabag.org/) is a self hostable Read-It-Later application allowing
-you to not miss any content anymore. Click, save, read it when you can.
+[Wallabag](https://www.wallabag.org/) is a self hostable Read-It-Later application allowing you to not miss any content anymore. Click, save, read it when you can.
 It extracts content so that you can read it when you have time.
 
 It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile apps (Android / iOS / Windows Phone) and even on e-reader (PocketBook / Kobo).
@@ -36,8 +35,7 @@ It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile 
 
 ## YunoHost specific features
 
-In addition to Wallabag core features, the following are made available with
-this package:
+In addition to Wallabag core features, the following are made available with this package:
 
  * Integrate with YunoHost users and SSO - i.e. logout button
  * Allow one user to be the administrator (set at the installation)
@@ -47,9 +45,8 @@ this package:
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wallabag2%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wallabag2%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/wallabag2%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/wallabag2/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/wallabag2%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/wallabag2/)
 
 ## Limitations
 
@@ -75,10 +72,8 @@ For the migration process, please refer to the
 
 ---
 
-Developers and testers info
-----------------
+## Developers and testers info
 
-**Only if you want to use a testing branch for coding, instead of merging directly into master.**
 Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing).
 
 To try the testing branch, please proceed like that:
