@@ -83,9 +83,6 @@ fi
 #=================================================
 ynh_script_progression --message="Updating wallabag configuration..."
 
-# Configure Wallabag instance URL
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE craue_config_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
-
 # Change domain name in parameters.yml
 ynh_replace_string --match_string="domain_name: .*" --replace_string="domain_name: https://$new_domain$new_path" --target_file=$final_path/app/config/parameters.yml
 
