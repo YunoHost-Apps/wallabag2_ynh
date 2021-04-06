@@ -180,9 +180,6 @@ ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_fil
 ynh_script_progression --message="Configuring SSOwat..."
 ynh_permission_update --permission="main" --add="visitors"
 
-# Set SSOwat rules
-
-
 #=================================================
 # RELOAD NGINX
 #=================================================
