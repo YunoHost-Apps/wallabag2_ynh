@@ -66,8 +66,15 @@ ynh_system_user_create --username=$app
 # RESTORE USER RIGHTS
 #=================================================
 
-# Restore permissions on app files
-chown -R $app: $final_path
+wb_conf=$final_path/app/config/parameters.yml
+
+# Set permissions to app files
+chown -R $app:www-data $final_path
+chmod -R g=u,g-w,o-rwx $final_path
+
+# Restrict rights to Wallabag user only
+chmod 600 $wb_conf
+chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php -f
 
 #=================================================
 # RESTORE THE PHP-FPM CONFIGURATION
