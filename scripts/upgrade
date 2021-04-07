@@ -172,8 +172,8 @@ then
 	$php_exec cache:clear
 
 	current_upstream_version="$(ynh_app_upstream_version --manifest="/etc/yunohost/apps/$YNH_APP_INSTANCE_NAME/manifest.json")"
-	if dpkg --compare-versions "2.4.0" gt "$current_upstream_version"; then
-		ynh_script_progression --message="Ensuring upgrade compatibility to Wallabag 2.4.0..."
+	if dpkg --compare-versions "2.4.2" gt "$current_upstream_version"; then
+		ynh_script_progression --message="Ensuring upgrade compatibility to Wallabag 2.4.x..."
 		
 		# Generate hashed URLs for faster check
 		# TODO does it take much time... ?
