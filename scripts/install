@@ -160,12 +160,13 @@ ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex=
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Restrict rights to Wallabag user only
-chmod 600 $wb_conf
-
 # Set permissions to app files
 chown -R $app: $final_path
 chmod 755 $final_path
+
+# Restrict rights to Wallabag user only
+chmod 600 $wb_conf # parameter file should not be accessible by any other user
+chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php # contains database password, should not be readable by another user
 
 #=================================================
 # SETUP HOOKS
