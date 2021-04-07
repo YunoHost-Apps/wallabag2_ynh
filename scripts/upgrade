@@ -191,13 +191,7 @@ fi
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Set permissions to app files
-chown -R $app:www-data $final_path
-chmod -R g=u,g-w,o-rwx $final_path
-
-# Restrict rights to Wallabag user only
-chmod 600 $wb_conf
-chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php -f
+set_permissions
 
 #=================================================
 # SETUP HOOKS
