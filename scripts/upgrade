@@ -69,6 +69,16 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
+# Migrate legacy permissions to new system
+#=================================================
+if ynh_legacy_permissions_exists
+then
+	ynh_legacy_permissions_delete_all
+
+	ynh_app_setting_delete --app=$app --key=is_public
+fi
+
+#=================================================
 # CHECK THE PATH
 #=================================================
 
@@ -187,12 +197,7 @@ fi
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Restrict rights to Wallabag user only
-chmod 600 $wb_conf
-
-# Set permissions to app files
-chown -R $app: $final_path
-chmod 755 $final_path
+set_permissions
 
 #=================================================
 # SETUP HOOKS
