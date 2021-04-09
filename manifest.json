@@ -14,7 +14,7 @@
         "email": ""
     },
     "requirements": {
-        "yunohost": ">= 3.5"
+        "yunohost": ">= 3.7.0"
     },
     "multi_instance": true,
     "services": [
