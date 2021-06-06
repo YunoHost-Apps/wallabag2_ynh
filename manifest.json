@@ -6,7 +6,7 @@
         "en": "A self hostable read-it-later app",
         "fr": "Une application de lecture-plus-tard auto-hébergeable"
     },
-    "version": "2.4.2~ynh1",
+    "version": "2.3.8~ynh3",
     "url": "https://www.wallabag.org",
     "license": "MIT",
     "maintainer": {
@@ -14,7 +14,7 @@
         "email": ""
     },
     "requirements": {
-        "yunohost": ">= 4.1.0"
+        "yunohost": ">= 3.7.0"
     },
     "multi_instance": true,
     "services": [
