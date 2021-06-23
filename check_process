@@ -1,8 +1,8 @@
 ;; Complete test
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/path"	(PATH)
-		admin="john"	(USER)
+		domain="domain.tld"
+		path="/path"
+		admin="john"
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
@@ -14,8 +14,6 @@
 		upgrade=1 from_commit=f75d58cb32c51a0981333ea88974dc3199324e65
 		backup_restore=1
 		multi_instance=1
-		incorrect_path=1
-		port_already_use=0
 		change_url=1
 ;;; Levels
 	Level 5=auto

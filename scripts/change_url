@@ -53,7 +53,7 @@ fi
 #=================================================
 # MODIFY URL IN NGINX CONF FILE
 #=================================================
-ynh_script_progression --message="Updating nginx web server configuration..." --weight=2
+ynh_script_progression --message="Updating NGINX web server configuration..." --weight=2
 
 nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 
@@ -104,7 +104,7 @@ ynh_secure_remove --file=$final_path/var/cache
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 

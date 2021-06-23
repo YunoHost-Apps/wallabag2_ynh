@@ -67,6 +67,14 @@ ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..." --weight=2
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir="$final_path"
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=6
@@ -78,23 +86,15 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..." --weight=2
+ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..." --weight=2
-
-# Create a system user
-ynh_system_user_create --username=$app
-
-#=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring php-fpm..." --weight=2
+ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config
@@ -106,20 +106,11 @@ ynh_add_fpm_config
 #=================================================
 ynh_script_progression --message="Configuring wallabag..." --weight=35
 
-# Copy and set Wallabag dist configuration
-wb_conf=$final_path/app/config/parameters.yml
-cp $final_path/app/config/parameters.yml.dist $wb_conf
-
-ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
-ynh_replace_string --match_string="database_name: wallabag" --replace_string="database_name:  $db_name" --target_file=$wb_conf
-ynh_replace_string --match_string="database_user: root" --replace_string="database_user: $db_user" --target_file=$wb_conf
-ynh_replace_string --match_string="database_password: ~" --replace_string="database_password: $db_pwd" --target_file=$wb_conf
-ynh_replace_string --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null" --target_file=$wb_conf
 # Generate random DES key & password
 deskey=$(ynh_string_random --length=24)
 ynh_app_setting_set --app=$app --key=deskey --value=$deskey
-ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
-ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
+
+ynh_add_config --template="../conf/parameters.yml.dist" --destination="$final_path/app/config/parameters.yml"
 
 # Alias for php-cli execution command
 php_exec="ynh_exec_as $app php "$final_path/bin/console" --no-interaction --env=prod"
@@ -144,10 +135,12 @@ $php_exec fos:user:promote --super "$admin"
 #=================================================
 # CONFIGURE FAIL2BAN
 #=================================================
+
 # Create the log file is not already existing during install
 mkdir -p "/var/www/$app/var/logs/"
 touch "/var/www/$app/var/logs/prod.log"
 chown $app: "/var/www/$app/var/logs/prod.log"
+
 # Add fail2ban config
 ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
 
@@ -157,7 +150,15 @@ ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex=
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-set_permissions
+# Set permissions to app files
+chown -R $app:www-data $final_path
+chmod -R g=u,g-w,o-rwx $final_path
+
+# Restrict rights to Wallabag user only
+chmod 600 $final_path/app/config/parameters.yml
+if [ -e $final_path/var/cache/prod/appProdProjectContainer.php ]; then
+	chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php
+fi
 
 #=================================================
 # SETUP HOOKS
@@ -169,13 +170,14 @@ ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_fil
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
+ynh_script_progression --message="Configuring permissions..."
+
 ynh_permission_update --permission="main" --add="visitors"
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
