@@ -14,7 +14,11 @@
         "email": ""
     },
     "requirements": {
+<<<<<<< Updated upstream
         "yunohost": ">= 4.2.4"
+=======
+        "yunohost": ">= 4.2.0"
+>>>>>>> Stashed changes
     },
     "multi_instance": true,
     "services": [
