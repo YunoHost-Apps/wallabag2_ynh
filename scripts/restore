@@ -26,6 +26,7 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
 
@@ -110,7 +111,7 @@ ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./
 #=================================================
 ynh_script_progression --message="Reloading nginx web server and php-fpm..."
 
-ynh_systemd_action --service_name=php7.0-fpm --action=reload
+ynh_systemd_action --service_name=php$phpversion-fpm --action=reload
 ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================

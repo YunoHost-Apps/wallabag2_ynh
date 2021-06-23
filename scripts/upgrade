@@ -54,6 +54,13 @@ if [ -z "$path_url" ]; then
 	ynh_app_setting_set --app=$app --key=path --value=$path_url
 fi
 
+if ynh_legacy_permissions_exists
+then
+	ynh_legacy_permissions_delete_all
+
+	ynh_app_setting_delete --app=$app --key=is_public
+fi
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -67,22 +74,6 @@ ynh_clean_setup () {
 }
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
-
-#=================================================
-# Migrate legacy permissions to new system
-#=================================================
-if ynh_legacy_permissions_exists
-then
-	ynh_legacy_permissions_delete_all
-
-	ynh_app_setting_delete --app=$app --key=is_public
-fi
-
-#=================================================
-# CHECK THE PATH
-#=================================================
-
-path_url=$(ynh_normalize_url_path --path_url=$path_url)
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -205,13 +196,6 @@ set_permissions
 
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Upgrading SSOwat configuration..."
-
-ynh_app_setting_set "$app" unprotected_uris "/"
 
 #=================================================
 # RELOAD NGINX
