@@ -67,4 +67,5 @@ ynh_backup "/etc/fail2ban/filter.d/$app.conf"
 #=================================================
 # END OF SCRIPT
 #=================================================
+
 ynh_print_info --message="Backup script completed for $app. (YunoHost will then actually copy those files to the archive)."

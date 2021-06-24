@@ -98,20 +98,11 @@ phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 #=================================================
 ynh_script_progression --message="Configuring wallabag..." --weight=35
 
-# Copy and set Wallabag dist configuration
-wb_conf=$final_path/app/config/parameters.yml
-cp $final_path/app/config/parameters.yml.dist $wb_conf
-
-ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
-ynh_replace_string --match_string="database_name: wallabag" --replace_string="database_name:  $db_name" --target_file=$wb_conf
-ynh_replace_string --match_string="database_user: root" --replace_string="database_user: $db_user" --target_file=$wb_conf
-ynh_replace_string --match_string="database_password: ~" --replace_string="database_password: $db_pwd" --target_file=$wb_conf
-ynh_replace_string --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null" --target_file=$wb_conf
 # Generate random DES key & password
 deskey=$(ynh_string_random --length=24)
 ynh_app_setting_set --app=$app --key=deskey --value=$deskey
-ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
-ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
+
+ynh_add_config --template="../conf/parameters.yml.dist" --destination="$final_path/app/config/parameters.yml"
 
 # Alias for php-cli execution command
 php_exec="ynh_exec_as $app php "$final_path/bin/console" --no-interaction --env=prod"
@@ -134,12 +125,18 @@ done
 $php_exec fos:user:promote --super "$admin"
 
 #=================================================
-# CONFIGURE FAIL2BAN
+# CONFIGURE LOG
 #=================================================
+
 # Create the log file is not already existing during install
 mkdir -p "$final_path/var/logs/"
 touch "$final_path/var/logs/prod.log"
 chown $app: "$final_path/var/logs/prod.log"
+
+#=================================================
+# CONFIGURE FAIL2BAN
+#=================================================
+
 # Add fail2ban config
 ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
 
@@ -149,7 +146,15 @@ ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='a
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-set_permissions
+# Set permissions to app files
+chown -R $app:www-data $final_path
+chmod -R g=u,g-w,o-rwx $final_path
+
+# Restrict rights to Wallabag user only
+chmod 600 $final_path/app/config/parameters.yml
+if [ -e $final_path/var/cache/prod/appProdProjectContainer.php ]; then
+	chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php
+fi
 
 #=================================================
 # SETUP HOOKS
@@ -157,13 +162,6 @@ set_permissions
 
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Configuring permissions..." --weight=1
-
-ynh_permission_update --permission="main" --add="visitors"
 
 #=================================================
 # RELOAD NGINX

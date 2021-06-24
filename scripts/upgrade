@@ -32,6 +32,20 @@ deskey=$(ynh_app_setting_get --app=$app --key=deskey)
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=5
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
@@ -54,6 +68,14 @@ if [ -z "$path_url" ]; then
 	ynh_app_setting_set --app=$app --key=path --value=$path_url
 fi
 
+# Create the log file is not already existing
+if [ ! -f "$final_path/var/logs/prod.log" ]
+then
+  mkdir -p "$final_path/var/logs/"
+  touch "$final_path/var/logs/prod.log"
+  chown $app: "$final_path/var/logs/prod.log"
+fi
+
 if ynh_legacy_permissions_exists
 then
 	ynh_legacy_permissions_delete_all
@@ -62,18 +84,12 @@ then
 fi
 
 #=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+# CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=30
+ynh_script_progression --message="Making sure dedicated system user exists..."
 
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -102,30 +118,17 @@ ynh_script_progression --message="Upgrading NGINX web server configuration..."
 ynh_add_nginx_config
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app
-
-#=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading php-fpm configuration..."
+ynh_script_progression --message="Upgrading PHP-FPM configuration..."
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config --package="$extra_php_dependencies"
 
-# Set-up fail2ban
-# Create the log file is not already existing
-if [ ! -f "$final_path/var/logs/prod.log" ]
-then
-  mkdir -p "$final_path/var/logs/"
-  touch "$final_path/var/logs/prod.log"
-  chown $app: "$final_path/var/logs/prod.log"
-fi
-# Add fail2ban config
+#=================================================
+# CONFIGURE FAIL2BAN
+#=================================================
+
 ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
 
 #=================================================
@@ -134,22 +137,11 @@ ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='a
 # CONFIGURE WALLABAG
 #=================================================
 
-wb_conf=$final_path/app/config/parameters.yml
-
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
 
-	# Copy and set Wallabag dist configuration
-	cp $final_path/app/config/parameters.yml.dist $wb_conf
-
-	ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
-	ynh_replace_string --match_string="database_name: wallabag" --replace_string="database_name:  $db_name" --target_file=$wb_conf
-	ynh_replace_string --match_string="database_user: root" --replace_string="database_user: $db_user" --target_file=$wb_conf
-	ynh_replace_string --match_string="database_password: ~" --replace_string="database_password: $db_pwd" --target_file=$wb_conf
-	ynh_replace_string --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null" --target_file=$wb_conf
-	ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
-	ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
+	ynh_add_config --template="../conf/parameters.yml.dist" --destination="$final_path/app/config/parameters.yml"
 
 	#=================================================
 	# UPGRADE WALLABAG
@@ -181,7 +173,15 @@ fi
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-set_permissions
+# Set permissions to app files
+chown -R $app:www-data $final_path
+chmod -R g=u,g-w,o-rwx $final_path
+
+# Restrict rights to Wallabag user only
+chmod 600 $final_path/app/config/parameters.yml
+if [ -e $final_path/var/cache/prod/appProdProjectContainer.php ]; then
+    chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php
+fi
 
 #=================================================
 # SETUP HOOKS

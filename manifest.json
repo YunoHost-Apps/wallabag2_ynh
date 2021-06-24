@@ -6,7 +6,7 @@
         "en": "A self hostable read-it-later app",
         "fr": "Une application de lecture-plus-tard auto-hébergeable"
     },
-    "version": "2.4.2~ynh1",
+    "version": "2.4.2~ynh2",
     "url": "https://www.wallabag.org",
     "upstream": {
         "license": "MIT",
@@ -35,7 +35,7 @@
             {
                 "name": "domain",
                 "type": "domain",
-                "example": "domain.org"
+                "example": "example.com"
             },
             {
                 "name": "path",
@@ -46,7 +46,7 @@
             {
                 "name": "admin",
                 "type": "user",
-                "example": "homer"
+                "example": "johndoe"
             }
         ]
     }
