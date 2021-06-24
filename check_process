@@ -15,8 +15,6 @@
 		backup_restore=1
 		multi_instance=1
 		change_url=1
-;;; Levels
-	Level 5=auto
 ;;; Options
 Email=
 Notification=none
