@@ -103,7 +103,7 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=6
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
+	ynh_setup_source --dest_dir="$final_path" --keep="$final_path/app/config/parameters.yml"
 
 	# Clear cache
 	ynh_secure_remove --file="$final_path/var/cache"
@@ -147,9 +147,9 @@ ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='a
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
+	#ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
 
-	ynh_add_config --template="../conf/parameters.yml.dist" --destination="$final_path/app/config/parameters.yml"
+	#ynh_add_config --template="../conf/parameters.yml.dist" --destination="$final_path/app/config/parameters.yml"
 
 	#=================================================
 	# UPGRADE WALLABAG
