@@ -32,6 +32,20 @@ deskey=$(ynh_app_setting_get --app=$app --key=deskey)
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=5
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
@@ -54,26 +68,20 @@ if [ -z "$path_url" ]; then
 	ynh_app_setting_set --app=$app --key=path --value=$path_url
 fi
 
+# Create the log file is not already existing
+if [ ! -f "$final_path/var/logs/prod.log" ]
+then
+  mkdir -p "$final_path/var/logs/"
+  touch "$final_path/var/logs/prod.log"
+  chown $app: "$final_path/var/logs/prod.log"
+fi
+
 if ynh_legacy_permissions_exists
 then
 	ynh_legacy_permissions_delete_all
 
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=30
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
 
 #=================================================
 # CREATE DEDICATED USER
@@ -119,19 +127,11 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading php-fpm configuration..."
+ynh_script_progression --message="Upgrading PHP-FPM configuration..."
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config --package="$extra_php_dependencies"
 
-# Set-up fail2ban
-# Create the log file is not already existing
-if [ ! -f "$final_path/var/logs/prod.log" ]
-then
-  mkdir -p "$final_path/var/logs/"
-  touch "$final_path/var/logs/prod.log"
-  chown $app: "$final_path/var/logs/prod.log"
-fi
 # Add fail2ban config
 ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
 
