@@ -97,6 +97,14 @@ ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
 ynh_systemd_action --action=reload --service_name=fail2ban # Reload instead of restart for better performance
 
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Reinstalling dependencies..." --weight=1
+
+# Define and install dependencies
+ynh_install_app_dependencies $pkg_dependencies
+
+#=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================
 ynh_script_progression --message="Restoring the MySQL database..." --weight=3
