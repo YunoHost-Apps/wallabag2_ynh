@@ -24,6 +24,7 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
 deskey=$(ynh_app_setting_get --app=$app --key=deskey)
+language=$(ynh_app_setting_get --app=$app --key=language)
 
 #=================================================
 # CHECK VERSION

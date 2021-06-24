@@ -34,7 +34,7 @@ parameters:
     mailer_encryption: ~
     mailer_auth_mode:  ~
 
-    locale: en
+    locale: __LANGUAGE__
 
     # A secret key that's used to generate certain security-related tokens
     secret: __DESKEY__
