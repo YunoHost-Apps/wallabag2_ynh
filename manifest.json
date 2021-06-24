@@ -8,6 +8,14 @@
     },
     "version": "2.4.2~ynh1",
     "url": "https://www.wallabag.org",
+    "upstream": {
+        "license": "MIT",
+        "website": "https://www.wallabag.org",
+        "demo": "https://demo.yunohost.org/wallabag/",
+        "admindoc": "https://doc.wallabag.org/en/",
+        "userdoc": "https://yunohost.org/#/app_wallabag2",
+        "code": "https://github.com/wallabag/wallabag"
+    },
     "license": "MIT",
     "maintainer": {
         "name": "lapineige",
