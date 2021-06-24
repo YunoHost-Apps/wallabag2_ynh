@@ -11,7 +11,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 ## Vue d'ensemble
 
-Une application de lecture-plus-tard auto-hébergeable
+Application de lecture-plus-tard auto-hébergeable
 
 **Version incluse :** 2.4.2~ynh2
 
