@@ -129,12 +129,11 @@ $php_exec fos:user:promote --super "$admin"
 #=================================================
 
 # Create the log file is not already existing during install
-mkdir -p "/var/www/$app/var/logs/"
-touch "/var/www/$app/var/logs/prod.log"
-chown $app: "/var/www/$app/var/logs/prod.log"
-
+mkdir -p "$final_path/var/logs/"
+touch "$final_path/var/logs/prod.log"
+chown $app: "$final_path/var/logs/prod.log"
 # Add fail2ban config
-ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
+ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
 
 #=================================================
 # GENERIC FINALIZATION
