@@ -69,6 +69,12 @@ if [ -z "$path_url" ]; then
 	ynh_app_setting_set --app=$app --key=path --value=$path_url
 fi
 
+# If final_path doesn't exist, create it
+if [ -z "$language" ]; then
+	language="en"
+	ynh_app_setting_set --app=$app --key=language --value=$language
+fi
+
 # Create the log file is not already existing
 if [ ! -f "$final_path/var/logs/prod.log" ]
 then
