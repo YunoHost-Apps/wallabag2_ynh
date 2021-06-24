@@ -33,7 +33,7 @@ In addition to Wallabag core features, the following are made available with thi
 
  * Integrate with YunoHost users and SSO - i.e. logout button
  * Allow one user to be the administrator (set at the installation)
- * Asynchronous import using Redis (need to be enabled in the *Internal Settings*). RabbitMQ import not supported (yet ?)
+ * Asynchronous import using Redis (need to be enabled in the *Internal Settings*). RabbitMQ import not supported (yet?)
 
 ## Limitations
 
