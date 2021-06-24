@@ -125,7 +125,10 @@ ynh_script_progression --message="Upgrading PHP-FPM configuration..."
 # Create a dedicated php-fpm config
 ynh_add_fpm_config --package="$extra_php_dependencies"
 
-# Add fail2ban config
+#=================================================
+# CONFIGURE FAIL2BAN
+#=================================================
+
 ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
 
 #=================================================
