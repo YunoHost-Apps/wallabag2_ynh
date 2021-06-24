@@ -13,7 +13,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Une application de lecture-plus-tard auto-hébergeable
 
-**Version incluse :** 2.4.2~ynh1
+**Version incluse :** 2.4.2~ynh2
 
 **Démo :** https://demo.yunohost.org/wallabag/
 
