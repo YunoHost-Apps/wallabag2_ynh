@@ -12,7 +12,7 @@ parameters:
 
     database_driver: pdo_mysql
     database_host: 127.0.0.1
-    database_port: ~
+    database_port: 3306
     database_name: __DB_NAME__
     database_user: __DB_NAME__
     database_password: __DB_PWD__
