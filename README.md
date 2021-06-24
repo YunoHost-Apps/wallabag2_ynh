@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 A self hostable read-it-later app
 
-**Shipped version:** 2.4.2~ynh1
+**Shipped version:** 2.4.2~ynh2
 
 **Demo:** https://demo.yunohost.org/wallabag/
 
