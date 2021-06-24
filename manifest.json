@@ -3,8 +3,8 @@
     "id": "wallabag2",
     "packaging_format": 1,
     "description": {
-        "en": "A self hostable read-it-later app",
-        "fr": "Une application de lecture-plus-tard auto-hébergeable"
+        "en": "Self hostable read-it-later app",
+        "fr": "Application de lecture-plus-tard auto-hébergeable"
     },
     "version": "2.4.2~ynh2",
     "url": "https://www.wallabag.org",

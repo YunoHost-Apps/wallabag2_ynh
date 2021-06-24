@@ -11,7 +11,7 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
-		upgrade=1 from_commit=f75d58cb32c51a0981333ea88974dc3199324e65
+		upgrade=1 from_commit=afdd82cbed98b66ff2bf31c30f86ea8f704154f7
 		backup_restore=1
 		multi_instance=1
 		change_url=1
@@ -19,6 +19,6 @@
 Email=
 Notification=none
 ;;; Upgrade options
-	; commit=f75d58cb32c51a0981333ea88974dc3199324e65
-		name= Previous package version
+	; commit=afdd82cbed98b66ff2bf31c30f86ea8f704154f7
+		name= version 4.1.0
 		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&

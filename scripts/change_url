@@ -98,7 +98,7 @@ fi
 #=================================================
 # SPECIFIC MODIFICATIONS
 #=================================================
-ynh_script_progression --message="Updating wallabag configuration..."
+ynh_script_progression --message="Updating wallabag configuration..." --weight=3
 
 # Change domain name in parameters.yml
 ynh_replace_string --match_string="domain_name: .*" --replace_string="domain_name: https://$new_domain$new_path" --target_file=$final_path/app/config/parameters.yml
@@ -120,7 +120,7 @@ ynh_secure_remove --file=$final_path/var/cache
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+ynh_script_progression --message="Reloading NGINX web server..." --weight=1
 
 ynh_systemd_action --service_name=nginx --action=reload
 

@@ -96,7 +96,7 @@ phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 #=================================================
 # CONFIGURE WALLABAG
 #=================================================
-ynh_script_progression --message="Configuring wallabag..." --weight=35
+ynh_script_progression --message="Configuring Wallabag..." --weight=35
 
 # Generate random DES key & password
 deskey=$(ynh_string_random --length=24)
