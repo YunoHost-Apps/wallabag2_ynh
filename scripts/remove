@@ -12,7 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..." --weight=1
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -34,7 +34,7 @@ ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
 #=================================================
 # REMOVE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Removing dependencies" --weight=9
+ynh_script_progression --message="Removing dependencies..." --weight=1
 
 # Remove metapackage and its dependencies
 ynh_remove_app_dependencies
@@ -50,7 +50,7 @@ ynh_secure_remove --file="$final_path"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing nginx web server configuration"
+ynh_script_progression --message="Removing NGINX web server configuration" --weight=1
 
 # Remove the dedicated nginx config
 ynh_remove_nginx_config
@@ -58,7 +58,7 @@ ynh_remove_nginx_config
 #=================================================
 # REMOVE PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing php-fpm configuration"
+ynh_script_progression --message="Removing PHP-FPM configuration" --weight=3
 
 # Remove the dedicated php-fpm config
 ynh_remove_fpm_config
@@ -66,6 +66,8 @@ ynh_remove_fpm_config
 #=================================================
 # REMOVE FAIL2BAN CONFIGURATION
 #=================================================
+ynh_script_progression --message="Removing Fail2ban configuration..." --weight=1
+
 ynh_remove_fail2ban_config
 
 #=================================================
@@ -73,7 +75,7 @@ ynh_remove_fail2ban_config
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Removing the dedicated system user"
+ynh_script_progression --message="Removing the dedicated system user" --weight=1
 
 # Delete a system user
 ynh_system_user_delete --username=$app

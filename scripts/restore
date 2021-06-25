@@ -26,13 +26,15 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
-ynh_script_progression --message="Validating restoration parameters..."
+ynh_script_progression --message="Validating restoration parameters..." --weight=1
 
 ynh_webpath_available --domain=$domain --path_url=$path_url \
 	|| ynh_die --message="Path not available: ${domain}${path_url}"
@@ -48,51 +50,59 @@ test ! -d $final_path \
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
-# RESTORE THE APP MAIN DIR
-#=================================================
-ynh_script_progression --message="Restoring the app main directory..."
-
-ynh_restore_file --origin_path="$final_path"
-
-#=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
 ynh_script_progression --message="Recreating the dedicated system user..." --weight=2
 
 # Create the dedicated user (if not existing)
-ynh_system_user_create --username=$app
+ynh_system_user_create --username=$app --home_dir="$final_path"
+
+#=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Restoring the app main directory..." --weight=2
+
+ynh_restore_file --origin_path="$final_path"
 
 #=================================================
 # RESTORE USER RIGHTS
 #=================================================
 
-wb_conf=$final_path/app/config/parameters.yml
+# Set permissions to app files
+chown -R $app:www-data $final_path
+chmod -R g=u,g-w,o-rwx $final_path
 
-set_permissions
+# Restrict rights to Wallabag user only
+chmod 600 $final_path/app/config/parameters.yml
+if [ -e $final_path/var/cache/prod/appProdProjectContainer.php ]; then
+    chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php
+fi
 
 #=================================================
 # RESTORE THE PHP-FPM CONFIGURATION
 #=================================================
+ynh_script_progression --message="Restoring the PHP-FPM configuration..." --weight=1
 
-ynh_restore_file --origin_path="/etc/php/7.0/fpm/pool.d/$app.conf"
+ynh_restore_file --origin_path="/etc/php/$phpversion/fpm/pool.d/$app.conf"
 
-#=================================================
-# SPECIFIC RESTORATION
-#=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Reinstalling dependencies..." --weight=15
-
-# Define and install dependencies
-ynh_install_app_dependencies $pkg_dependencies
+ynh_add_fpm_config --package="$extra_php_dependencies"
 
 #=================================================
 # RESTORE FAIL2BAN CONFIGURATION
 #=================================================
+
 ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
 ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
 
 ynh_systemd_action --action=reload --service_name=fail2ban # Reload instead of restart for better performance
+
+#=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Reinstalling dependencies..." --weight=1
+
+# Define and install dependencies
+ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # RESTORE THE MYSQL DATABASE
@@ -108,9 +118,9 @@ ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./
 #=================================================
 # RELOAD NGINX AND PHP-FPM
 #=================================================
-ynh_script_progression --message="Reloading nginx web server and php-fpm..."
+ynh_script_progression --message="Reloading NGINX web server and PHP-FPM..." --weight=3
 
-ynh_systemd_action --service_name=php7.0-fpm --action=reload
+ynh_systemd_action --service_name=php$phpversion-fpm --action=reload
 ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
