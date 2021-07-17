@@ -162,7 +162,7 @@ then
 	#=================================================
 
 	# Alias for php-cli execution command
-	php_exec="ynh_exec_as $app php "$final_path/bin/console" --no-interaction --env prod"
+	php_exec="ynh_exec_as $app php "$final_path/bin/console" --no-interaction --env=prod"
 
 	# Set permissions to app files
 	chown -R $app: $final_path
@@ -171,14 +171,8 @@ then
 	$php_exec doctrine:migrations:migrate
 	$php_exec cache:clear
 
-	current_upstream_version="$(ynh_app_upstream_version --manifest="/etc/yunohost/apps/$YNH_APP_INSTANCE_NAME/manifest.json")"
-	if dpkg --compare-versions "2.4.2" gt "$current_upstream_version"; then
-		ynh_script_progression --message="Ensuring upgrade compatibility to Wallabag 2.4.x..."
-		
-		# Generate hashed URLs for faster check
-		# TODO does it take much time... ?
-		$php_exec wallabag:generate-hashed-urls
-	fi
+	# Configure Wallabag instance URL
+	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 fi
 
 #=================================================
