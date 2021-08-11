@@ -3,23 +3,31 @@
     "id": "wallabag2",
     "packaging_format": 1,
     "description": {
-        "en": "A self hostable read-it-later app",
-        "fr": "Une application de lecture-plus-tard auto-hébergeable"
+        "en": "Self hostable read-it-later app",
+        "fr": "Application de lecture-plus-tard auto-hébergeable"
     },
-    "version": "2.3.8~ynh3",
+    "version": "2.4.2~ynh2",
     "url": "https://www.wallabag.org",
+    "upstream": {
+        "license": "MIT",
+        "website": "https://www.wallabag.org",
+        "demo": "https://demo.yunohost.org/wallabag/",
+        "admindoc": "https://doc.wallabag.org/en/",
+        "userdoc": "https://yunohost.org/#/app_wallabag2",
+        "code": "https://github.com/wallabag/wallabag"
+    },
     "license": "MIT",
     "maintainer": {
         "name": "lapineige",
         "email": ""
     },
     "requirements": {
-        "yunohost": ">= 3.7.0"
+        "yunohost": ">= 4.2.4"
     },
     "multi_instance": true,
     "services": [
         "nginx",
-        "php5-fpm",
+        "php7.3-fpm",
         "mysql"
     ],
     "arguments": {
@@ -27,30 +35,28 @@
             {
                 "name": "domain",
                 "type": "domain",
-                "ask": {
-                    "en": "Choose a domain for Wallabag",
-                    "fr": "Choisissez un domaine pour Wallabag"
-                },
-                "example": "domain.org"
+                "example": "example.com"
             },
             {
                 "name": "path",
                 "type": "path",
-                "ask": {
-                    "en": "Choose a path for Wallabag",
-                    "fr": "Choisissez un chemin pour Wallabag"
-                },
                 "example": "/wallabag",
                 "default": "/wallabag"
             },
             {
                 "name": "admin",
                 "type": "user",
+                "example": "johndoe"
+            },
+                        {
+                "name": "language",
+                "type": "string",
                 "ask": {
-                    "en": "Choose the Wallabag administrator",
-                    "fr": "Choisissez l'administrateur de Wallabag"
+                    "en": "Choose the application language",
+                    "fr": "Choisissez la langue de l'application"
                 },
-                "example": "homer"
+                "choices": ["de", "en", "fr", "it", "pt"],
+                "default": "en"
             }
         ]
     }
