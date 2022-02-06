@@ -18,11 +18,10 @@
     },
     "license": "MIT",
     "maintainer": {
-        "name": "lapineige",
-        "email": ""
+        "name": "lapineige"
     },
     "requirements": {
-        "yunohost": ">= 4.2.4"
+        "yunohost": ">= 4.3.0"
     },
     "multi_instance": true,
     "services": [
@@ -31,11 +30,10 @@
         "mysql"
     ],
     "arguments": {
-        "install" : [
+        "install": [
             {
                 "name": "domain",
-                "type": "domain",
-                "example": "example.com"
+                "type": "domain"
             },
             {
                 "name": "path",
@@ -45,10 +43,9 @@
             },
             {
                 "name": "admin",
-                "type": "user",
-                "example": "johndoe"
+                "type": "user"
             },
-                        {
+            {
                 "name": "language",
                 "type": "string",
                 "ask": {
