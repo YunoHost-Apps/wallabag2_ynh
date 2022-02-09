@@ -19,7 +19,7 @@ Une application de lecture-plus-tard auto-hébergeable
 
 ## Avertissements / informations importantes
 
-## Caractéristiques spécifiques YunoHost
+### Caractéristiques spécifiques YunoHost
 
 En plus des fonctionnalités principales de Wallabag, ce paquet propose également :
 
@@ -27,14 +27,14 @@ En plus des fonctionnalités principales de Wallabag, ce paquet propose égaleme
  * De permettre à un utilisateur d'être administrateur (réglage lors de l'installation)
  * Un import asynchrone utilisant Redis (à activer dans les *Paramètres Internes*). L'import via RabbitMQ n'est pas (encore ?) supporté.
 
-## Limitations
+### Limitations
 
 * Supprimer un utilisateur YunoHost ne supprimera pas l'utilisateur Wallabag lié, il sera seulement désactivé. Vous devez le supprimer manuellement avant. Voir : https://github.com/YunoHost-Apps/wallabag2_ynh/issues/39
 
 * La mise à niveau depuis le paquet YunoHost de [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh) demande une opération manuelle, c'est pourquoi un nouveau paquet est fournit. Pour le processus de migration, merci de vous référer à [la documentation officiel de Wallabag](https://doc.wallabag.org/fr/user/import/wallabagv1.html).
 
 
-## Branche de test (*Testing*)
+### Branche de test (*Testing*)
 *Soyez concient que la branche testing* pourrait *contenir des bugs et n'est pas recommandée si vous recherchez la stabilité de votre application.*
 
 Les personnes souhaitant (bêta) tester de nouvelles mises à jour (ex: une nouvelle version), listée dans la [section des Pull Requests](https://github.com/YunoHost-Apps/wallabag2_ynh/pulls), sont les bienvenues. Plus de tests nous permettrons de sortir des mises à jour plus vite 🙂. Pour tester la branche *testing*, utilisez `sudo yunohost app upgrade wallabag2 -u https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing`.
