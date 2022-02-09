@@ -1,3 +1,3 @@
-[Wallabag](https://www.wallabag.org/) est une application de lecture différée : elle  permet simplement d’archiver une page web en ne conservant que le contenu. Les éléments superflus (menus, publicités, etc.) sont supprimés.
+[Wallabag](https://www.wallabag.org/) est une application de lecture diffÃ©rÃ©e : elle  permet simplement dâ€™archiver une page web en ne conservant que le contenu. Les Ã©lÃ©ments superflus (menus, publicitÃ©s, etc.) sont supprimÃ©s.
 
-Sont disponibles une interface web, des add-ons pour navigateurs (Firefox / Chrome / Opera), des applications pour mobile (Android / iOS / Windows Phone) et même sur liseuse (PocketBook / Kobo).
+Sont disponibles une interface web, des add-ons pour navigateurs (Firefox / Chrome / Opera), des applications pour mobile (Android / iOS / Windows Phone) et mÃªme sur liseuse (PocketBook / Kobo).
