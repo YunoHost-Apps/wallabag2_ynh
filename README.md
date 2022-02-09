@@ -15,16 +15,23 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-A self hostable read-it-later app
+[Wallabag](https://www.wallabag.org/) is a self hostable Read-It-Later application allowing you to not miss any content anymore. Click, save, read it when you can.
+It extracts content so that you can read it when you have time.
 
-**Shipped version:** 2.3.8~ynh3
+It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile apps (Android / iOS / Windows Phone) and even on e-reader (PocketBook / Kobo).
 
 
+**Shipped version:** 2.3.8~ynh4
+
+**Demo:** https://demo.yunohost.org/wallabag/
+
+## Screenshots
+
+![](./doc/screenshots/screenshot1.webp)
 
 ## Disclaimers / important information
 
 ### YunoHost specific features
-
 In addition to Wallabag core features, the following are made available with this package:
 
  * Integrate with YunoHost users and SSO - i.e. logout button
@@ -42,9 +49,11 @@ In addition to Wallabag core features, the following are made available with thi
 (Beta) Testers are welcome to try new upgrades (such as a new version), as listed in the [Pull Requests section](https://github.com/YunoHost-Apps/wallabag2_ynh/pulls). More testing will allow us to provide upgrades faster 🙂. In order to try the testing branch, use `sudo yunohost app upgrade wallabag2 -u https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing`.
 
 Warning : Doing a normal upgrade of the package with the web admin or `sudo yunohost app upgrade wallabag2` (without any URL specified) will revert you app to the master branch. *This may break you wallabag* if it goes to a previous version (if the newest is not retrocompatible).
-
 ## Documentation and resources
 
+* Official app website: https://www.wallabag.org
+* Official admin documentation: https://doc.wallabag.org/en/
+* Upstream app code repository: https://github.com/wallabag/wallabag
 * YunoHost documentation for this app: https://yunohost.org/app_wallabag2
 * Report a bug: https://github.com/YunoHost-Apps/wallabag2_ynh/issues
 
