@@ -1,14 +1,22 @@
-En plus des fonctionnalités principales de Wallabag, ce paquet propose également :
+### CaractÃ©ristiques spÃ©cifiques YunoHost
 
- * Une intégration avec le système de gestion des utilisateurs et le SSO de YunoHost - e.g. un bouton de déconnexion
- * De permettre à un utilisateur d'être administrateur (réglage lors de l'installation)
- * Un import asynchrone utilisant Redis (à activer dans les *Paramètres Internes*). L'import via RabbitMQ n'est pas (encore ?) supporté.
+En plus des fonctionnalitÃ©s principales de Wallabag, ce paquet propose Ã©galement :
 
-## Limitations
+ * Une intÃ©gration avec le systÃ¨me de gestion des utilisateurs et le SSO de YunoHost - e.g. un bouton de dÃ©connexion
+ * De permettre Ã  un utilisateur d'Ãªtre administrateur (rÃ©glage lors de l'installation)
+ * Un import asynchrone utilisant Redis (Ã€Â  activer dans les *ParamÃ¨tres Internes*). L'import via RabbitMQ n'est pas (encore ?) supportÃ©.
 
-* Supprimer un utilisateur YunoHost ne supprimera pas l'utilisateur Wallabag lié, il sera seulement désactivé. Vous devez le supprimer manuellement avant. Voir : https://github.com/YunoHost-Apps/wallabag2_ynh/issues/39
+### Limitations
 
-#### Mettre à niveau depuis la v1
+* Supprimer un utilisateur YunoHost ne supprimera pas l'utilisateur Wallabag liÃ©, il sera seulement dÃ©sactivÃ©. Vous devez le supprimer manuellement avant. Voir : https://github.com/YunoHost-Apps/wallabag2_ynh/issues/39
 
-La mise à niveau depuis le paquet YunoHost de [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh) demande une opération manuelle, c'est pourquoi un nouveau paquet est fournit.
-Pour le processus de migration, merci de vous référer à [la documentation officiel de Wallabag](https://doc.wallabag.org/fr/user/import/wallabagv1.html).
+* La mise ÃƒÂ  niveau depuis le paquet YunoHost de [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh) demande une opÃ©ration manuelle, c'est pourquoi un nouveau paquet est fournit. Pour le processus de migration, merci de vous rÃƒÂ©fÃƒÂ©rer ÃƒÂ  [la documentation officiel de Wallabag](https://doc.wallabag.org/fr/user/import/wallabagv1.html).
+
+
+### Branche de test (*Testing*)
+*Soyez concient que la branche testing* pourrait *contenir des bugs et n'est pas recommandÃ©e si vous recherchez la stabilitÃ© de votre application.*
+
+Les personnes souhaitant (bÃªta) tester de nouvelles mises Ã  jour (ex: une nouvelle version), listÃƒÂ©e dans la [section des Pull Requests](https://github.com/YunoHost-Apps/wallabag2_ynh/pulls), sont les bienvenues. Plus de tests nous permettrons de sortir des mises Ã  jour plus vite. Pour tester la branche *testing*, utilisez `sudo yunohost app upgrade wallabag2 -u https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing`.
+
+Attention : Une mise Ã  jour classique avec l'interface d'administration ou avec `sudo yunohost app upgrade wallabag2` (sans prÃ©ciser l'URL) fera retourner votre application au niveau de la branche master. *Ceci pourrait casser votre wallabag* si vous revenez Ã  une version prÃ©cÃ©dente (et si la nouvelle n'est pas rÃ©trocompatible).
+
