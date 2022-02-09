@@ -6,51 +6,43 @@
         "en": "A self hostable read-it-later app",
         "fr": "Une application de lecture-plus-tard auto-hébergeable"
     },
-    "version": "2.3.8~ynh3",
+    "version": "2.3.8~ynh4",
     "url": "https://www.wallabag.org",
+    "upstream": {
+        "license": "MIT",
+        "website": "https://www.wallabag.org",
+        "demo": "https://demo.yunohost.org/wallabag/",
+        "admindoc": "https://doc.wallabag.org/en/",
+        "code": "https://github.com/wallabag/wallabag"
+    },
     "license": "MIT",
     "maintainer": {
-        "name": "lapineige",
-        "email": ""
+        "name": "lapineige"
     },
     "requirements": {
-        "yunohost": ">= 3.7.0"
+        "yunohost": ">= 4.3.0"
     },
     "multi_instance": true,
     "services": [
         "nginx",
-        "php5-fpm",
+        "php7.3-fpm",
         "mysql"
     ],
     "arguments": {
-        "install" : [
+        "install": [
             {
                 "name": "domain",
-                "type": "domain",
-                "ask": {
-                    "en": "Choose a domain for Wallabag",
-                    "fr": "Choisissez un domaine pour Wallabag"
-                },
-                "example": "domain.org"
+                "type": "domain"
             },
             {
                 "name": "path",
                 "type": "path",
-                "ask": {
-                    "en": "Choose a path for Wallabag",
-                    "fr": "Choisissez un chemin pour Wallabag"
-                },
                 "example": "/wallabag",
                 "default": "/wallabag"
             },
             {
                 "name": "admin",
-                "type": "user",
-                "ask": {
-                    "en": "Choose the Wallabag administrator",
-                    "fr": "Choisissez l'administrateur de Wallabag"
-                },
-                "example": "homer"
+                "type": "user"
             }
         ]
     }

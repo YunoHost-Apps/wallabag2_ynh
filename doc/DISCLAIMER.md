@@ -1,5 +1,4 @@
 ### YunoHost specific features
-
 In addition to Wallabag core features, the following are made available with this package:
 
  * Integrate with YunoHost users and SSO - i.e. logout button
