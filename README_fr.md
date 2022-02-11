@@ -16,7 +16,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 Sont disponibles une interface web, des add-ons pour navigateurs (Firefox / Chrome / Opera), des applications pour mobile (Android / iOS / Windows Phone) et même sur liseuse (PocketBook / Kobo).
 
 
-**Version incluse :** 2.3.8~ynh4
+**Version incluse :** 2.4.0~ynh1
 
 **Démo :** https://demo.yunohost.org/wallabag/
 
