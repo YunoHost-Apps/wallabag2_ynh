@@ -159,6 +159,11 @@ then
 	ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
 	ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
 
+	# Migrate old (erroneous) database scheme (see: https://github.com/YunoHost-Apps/wallabag2_ynh/pull/125#issuecomment-1041426972)
+	ynh_script_progression --message="Migrating old (pre-2018) database scheme..." --weight=11
+	ynh_exec_warn_less ynh_mysql_execute_file_as_root --file="../migrations/foreign-keys-renaming.sql" --database=$db_name
+	ynh_script_progression --message="Database migration done. Resuming normal upgrade process" --weight=11
+
 	#=================================================
 	# UPGRADE WALLABAG
 	#=================================================
