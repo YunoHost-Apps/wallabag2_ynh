@@ -104,13 +104,13 @@ fi
 ynh_script_progression --message="Updating wallabag configuration..."
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE craue_config_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
+ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
 
 # Change domain name in parameters.yml
 ynh_replace_string --match_string="domain_name: .*" --replace_string="domain_name: https://$new_domain$new_path" --target_file=$final_path/app/config/parameters.yml
 
 # If "Download images locally" option has been enabled in Internal Settings
-download_images_enabled=$(ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "SELECT value from craue_config_setting WHERE name='download_images_enabled '" | tail -n 1)
+download_images_enabled=$(ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "SELECT value from internal_setting WHERE name='download_images_enabled '" | tail -n 1)
 if [ "$download_images_enabled" = "1" ]
 then
   ynh_print_info --message="Updating images URL; this operation may take a while..."
