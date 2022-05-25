@@ -4,8 +4,10 @@
 # COMMON VARIABLES
 #=================================================
 
+phpversion="7.4"
+
 # dependencies used by the app
-pkg_dependencies="php$YNH_DEFAULT_PHP_VERSION-cli php$YNH_DEFAULT_PHP_VERSION-mysql php$YNH_DEFAULT_PHP_VERSION-json php$YNH_DEFAULT_PHP_VERSION-gd php$YNH_DEFAULT_PHP_VERSION-tidy php$YNH_DEFAULT_PHP_VERSION-curl php$YNH_DEFAULT_PHP_VERSION-php-gettext php$YNH_DEFAULT_PHP_VERSION-redis"
+pkg_dependencies="php$phpversion-cli php$phpversion-mysql php$phpversion-json php$phpversion-gd php$phpversion-tidy php$phpversion-curl php-gettext php$phpversion-redis php$phpversion-xml"
 
 #=================================================
 # PERSONAL HELPERS
