@@ -5,7 +5,7 @@ It shall NOT be edited by hand.
 
 # Wallabag for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![Working status](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)  
 [![Install Wallabag with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -27,7 +27,7 @@ It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile 
 
 ## Screenshots
 
-![](./doc/screenshots/screenshot1.webp)
+![Screenshot of Wallabag](./doc/screenshots/screenshot1.webp)
 
 ## Disclaimers / important information
 
@@ -51,21 +51,22 @@ In addition to Wallabag core features, the following are made available with thi
 Warning : Doing a normal upgrade of the package with the web admin or `sudo yunohost app upgrade wallabag2` (without any URL specified) will revert you app to the master branch. *This may break you wallabag* if it goes to a previous version (if the newest is not retrocompatible).
 ## Documentation and resources
 
-* Official app website: https://www.wallabag.org
-* Official admin documentation: https://doc.wallabag.org/en/
-* Upstream app code repository: https://github.com/wallabag/wallabag
-* YunoHost documentation for this app: https://yunohost.org/app_wallabag2
-* Report a bug: https://github.com/YunoHost-Apps/wallabag2_ynh/issues
+* Official app website: <https://www.wallabag.org>
+* Official admin documentation: <https://doc.wallabag.org/en/>
+* Upstream app code repository: <https://github.com/wallabag/wallabag>
+* YunoHost documentation for this app: <https://yunohost.org/app_wallabag2>
+* Report a bug: <https://github.com/YunoHost-Apps/wallabag2_ynh/issues>
 
 ## Developer info
 
 Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.
-```
+
+``` bash
 sudo yunohost app install https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade wallabag2 -u https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing --debug
 ```
 
-**More info regarding app packaging:** https://yunohost.org/packaging_apps
+**More info regarding app packaging:** <https://yunohost.org/packaging_apps>
