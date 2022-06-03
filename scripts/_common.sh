@@ -16,8 +16,9 @@ php$YNH_DEFAULT_PHP_VERSION-json
 php$YNH_DEFAULT_PHP_VERSION-gd
 php$YNH_DEFAULT_PHP_VERSION-tidy
 php$YNH_DEFAULT_PHP_VERSION-curl
-php$YNH_DEFAULT_PHP_VERSION-php-gettext
+php$YNH_DEFAULT_PHP_VERSION-gettext
 php$YNH_DEFAULT_PHP_VERSION-redis
+php$YNH_DEFAULT_PHP_VERSION-common
 "
 
 #=================================================
