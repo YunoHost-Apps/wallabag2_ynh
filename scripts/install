@@ -96,7 +96,7 @@ ynh_add_nginx_config
 ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
 # Create a dedicated PHP-FPM config
-ynh_add_fpm_config --phpversion=$phpversion
+ynh_add_fpm_config --phpversion=$YNH_PHP_VERSION
 
 #=================================================
 # SPECIFIC SETUP
