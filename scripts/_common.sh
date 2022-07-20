@@ -4,7 +4,7 @@
 # COMMON VARIABLES
 #=================================================
 
-phpversion="7.4"
+YNH_PHP_VERSION="7.4"
 
 # dependencies used by the app
 pkg_dependencies="php$phpversion-cli php$phpversion-mysql php$phpversion-json php$phpversion-gd php$phpversion-tidy php$phpversion-curl php-gettext php$phpversion-redis php$phpversion-xml"
