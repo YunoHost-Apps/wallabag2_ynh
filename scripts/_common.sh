@@ -7,7 +7,7 @@
 YNH_PHP_VERSION="7.4"
 
 # dependencies used by the app
-pkg_dependencies="php$phpversion-cli php$phpversion-mysql php$phpversion-json php$phpversion-gd php$phpversion-tidy php$phpversion-curl php-gettext php$phpversion-redis php$phpversion-xml"
+pkg_dependencies="php${YNH_PHP_VERSION}-cli php${YNH_PHP_VERSION}-mysql php${YNH_PHP_VERSION}-json php${YNH_PHP_VERSION}-gd php${YNH_PHP_VERSION}-tidy php${YNH_PHP_VERSION}-curl php-gettext php${YNH_PHP_VERSION}-redis php${YNH_PHP_VERSION}-xml"
 
 #=================================================
 # PERSONAL HELPERS
