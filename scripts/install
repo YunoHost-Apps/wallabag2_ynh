@@ -121,7 +121,7 @@ ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --rep
 ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
 
 # Alias for php-cli execution command
-php_exec="ynh_exec_as $app php$phpversion "$final_path/bin/console" --no-interaction --env=prod"
+php_exec="ynh_exec_as $app php$YNH_PHP_VERSION "$final_path/bin/console" --no-interaction --env=prod"
 
 # Set permissions to app files
 chown -R $app: $final_path
