@@ -123,7 +123,7 @@ ynh_install_app_dependencies $pkg_dependencies
 ynh_script_progression --message="Upgrading PHP-FPM configuration..."
 
 # Create a dedicated PHP-FPM config
-ynh_add_fpm_config
+ynh_add_fpm_config --phpversion=$YNH_PHP_VERSION
 
 # Set-up fail2ban
 # Create the log file is not already existing
@@ -164,7 +164,7 @@ then
 	#=================================================
 
 	# Alias for php-cli execution command
-	php_exec="ynh_exec_as $app php "$final_path/bin/console" --no-interaction --env=prod"
+	php_exec="ynh_exec_as $app php${YNH_PHP_VERSION} "$final_path/bin/console" --no-interaction --env=prod"
 
 	# Set permissions to app files
 	chown -R $app: $final_path
@@ -174,7 +174,7 @@ then
 	$php_exec cache:clear
 
 	# Configure Wallabag instance URL
-	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE craue_config_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
 fi
 
 #=================================================
