@@ -123,7 +123,7 @@ ynh_install_app_dependencies $pkg_dependencies
 ynh_script_progression --message="Upgrading PHP-FPM configuration..."
 
 # Create a dedicated PHP-FPM config
-ynh_add_fpm_config --phpversion=$phpversion
+ynh_add_fpm_config --phpversion=$YNH_PHP_VERSION
 
 # Set-up fail2ban
 # Create the log file is not already existing
@@ -164,7 +164,7 @@ then
 	#=================================================
 
 	# Alias for php-cli execution command
-	php_exec="ynh_exec_as $app php$phpversion "$final_path/bin/console" --no-interaction --env=prod"
+	php_exec="ynh_exec_as $app php${YNH_PHP_VERSION} "$final_path/bin/console" --no-interaction --env=prod"
 
 	# Set permissions to app files
 	chown -R $app: $final_path
