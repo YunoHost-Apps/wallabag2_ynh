@@ -159,6 +159,16 @@ ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_fil
 set_permissions
 
 #=================================================
+# SETUP LOGROTATE
+#=================================================
+
+ynh_script_progression --message="Configuring log rotation..."
+# Use logrotate to manage application logfile(s)
+touch "$final_path/var/logs/prod.log"
+ynh_use_logrotate "$final_path/var/logs/prod.log"
+chown $app:www-data "$final_path/var/logs/prod.log"
+
+#=================================================
 # SETUP FAIL2BAN
 #=================================================
 ynh_script_progression --message="Configuring Fail2Ban..."
