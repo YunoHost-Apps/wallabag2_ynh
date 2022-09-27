@@ -23,6 +23,7 @@ It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile 
 
 **Shipped version:** 2.5.1~ynh3
 
+
 **Demo:** https://demo.yunohost.org/wallabag/
 
 ## Screenshots
