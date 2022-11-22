@@ -12,7 +12,16 @@ ynh_print_info "Declaring files to be backed up..."
 # Clean cache files before backup (saved some disk space)
 ynh_safe_rm $install_dir/var/cache/prod
 
-ynh_backup "$install_dir"
+# This will only apply on upgrade
+CUSTOM_BACKUP_CORE_ONLY=$(ynh_app_setting_get --app="$app" --key="backup_core_only")
+if [ "$BACKUP_CORE_ONLY" == "auto" ] && [ "$CUSTOM_BACKUP_CORE_ONLY" == 1 ]; then
+    ynh_print_warn --message="Backing up only the core... If you downloaded article images, they will not be saved."
+    mv "$install_dir/web/assets/images" "/tmp/$app/web/assets/images"
+    ynh_backup --src_path="$install_dir"
+    mv "/tmp/$app/web/assets/images" "$install_dir/web/assets/images"
+else
+    ynh_backup --src_path="$install_dir"
+fi
 
 #=================================================
 # BACKUP THE SYSTEM CONFIGURATION
