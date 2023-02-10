@@ -5,7 +5,7 @@ It shall NOT be edited by hand.
 
 # Wallabag for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![Working status](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![Working status](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
 [![Install Wallabag with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -21,7 +21,7 @@ It extracts content so that you can read it when you have time.
 It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile apps (Android / iOS / Windows Phone) and even on e-reader (PocketBook / Kobo).
 
 
-**Shipped version:** 2.5.2~ynh1
+**Shipped version:** 2.5.4~ynh1
 
 **Demo:** https://demo.yunohost.org/wallabag/
 
