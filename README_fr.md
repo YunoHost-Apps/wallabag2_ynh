@@ -5,28 +5,28 @@ It shall NOT be edited by hand.
 
 # Wallabag pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
 [![Installer Wallabag avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 
 *[Read this readme in english.](./README.md)*
 
-> *Ce package vous permet d'installer Wallabag rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Wallabag rapidement et simplement sur un serveur YunoHost.
+Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l’installer et en profiter.*
 
-## Vue d'ensemble
+## Vue d’ensemble
 
 [Wallabag](https://www.wallabag.org/) est une application de lecture différée : elle  permet simplement d’archiver une page web en ne conservant que le contenu. Les éléments superflus (menus, publicités, etc.) sont supprimés.
 
 Sont disponibles une interface web, des add-ons pour navigateurs (Firefox / Chrome / Opera), des applications pour mobile (Android / iOS / Windows Phone) et même sur liseuse (PocketBook / Kobo).
 
 
-**Version incluse :** 2.5.2~ynh1
+**Version incluse :** 2.5.4~ynh2
 
 **Démo :** https://demo.yunohost.org/wallabag/
 
-## Captures d'écran
+## Captures d’écran
 
-![Capture d'écran de Wallabag](./doc/screenshots/screenshot1.webp)
+![Capture d’écran de Wallabag](./doc/screenshots/screenshot1.webp)
 
 ## Avertissements / informations importantes
 
@@ -55,9 +55,9 @@ Attention : Une mise à jour classique avec l'interface d'administration ou avec
 
 ## Documentations et ressources
 
-* Site officiel de l'app : <https://www.wallabag.org>
-* Documentation officielle de l'admin : <https://doc.wallabag.org/en/>
-* Dépôt de code officiel de l'app : <https://github.com/wallabag/wallabag>
+* Site officiel de l’app : <https://www.wallabag.org>
+* Documentation officielle de l’admin : <https://doc.wallabag.org/en/>
+* Dépôt de code officiel de l’app : <https://github.com/wallabag/wallabag>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_wallabag2>
 * Signaler un bug : <https://github.com/YunoHost-Apps/wallabag2_ynh/issues>
 
@@ -73,4 +73,4 @@ ou
 sudo yunohost app upgrade wallabag2 -u https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>
