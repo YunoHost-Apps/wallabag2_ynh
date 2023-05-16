@@ -32,22 +32,17 @@ then
 fi
 
 #=================================================
-# NGINX CONFIGURATION
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..."
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
-
-#=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading PHP-FPM configuration..."
+ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
 
 # Create a dedicated PHP-FPM config
 ynh_add_fpm_config --usage=low --footprint=low
 
-# Set-up fail2ban
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+
+# Set-up Fail2Ban
 # Create the log file is not already existing
 if [ ! -f "$install_dir/var/logs/prod.log" ]
 then
@@ -56,8 +51,10 @@ then
   chown $app: "$install_dir/var/logs/prod.log"
 fi
 
-# Add fail2ban config
+# Add Fail2Ban config
 ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
+
+ynh_use_logrotate --non-append
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -67,7 +64,7 @@ ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
+	ynh_script_progression --message="Reconfiguring wallabag..." --weight=1
 
 	# Copy and set Wallabag dist configuration
 	ynh_add_config --template="../conf/parameters.yml" --destination="$install_dir/app/config/parameters.yml"
@@ -96,14 +93,6 @@ fi
 
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-
-ynh_use_logrotate --non-append
 
 #=================================================
 # SECURE FILES AND DIRECTORIES

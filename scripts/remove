@@ -10,35 +10,18 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD REMOVE
+# REMOVE SYSTEMD SERVICE 
 #=================================================
-# REMOVE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing logrotate configuration..."
+ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
 
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing NGINX web server configuration..."
-
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
-#=================================================
-# REMOVE PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing PHP-FPM configuration..."
-
 # Remove the dedicated PHP-FPM config
 ynh_remove_fpm_config
-
-#=================================================
-# REMOVE FAIL2BAN CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing Fail2Ban configuration..."
 
 # Remove the dedicated Fail2Ban config
 ynh_remove_fail2ban_config

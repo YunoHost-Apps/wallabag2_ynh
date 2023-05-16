@@ -24,15 +24,10 @@ ynh_setup_source --dest_dir="$install_dir"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --weight=2
+ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
-
-#=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
 # Create a dedicated PHP-FPM config
 ynh_add_fpm_config --usage=low --footprint=low
@@ -42,7 +37,7 @@ ynh_add_fpm_config --usage=low --footprint=low
 #=================================================
 # CONFIGURE WALLABAG
 #=================================================
-ynh_script_progression --message="Configuring wallabag..." --weight=35
+ynh_script_progression --message="Configuring wallabag..." --weight=25
 
 ynh_add_config --template="../conf/parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
@@ -95,8 +90,8 @@ fi
 #=================================================
 # SETUP LOGROTATE
 #=================================================
+ynh_script_progression --message="Configuring log rotation..." --weight=1
 
-ynh_script_progression --message="Configuring log rotation..."
 # Use logrotate to manage application logfile(s)
 touch "$install_dir/var/logs/prod.log"
 ynh_use_logrotate "$install_dir/var/logs/prod.log"

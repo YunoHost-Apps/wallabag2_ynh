@@ -11,15 +11,6 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD RESTORATION STEPS
-#=================================================
-# RESTORE THE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the NGINX web server configuration..."
-
-ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-
-#=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
 ynh_script_progression --message="Restoring the app main directory..."
@@ -41,29 +32,6 @@ if [ -e $install_dir/var/cache/prod/appProdProjectContainer.php ]; then
 fi
 
 #=================================================
-# RESTORE THE PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the PHP-FPM configuration..."
-
-ynh_restore_file --origin_path="/etc/php/$phpversion/fpm/pool.d/$app.conf"
-
-#=================================================
-# RESTORE THE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the logrotate configuration..."
-
-ynh_restore_file --origin_path="/etc/logrotate.d/$app"
-
-#=================================================
-# RESTORE FAIL2BAN CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the Fail2Ban configuration..."
-
-ynh_restore_file --origin_path="/etc/fail2ban/jail.d/$app.conf"
-ynh_restore_file --origin_path="/etc/fail2ban/filter.d/$app.conf"
-ynh_systemd_action --action=restart --service_name=fail2ban
-
-#=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================
 ynh_script_progression --message="Restoring the MySQL database..." --weight=3
@@ -71,11 +39,26 @@ ynh_script_progression --message="Restoring the MySQL database..." --weight=3
 ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
 
 #=================================================
+# RESTORE THE PHP-FPM CONFIGURATION
+#=================================================
+ynh_script_progression --message="Restoring system configurations related to $app..." --weight=1
+
+ynh_restore_file --origin_path="/etc/php/$phpversion/fpm/pool.d/$app.conf"
+
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+
+ynh_restore_file --origin_path="/etc/logrotate.d/$app"
+
+ynh_restore_file --origin_path="/etc/fail2ban/jail.d/$app.conf"
+ynh_restore_file --origin_path="/etc/fail2ban/filter.d/$app.conf"
+ynh_systemd_action --action=restart --service_name=fail2ban
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
-# RELOAD NGINX AND PHP-FPM
+# RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server and PHP-FPM..."
+ynh_script_progression --message="Reloading NGINX web server and $app's service..." --weight=1
 
 ynh_systemd_action --service_name=php$phpversion-fpm --action=reload
 ynh_systemd_action --service_name=nginx --action=reload
