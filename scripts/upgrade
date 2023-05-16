@@ -12,18 +12,18 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=2
+#REMOVEME? ynh_script_progression --message="Loading installation settings..." --weight=2
 
-app=$YNH_APP_INSTANCE_NAME
+#REMOVEME? app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-admin=$(ynh_app_setting_get --app=$app --key=admin)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
-db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-deskey=$(ynh_app_setting_get --app=$app --key=deskey)
+#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
+#REMOVEME? path=$(ynh_app_setting_get --app=$app --key=path)
+#REMOVEME? admin=$(ynh_app_setting_get --app=$app --key=admin)
+#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
+#REMOVEME? db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+#REMOVEME? db_user=$db_name
+#REMOVEME? db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+#REMOVEME? deskey=$(ynh_app_setting_get --app=$app --key=deskey)
 
 #=================================================
 # CHECK VERSION
@@ -35,16 +35,16 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=30
+#REMOVEME? ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=30
 
 # Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
+#REMOVEME? ynh_backup_before_upgrade
+#REMOVEME? ynh_clean_setup () {
 	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
+#REMOVEME? 	ynh_restore_upgradebackup
 }
 # Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -54,8 +54,8 @@ ynh_abort_if_errors
 ynh_script_progression --message="Ensuring downward compatibility..."
 
 # Cleaning legacy permissions
-if ynh_legacy_permissions_exists; then
-	ynh_legacy_permissions_delete_all
+#REMOVEME? if ynh_legacy_permissions_exists; then
+#REMOVEME? 	ynh_legacy_permissions_delete_all
 
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
@@ -63,28 +63,28 @@ fi
 # If db_name doesn't exist, create it
 if [ -z "$db_name" ]; then
 	db_name=$(ynh_sanitize_dbid --db_name=$app)
-	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+#REMOVEME? 	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 
-# If final_path doesn't exist, create it
-if [ -z "$final_path" ]; then
-	final_path=/var/www/$app
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+# If install_dir doesn't exist, create it
+if [ -z "$install_dir" ]; then
+#REMOVEME? 	install_dir=/var/www/$app
+#REMOVEME? 	ynh_app_setting_set --app=$app --key=install_dir --value=$install_dir
 fi
 
-# If path_url doesn't exist, create it
-if [ -z "$path_url" ]; then
-	path_url=$(ynh_app_setting_get --app=$app --key=path_url)
-	ynh_app_setting_set --app=$app --key=path --value=$path_url
+# If path doesn't exist, create it
+if [ -z "$path" ]; then
+#REMOVEME? 	path=$(ynh_app_setting_get --app=$app --key=path)
+#REMOVEME? 	ynh_app_setting_set --app=$app --key=path --value=$path
 fi
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
+#REMOVEME? ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir="$final_path"
+#REMOVEME? ynh_system_user_create --username=$app --home_dir="$install_dir"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -95,11 +95,11 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=6
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
+	ynh_setup_source --dest_dir="$install_dir"
 
 	# Clear cache
-	ynh_secure_remove --file="$final_path/var/cache"
-	mkdir "$final_path/var/cache"
+#REMOVEME? 	ynh_secure_remove --file="$install_dir/var/cache"
+	mkdir "$install_dir/var/cache"
 fi
 
 #=================================================
@@ -113,9 +113,9 @@ ynh_add_nginx_config
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=7
+#REMOVEME? ynh_script_progression --message="Upgrading dependencies..." --weight=7
 
-ynh_install_app_dependencies $pkg_dependencies
+#REMOVEME? ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # PHP-FPM CONFIGURATION
@@ -127,14 +127,14 @@ ynh_add_fpm_config --phpversion=$YNH_PHP_VERSION
 
 # Set-up fail2ban
 # Create the log file is not already existing
-if [ ! -f "$final_path/var/logs/prod.log" ]
+if [ ! -f "$install_dir/var/logs/prod.log" ]
 then
-  mkdir -p "$final_path/var/logs/"
-  touch "$final_path/var/logs/prod.log"
-  chown $app: "$final_path/var/logs/prod.log"
+  mkdir -p "$install_dir/var/logs/"
+  touch "$install_dir/var/logs/prod.log"
+  chown $app: "$install_dir/var/logs/prod.log"
 fi
 # Add fail2ban config
-ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
+ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -142,14 +142,14 @@ ynh_add_fail2ban_config --logpath="$final_path/var/logs/prod.log" --failregex='a
 # CONFIGURE WALLABAG
 #=================================================
 
-wb_conf=$final_path/app/config/parameters.yml
+wb_conf=$install_dir/app/config/parameters.yml
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
 
 	# Copy and set Wallabag dist configuration
-	cp $final_path/app/config/parameters.yml.dist $wb_conf
+	cp $install_dir/app/config/parameters.yml.dist $wb_conf
 
 	ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
 	ynh_replace_string --match_string="database_name: wallabag" --replace_string="database_name:  $db_name" --target_file=$wb_conf
@@ -157,24 +157,24 @@ then
 	ynh_replace_string --match_string="database_password: ~" --replace_string="database_password: $db_pwd" --target_file=$wb_conf
 	ynh_replace_string --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null" --target_file=$wb_conf
 	ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
-	ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
+	ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path" --target_file=$wb_conf
 
 	#=================================================
 	# UPGRADE WALLABAG
 	#=================================================
 
 	# Alias for php-cli execution command
-	php_exec="ynh_exec_as $app php${YNH_PHP_VERSION} "$final_path/bin/console" --no-interaction --env=prod"
+	php_exec="ynh_exec_as $app php${YNH_PHP_VERSION} "$install_dir/bin/console" --no-interaction --env=prod"
 
 	# Set permissions to app files
-	chown -R $app: $final_path
+	chown -R $app: $install_dir
 
 	# Upgrade database and clear the cache
 	$php_exec doctrine:migrations:migrate
 	$php_exec cache:clear
 
 	# Configure Wallabag instance URL
-	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 fi
 
 #=================================================
@@ -201,9 +201,9 @@ set_permissions
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..."
 
-ynh_systemd_action --service_name=nginx --action=reload
+#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT

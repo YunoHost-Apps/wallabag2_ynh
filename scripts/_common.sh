@@ -4,10 +4,10 @@
 # COMMON VARIABLES
 #=================================================
 
-YNH_PHP_VERSION="7.4"
+#REMOVEME? YNH_PHP_VERSION="7.4"
 
 # dependencies used by the app
-pkg_dependencies="php${YNH_PHP_VERSION}-cli php${YNH_PHP_VERSION}-mysql php${YNH_PHP_VERSION}-json php${YNH_PHP_VERSION}-gd php${YNH_PHP_VERSION}-tidy php${YNH_PHP_VERSION}-curl php${YNH_PHP_VERSION}-gettext php${YNH_PHP_VERSION}-redis php${YNH_PHP_VERSION}-xml php${YNH_PHP_VERSION}-mbstring php${YNH_PHP_VERSION}-ldap php${YNH_PHP_VERSION}-intl"
+#REMOVEME? pkg_dependencies="php${YNH_PHP_VERSION}-cli php${YNH_PHP_VERSION}-mysql php${YNH_PHP_VERSION}-json php${YNH_PHP_VERSION}-gd php${YNH_PHP_VERSION}-tidy php${YNH_PHP_VERSION}-curl php${YNH_PHP_VERSION}-gettext php${YNH_PHP_VERSION}-redis php${YNH_PHP_VERSION}-xml php${YNH_PHP_VERSION}-mbstring php${YNH_PHP_VERSION}-ldap php${YNH_PHP_VERSION}-intl"
 
 
 #=================================================
@@ -16,13 +16,13 @@ pkg_dependencies="php${YNH_PHP_VERSION}-cli php${YNH_PHP_VERSION}-mysql php${YNH
 
 function set_permissions {
   # Set permissions to app files
-  chown -R $app:www-data $final_path
-  chmod -R g=u,g-w,o-rwx $final_path
+  chown -R $app:www-data $install_dir
+  chmod -R g=u,g-w,o-rwx $install_dir
 
   # Restrict rights to Wallabag user only
   chmod 600 $wb_conf
-  if [ -e $final_path/var/cache/prod/appProdProjectContainer.php ]; then
-    chmod 700 $final_path/var/cache/prod/appProdProjectContainer.php
+  if [ -e $install_dir/var/cache/prod/appProdProjectContainer.php ]; then
+    chmod 700 $install_dir/var/cache/prod/appProdProjectContainer.php
   fi
 }
 
