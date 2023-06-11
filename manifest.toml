@@ -22,7 +22,7 @@ architectures = "all"
 multi_instance = true
 ldap = true
 sso = true
-disk = "50M"
+disk = "200M"
 ram.build = "50M"
 ram.runtime = "50M"
 
