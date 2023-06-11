@@ -5,7 +5,7 @@ name = "Wallabag"
 description.en = "Self hostable read-it-later app"
 description.fr = "Application de lecture-plus-tard auto-hébergeable"
 
-version = "2.5.4~ynh3"
+version = "2.5.4~ynh5"
 
 maintainers = ["lapineige"]
 
@@ -51,7 +51,7 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "mariadb-server php8.0-cli php8.0-mysql php8.0-gd php8.0-tidy php8.0-curl php8.0-gettext php8.0-redis php8.0-xml php8.0-mbstring php8.0-ldap php8.0-intl"
+    packages = "mariadb-server php8.1-cli php8.1-mysql php8.1-gd php8.1-tidy php8.1-curl php8.1-gettext php8.1-redis php8.1-xml php8.1-mbstring php8.1-ldap php8.1-intl"
 
     [resources.database]
     type = "mysql"
