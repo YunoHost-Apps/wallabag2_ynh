@@ -31,6 +31,8 @@ then
 	mkdir "$install_dir/var/cache"
 fi
 
+chown -R $app:www-data "$install_dir"
+
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
