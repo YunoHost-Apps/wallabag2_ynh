@@ -4,6 +4,11 @@
 # COMMON VARIABLES
 #=================================================
 
+php_exec() {
+	(cd "$install_dir" && ynh_exec_as "$app" \
+	    php${YNH_PHP_VERSION} "$install_dir/bin/console" --no-interaction --env=prod "$@")
+}
+
 #=================================================
 # PERSONAL HELPERS
 #=================================================

@@ -41,25 +41,22 @@ ynh_script_progression --message="Configuring wallabag..." --weight=25
 
 ynh_add_config --template="../conf/parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
-# Alias for php-cli execution command
-php_exec="ynh_exec_as $app php$YNH_PHP_VERSION "$install_dir/bin/console" --no-interaction --env=prod"
-
 # Set permissions to app files
 chown -R $app: $install_dir
 
 # Install dependencies and Wallabag
-$php_exec wallabag:install
+php_exec wallabag:install
 
 # Add users to Wallabag
 for username in $(ynh_user_list)
 do
 	user_email=$(ynh_user_get_info --username="$username" --key=mail)
 	user_pass=$(ynh_string_random)
-	$php_exec fos:user:create "$username" "$user_email" "$user_pass"
+	php_exec fos:user:create "$username" "$user_email" "$user_pass"
 done
 
 # Set admin user
-$php_exec fos:user:promote --super "$admin"
+php_exec fos:user:promote --super "$admin"
 
 # Configure Wallabag instance URL
 ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"

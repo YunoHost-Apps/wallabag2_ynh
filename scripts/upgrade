@@ -73,18 +73,15 @@ then
 	# UPGRADE WALLABAG
 	#=================================================
 
-	# Alias for php-cli execution command
-	php_exec="ynh_exec_as $app php${YNH_PHP_VERSION} "$install_dir/bin/console" --no-interaction --env=prod"
-
 	# Set permissions to app files
 	chown -R $app: $install_dir
 
 	# Upgrade database and clear the cache
-	$php_exec doctrine:migrations:migrate
-	$php_exec cache:clear
+	php_exec doctrine:migrations:migrate
+	php_exec cache:clear
 
 	# Configure Wallabag instance URL
-	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
+	#ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 fi
 
 #=================================================
