@@ -1,5 +1,5 @@
-SOURCE_URL=https://static.wallabag.org/releases/wallabag-release-2.5.4.tar.gz
-SOURCE_SUM=c953105e3181f18bf592541a1c46c318c6663ad00d4687052676b02a7d74c618
+SOURCE_URL=https://static.wallabag.org/releases/wallabag-release-2.6.1.tar.gz
+SOURCE_SUM=0954562145d881d287af7c9769a41cec5a806b06f04c9517d40277c7f5ca2d51
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
