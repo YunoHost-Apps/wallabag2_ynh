@@ -39,8 +39,8 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        url = "https://github.com/wallabag/wallabag/releases/download/2.5.4/wallabag-2.5.4.tar.gz"
-        sha256 = "c953105e3181f18bf592541a1c46c318c6663ad00d4687052676b02a7d74c618"
+        url = "https://github.com/wallabag/wallabag/archive/refs/tags/2.6.1.tar.gz"
+        sha256 = "d1316325a32184fe46d0b9b4ef54cac974275ae51c9041f95dce9f722f84dc18"
         autoupdate.strategy = "latest_github_tag"
 
     [resources.system_user]
