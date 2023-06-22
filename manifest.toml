@@ -5,7 +5,7 @@ name = "Wallabag"
 description.en = "Self hostable read-it-later app"
 description.fr = "Application de lecture-plus-tard auto-hébergeable"
 
-version = "2.5.4~ynh5"
+version = "2.6.1~ynh1"
 
 maintainers = ["lapineige"]
 
