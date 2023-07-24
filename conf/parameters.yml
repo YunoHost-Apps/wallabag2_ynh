@@ -26,7 +26,8 @@ parameters:
     domain_name: https://__DOMAIN____PATH__
     server_name: "Your wallabag instance"
 
-    mailer_dsn: smtp://~:~@127.0.0.1
+    #mailer_dsn: smtp://user:pass@__DOMAIN__:25
+    mailer_dsn: sendmail://default
 
     locale: en
 
