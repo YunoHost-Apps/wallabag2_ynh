@@ -42,7 +42,7 @@ ynh_script_progression --message="Configuring wallabag..." --weight=25
 ynh_add_config --template="../conf/parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
 # Alias for php-cli execution command
-php_exec="ynh_exec_as $app php$YNH_PHP_VERSION "$install_dir/bin/console" --no-interaction --env=prod"
+php_exec="ynh_exec_as $app php$phpversion "$install_dir/bin/console" --no-interaction --env=prod"
 
 # Set permissions to app files
 chown -R $app: $install_dir
