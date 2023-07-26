@@ -48,7 +48,7 @@ php_exec="ynh_exec_as $app php$phpversion "$install_dir/bin/console" --no-intera
 chown -R $app: $install_dir
 
 # Install dependencies and Wallabag
-ynh_warn_less $php_exec wallabag:install
+ynh_exec_warn_less $php_exec wallabag:install
 
 # Add users to Wallabag
 for username in $(ynh_user_list)
