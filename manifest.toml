@@ -5,7 +5,7 @@ name = "Wallabag"
 description.en = "Self hostable read-it-later app"
 description.fr = "Application de lecture-plus-tard auto-hébergeable"
 
-version = "2.6.2~ynh1"
+version = "2.6.3~ynh1"
 
 maintainers = ["lapineige"]
 
@@ -39,8 +39,8 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        url = "https://github.com/wallabag/wallabag/releases/download/2.6.2/wallabag-2.6.2.tar.gz"
-        sha256 = "fe7b573cc90bdf4a984decf74aeeb7fc387720544e5f1773d0ff97cd2768ce6c"
+        url = "https://github.com/wallabag/wallabag/releases/download/2.6.3/wallabag-2.6.3.tar.gz"
+        sha256 = "3b9515d407639a130e996db45bd2186019d27f959f3b1b9e79c11fbdcf4a43ea"
         autoupdate.strategy = "latest_github_tag"
 
     [resources.system_user]
