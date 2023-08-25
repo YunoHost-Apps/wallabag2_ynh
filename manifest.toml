@@ -5,7 +5,7 @@ name = "Wallabag"
 description.en = "Self hostable read-it-later app"
 description.fr = "Application de lecture-plus-tard auto-hébergeable"
 
-version = "2.6.1~ynh1"
+version = "2.6.4~ynh1"
 
 maintainers = ["lapineige"]
 
@@ -17,7 +17,7 @@ admindoc = "https://doc.wallabag.org/en/"
 code = "https://github.com/wallabag/wallabag"
 
 [integration]
-yunohost = ">= 11.1.21"
+yunohost = ">= 11.2"
 architectures = "all"
 multi_instance = true
 ldap = true
@@ -34,13 +34,17 @@ ram.runtime = "50M"
     type = "path"
     default = "/wallabag"
 
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
     [install.admin]
     type = "user"
 
 [resources]
         [resources.sources.main]
-        url = "https://github.com/wallabag/wallabag/releases/download/2.6.1/wallabag-2.6.1.tar.gz"
-        sha256 = "7efb39adfa9ac0393817d96ae4432ed420d501aaba7b4116138fca2a40593ced"
+        url = "https://github.com/wallabag/wallabag/releases/download/2.6.4/wallabag-2.6.4.tar.gz"
+        sha256 = "f0209d3eec80621b54a62cf31068b93103fbc56d6c0b635c55defff4e9afc1f3"
         autoupdate.strategy = "latest_github_tag"
 
     [resources.system_user]
@@ -51,7 +55,7 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "mariadb-server php8.1-cli php8.1-mysql php8.1-gd php8.1-tidy php8.1-curl php8.1-gettext php8.1-redis php8.1-xml php8.1-mbstring php8.1-ldap php8.1-intl"
+    packages = "mariadb-server php8.2-cli php8.2-mysql php8.2-gd php8.2-tidy php8.2-curl php8.2-gettext php8.2-redis php8.2-xml php8.2-mbstring php8.2-ldap php8.2-intl"
 
     [resources.database]
     type = "mysql"
