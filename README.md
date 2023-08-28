@@ -20,7 +20,7 @@ Wallabag is a self hostable Read-It-Later application allowing you to not miss a
 It provides a web interface, browser (Firefox/Chrome/Opera) add-ons, mobile apps (Android/iOS/Windows Phone) and even on e-reader (PocketBook/Kobo).
 
 
-**Shipped version:** 2.6.4~ynh1
+**Shipped version:** 2.6.5~ynh1
 
 **Demo:** https://demo.yunohost.org/wallabag/
 
