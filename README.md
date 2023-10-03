@@ -22,7 +22,7 @@ It extracts content so that you can read it when you have time.
 It provides a web interface, browser (Firefox / Chrome / Opera) add-ons, mobile apps (Android / iOS / Windows Phone) and even on e-reader (PocketBook / Kobo).
 
 
-**Shipped version:** 2.5.4~ynh2
+**Shipped version:** 2.6.7~ynh1
 
 **Demo:** https://demo.yunohost.org/wallabag/
 
@@ -55,7 +55,6 @@ Warning : Doing a normal upgrade of the package with the web admin or `sudo yuno
 * Official app website: <https://www.wallabag.org>
 * Official admin documentation: <https://doc.wallabag.org/en/>
 * Upstream app code repository: <https://github.com/wallabag/wallabag>
-* YunoHost documentation for this app: <https://yunohost.org/app_wallabag2>
 * Report a bug: <https://github.com/YunoHost-Apps/wallabag2_ynh/issues>
 
 ## Developer info
