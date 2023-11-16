@@ -29,7 +29,7 @@ parameters:
     #mailer_dsn: smtp://user:pass@__DOMAIN__:25
     mailer_dsn: smtp://__APP__:__MAIL_PWD__@__DOMAIN__:25
 
-    locale: en
+    locale: __LANGUAGE__
 
     # A secret key that's used to generate certain security-related tokens
     secret: __DESKEY__
