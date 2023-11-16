@@ -36,7 +36,7 @@ ynh_add_fpm_config
 #=================================================
 # CONFIGURE WALLABAG
 #=================================================
-ynh_script_progression --message="Configuring wallabag..." --weight=25
+ynh_script_progression --message="Configuring $app..." --weight=25
 
 ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
@@ -47,7 +47,7 @@ php_exec="ynh_exec_as $app php$phpversion "$install_dir/bin/console" --no-intera
 chown -R $app: $install_dir
 
 # Install dependencies and Wallabag
-$php_exec wallabag:install
+ynh_exec_warn_less $php_exec wallabag:install
 
 # Add users to Wallabag
 for username in $(ynh_user_list)
