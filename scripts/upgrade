@@ -64,7 +64,7 @@ ynh_use_logrotate --non-append
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Reconfiguring wallabag..." --weight=1
+	ynh_script_progression --message="Reconfiguring $app..." --weight=1
 
 	# Copy and set Wallabag dist configuration
 	#ynh_add_config --template="../conf/parameters.yml" --destination="$install_dir/app/config/parameters.yml"
