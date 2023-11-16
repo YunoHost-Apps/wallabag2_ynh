@@ -20,7 +20,7 @@ Wallabag est une application de lecture différée : elle  permet simplement d�
 Sont disponibles une interface web, des add-ons pour navigateurs (Firefox/Chrome/Opera), des applications pour mobile (Android/iOS/Windows Phone) et même sur liseuse (PocketBook/Kobo).
 
 
-**Version incluse :** 2.6.4~ynh1
+**Version incluse :** 2.6.7~ynh1
 
 **Démo :** https://demo.yunohost.org/wallabag/
 
@@ -33,7 +33,7 @@ Sont disponibles une interface web, des add-ons pour navigateurs (Firefox/Chrome
 * Site officiel de l’app : <https://www.wallabag.org>
 * Documentation officielle de l’admin : <https://doc.wallabag.org/en/>
 * Dépôt de code officiel de l’app : <https://github.com/wallabag/wallabag>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_wallabag2>
+* YunoHost Store: <https://apps.yunohost.org/app/wallabag2>
 * Signaler un bug : <https://github.com/YunoHost-Apps/wallabag2_ynh/issues>
 
 ## Informations pour les développeurs
