@@ -21,16 +21,6 @@ ynh_script_progression --message="Setting up source files..." --weight=6
 ynh_setup_source --dest_dir="$install_dir"
 
 #=================================================
-# INSTALL RABBITMQ
-#=================================================
-ynh_script_progression --message="Installing RabbitMQ..."
-
-tempdir="$(mktemp -d)"
-ynh_setup_source --dest_dir=$tempdir --source_id="rabbitmq"
-dpkg -i $tempdir/rabbitmq-server.deb
-ynh_secure_remove --file="$tempdir"
-
-#=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Adding system configurations related to $app..." --weight=1

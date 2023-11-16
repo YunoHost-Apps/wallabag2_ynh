@@ -35,16 +35,6 @@ if [ -z "${name:-}" ]; then
 fi
 
 #=================================================
-# INSTALL RABBITMQ
-#=================================================
-ynh_script_progression --message="Installing RabbitMQ..."
-
-tempdir="$(mktemp -d)"
-ynh_setup_source --dest_dir=$tempdir --source_id="rabbitmq"
-dpkg -i $tempdir/rabbitmq-server.deb
-ynh_secure_remove --file="$tempdir"
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 

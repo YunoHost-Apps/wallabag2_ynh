@@ -22,10 +22,6 @@ parameters:
     fos_oauth_server_refresh_token_lifetime: 1209600
     from_email: no-reply@__DOMAIN__
     rss_limit: 50
-    rabbitmq_host: localhost
-    rabbitmq_port: 5672
-    rabbitmq_user: guest
-    rabbitmq_password: guest
     redis_scheme: tcp
     redis_host: localhost
     redis_port: 6379

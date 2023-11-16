@@ -26,8 +26,6 @@ ynh_remove_fpm_config
 # Remove the dedicated Fail2Ban config
 ynh_remove_fail2ban_config
 
-dpkg --remove rabbitmq-server
-
 #=================================================
 # END OF SCRIPT
 #=================================================

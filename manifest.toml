@@ -41,10 +41,6 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
-
-
-
-
     [install.language]
     ask.en = "Choose the application language"
     ask.fr = "Choisissez la langue de l'application"
@@ -68,12 +64,6 @@ ram.runtime = "50M"
         sha256 = "a6b93fb05ef6bf9ab206fd4bcffda763a2cf33ea27e7f83000c335bbdf97f310"
         autoupdate.strategy = "latest_github_tag"
 
-        [resources.sources.rabbitmq]
-        url = "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.12.8/rabbitmq-server_3.12.8-1_all.deb"
-        sha256 = "bc796fed9477c6c2ea56b3ecaea529ee3abc19cf2bab74a5fb79fad856d2dfef"
-        rename ="rabbitmq-server.deb"
-        autoupdate.strategy = "latest_github_tag"
-
     [resources.system_user]
     allow_email = true
 
@@ -83,7 +73,7 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "erlang-base, erlang-asn1, erlang-crypto, erlang-eldap, erlang-ftp, erlang-inets, erlang-mnesia, erlang-os-mon, erlang-parsetools, erlang-public-key, erlang-runtime-tools, erlang-snmp, erlang-ssl, erlang-syntax-tools, erlang-tftp, erlang-tools, erlang-xmerl, mariadb-server, php8.2-cli, php8.2-mysql, php8.2-gd, php8.2-tidy, php8.2-curl, php8.2-gettext, php8.2-redis, php8.2-xml, php8.2-mbstring, php8.2-ldap, php8.2-intl"
+    packages = "mariadb-server, php8.2-cli, php8.2-mysql, php8.2-gd, php8.2-tidy, php8.2-curl, php8.2-gettext, php8.2-redis, php8.2-xml, php8.2-mbstring, php8.2-ldap, php8.2-intl"
 
     [resources.database]
     type = "mysql"
