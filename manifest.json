@@ -17,7 +17,7 @@
     },
     "license": "MIT",
     "maintainer": {
-        "name": "lapineige"
+        "name": "Lapineige"
     },
     "requirements": {
         "yunohost": ">= 11.0"
