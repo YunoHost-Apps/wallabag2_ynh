@@ -68,6 +68,11 @@ ram.runtime = "50M"
         sha256 = "a6b93fb05ef6bf9ab206fd4bcffda763a2cf33ea27e7f83000c335bbdf97f310"
         autoupdate.strategy = "latest_github_tag"
 
+        [resources.sources.rabbitmq]
+        url = "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.12.8/rabbitmq-server_3.12.8-1_all.deb"
+        sha256 = "bc796fed9477c6c2ea56b3ecaea529ee3abc19cf2bab74a5fb79fad856d2dfef"
+        autoupdate.strategy = "latest_github_tag"
+        
     [resources.system_user]
     allow_email = true
 
