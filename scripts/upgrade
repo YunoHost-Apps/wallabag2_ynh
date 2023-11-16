@@ -37,7 +37,7 @@ fi
 ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
 
 # Create a dedicated PHP-FPM config
-ynh_add_fpm_config --usage=low --footprint=low
+ynh_add_fpm_config
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
