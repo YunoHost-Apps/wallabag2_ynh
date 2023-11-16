@@ -103,12 +103,12 @@ chown $app:www-data "$install_dir/var/logs/prod.log"
 ynh_script_progression --message="Configuring Fail2Ban..."
 
 # Create the log file is not already existing during install
-mkdir -p "/var/www/$app/var/logs/"
-touch "/var/www/$app/var/logs/prod.log"
-chown $app: "/var/www/$app/var/logs/prod.log"
+mkdir -p "$install_dir/var/logs/"
+touch "$install_dir/var/logs/prod.log"
+chown $app: "$install_dir/var/logs/prod.log"
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
+ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
 
 #=================================================
 # END OF SCRIPT
