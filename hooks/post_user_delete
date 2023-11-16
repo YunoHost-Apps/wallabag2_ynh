@@ -2,7 +2,6 @@
 
 app="__APP__"
 user="__APP__"
-
 install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
