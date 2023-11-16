@@ -26,7 +26,13 @@ ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 if [ -z "${language:-}" ]; then
 	language="en"
 	ynh_app_setting_set --app=$app --key=language --value=$language
-#fi
+fi
+
+# If name doesn't exist, create it
+if [ -z "${name:-}" ]; then
+	name="wallabag"
+	ynh_app_setting_set --app=$app --key=name --value=$name
+fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -75,19 +81,21 @@ ynh_use_logrotate --non-append
 # CONFIGURE WALLABAG
 #=================================================
 
+# Alias for php-cli execution command
+php_exec="ynh_exec_as $app php${YNH_PHP_VERSION} "$install_dir/bin/console" --no-interaction --env=prod"
+
+
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Reconfiguring wallabag..." --weight=1
 
 	# Copy and set Wallabag dist configuration
-	ynh_add_config --template="../conf/parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+	ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+	$php_exec cache:clear --env=prod
 
 	#=================================================
 	# UPGRADE WALLABAG
 	#=================================================
-
-	# Alias for php-cli execution command
-	php_exec="ynh_exec_as $app php${YNH_PHP_VERSION} "$install_dir/bin/console" --no-interaction --env=prod"
 
 	# Set permissions to app files
 	chown -R $app: $install_dir

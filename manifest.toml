@@ -41,6 +41,10 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
+
+
+
+
     [install.language]
     ask.en = "Choose the application language"
     ask.fr = "Choisissez la langue de l'application"
@@ -50,6 +54,13 @@ ram.runtime = "50M"
 
     [install.admin]
     type = "user"
+
+    [install.name]
+    ask.en = "Choose your wallabag instance name"
+    ask.fr = "Choisissez le nom de votre instance wallabag"
+    type = "string"
+    example = "Wallabag"
+    default = "Your wallabag instance"
 
 [resources]
         [resources.sources.main]
