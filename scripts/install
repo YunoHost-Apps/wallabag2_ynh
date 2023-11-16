@@ -61,7 +61,7 @@ done
 $php_exec fos:user:promote --super "$admin"
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
+#ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
 #=================================================
 # SETUP HOOKS
@@ -102,12 +102,12 @@ chown $app:www-data "$install_dir/var/logs/prod.log"
 ynh_script_progression --message="Configuring Fail2Ban..."
 
 # Create the log file is not already existing during install
-mkdir -p "/var/www/$app/var/logs/"
-touch "/var/www/$app/var/logs/prod.log"
-chown $app: "/var/www/$app/var/logs/prod.log"
+mkdir -p "$install_dir/var/logs/"
+touch "$install_dir/var/logs/prod.log"
+chown $app: "$install_dir/var/logs/prod.log"
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
+ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
 
 #=================================================
 # END OF SCRIPT
