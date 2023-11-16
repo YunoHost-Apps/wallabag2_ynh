@@ -20,7 +20,7 @@ Wallabag is a self hostable Read-It-Later application allowing you to not miss a
 It provides a web interface, browser (Firefox/Chrome/Opera) add-ons, mobile apps (Android/iOS/Windows Phone) and even on e-reader (PocketBook/Kobo).
 
 
-**Shipped version:** 2.6.4~ynh1
+**Shipped version:** 2.6.7~ynh1
 
 **Demo:** https://demo.yunohost.org/wallabag/
 
@@ -33,7 +33,7 @@ It provides a web interface, browser (Firefox/Chrome/Opera) add-ons, mobile apps
 * Official app website: <https://www.wallabag.org>
 * Official admin documentation: <https://doc.wallabag.org/en/>
 * Upstream app code repository: <https://github.com/wallabag/wallabag>
-* YunoHost documentation for this app: <https://yunohost.org/app_wallabag2>
+* YunoHost Store: <https://apps.yunohost.org/app/wallabag2>
 * Report a bug: <https://github.com/YunoHost-Apps/wallabag2_ynh/issues>
 
 ## Developer info
