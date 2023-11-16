@@ -67,7 +67,7 @@ then
 	ynh_script_progression --message="Reconfiguring $app..." --weight=1
 
 	# Copy and set Wallabag dist configuration
-	#ynh_add_config --template="../conf/parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+	#ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
 	#=================================================
 	# UPGRADE WALLABAG
