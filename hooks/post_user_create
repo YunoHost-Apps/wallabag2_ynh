@@ -15,5 +15,5 @@ user_pass=$(ynh_string_random)
 
 # Create the new user in Wallabag
 (cd "/var/www/$app" && \
- sudo -u "$user" php "bin/console" --no-interaction --env=prod \
+ sudo -u "$user" php${phpversion} "bin/console" --no-interaction --env=prod \
     fos:user:create "$username" "$user_email" "$user_pass")
