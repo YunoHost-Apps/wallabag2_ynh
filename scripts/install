@@ -61,7 +61,7 @@ done
 $php_exec fos:user:promote --super "$admin"
 
 # Configure Wallabag instance URL
-#ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
+ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE $app.wallabag_internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
 #=================================================
 # SETUP HOOKS
