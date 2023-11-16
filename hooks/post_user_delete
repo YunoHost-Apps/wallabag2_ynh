@@ -5,6 +5,9 @@ user="__APP__"
 install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
+install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
+
 # Retrieve arguments
 username=$1
 purge=$2
