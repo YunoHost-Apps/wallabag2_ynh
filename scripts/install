@@ -60,8 +60,6 @@ done
 # Set admin user
 $php_exec fos:user:promote --super "$admin"
 
-#$php_exec doctrine:migrations:migrate
-
 # Configure Wallabag instance URL
 ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
