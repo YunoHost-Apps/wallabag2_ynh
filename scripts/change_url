@@ -1,16 +1,12 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC STARTING
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# STANDARD MODIFICATIONS
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
@@ -19,29 +15,30 @@ ynh_script_progression --message="Updating NGINX web server configuration..." --
 ynh_change_url_nginx_config
 
 #=================================================
-# SPECIFIC MODIFICATIONS
-#=================================================
 # UPDATE CONFIGURATION
 #=================================================
 ynh_script_progression --message="Updating wallabag configuration..."
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
+ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+    <<< "UPDATE internal_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
 
 # Change domain name in parameters.yml
 ynh_replace_string --match_string="domain_name: .*" --replace_string="domain_name: https://$new_domain$new_path" --target_file=$install_dir/app/config/parameters.yml
 
 # If "Download images locally" option has been enabled in Internal Settings
-download_images_enabled=$(ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "SELECT value from internal_setting WHERE name='download_images_enabled '" | tail -n 1)
-if [ "$download_images_enabled" = "1" ]
-then
-  ynh_print_info --message="Updating images URL; this operation may take a while..."
-  # Query/replace the domain/path in every entry.content in mysql database
-  ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE entry SET content = REPLACE(content, '$old_domain$old_path', '$new_domain$new_path');"
+download_images_enabled=$(ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+  <<< "SELECT value from internal_setting WHERE name='download_images_enabled '" | tail -n 1)
+
+if [ "$download_images_enabled" = "1" ]; then
+    ynh_print_info --message="Updating images URL; this operation may take a while..."
+    # Query/replace the domain/path in every entry.content in mysql database
+    ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+        <<< "UPDATE entry SET content = REPLACE(content, '$old_domain$old_path', '$new_domain$new_path');"
 fi
 
 # Clear assets cache
-ynh_secure_remove --file=$install_dir/var/cache
+ynh_secure_remove --file="$install_dir/var/cache"
 
 #=================================================
 # END OF SCRIPT

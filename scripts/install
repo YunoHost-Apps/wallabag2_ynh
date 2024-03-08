@@ -1,17 +1,18 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC START
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
 source _common.sh
 source /usr/share/yunohost/helpers
 
+#=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
 
 deskey=$(ynh_string_random --length=24)
-ynh_app_setting_set --app=$app --key=deskey --value=$deskey
+ynh_app_setting_set --app="$app" --key=deskey --value="$deskey"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -20,6 +21,52 @@ ynh_script_progression --message="Setting up source files..." --weight=6
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
+
+mkdir -p "$install_dir/var/logs/"
+touch "$install_dir/var/logs/prod.log"
+
+# Set permissions to app files
+chown -R "$app:www-data" "$install_dir"
+
+# Restrict rights to Wallabag user only
+if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
+    chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
+fi
+
+#=================================================
+# APP INITIAL CONFIGURATION
+#=================================================
+ynh_script_progression --message="Adding $app's configuration files..." --weight=1
+
+ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+chmod 600 "$install_dir/app/config/parameters.yml"
+
+# Alias for php-cli execution command
+php_exec=(ynh_exec_as "$app" "php$phpversion" "$install_dir/bin/console" --no-interaction --env=prod)
+
+# Install dependencies and Wallabag
+ynh_exec_warn_less "${php_exec[@]}" wallabag:install
+
+# Add users to Wallabag
+for username in $(ynh_user_list); do
+    user_email=$(ynh_user_get_info --username="$username" --key=mail)
+    user_pass=$(ynh_string_random)
+    "${php_exec[@]}" fos:user:create "$username" "$user_email" "$user_pass"
+done
+
+# Set admin user
+"${php_exec[@]}" fos:user:promote --super "$admin"
+
+# Configure Wallabag instance URL
+ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+    <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
+
+#=================================================
+# SETUP HOOKS
+#=================================================
+
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
 
 #=================================================
 # NGINX CONFIGURATION
@@ -32,80 +79,8 @@ ynh_add_nginx_config
 # Create a dedicated PHP-FPM config
 ynh_add_fpm_config
 
-#=================================================
-# SPECIFIC SETUP
-#=================================================
-# CONFIGURE WALLABAG
-#=================================================
-ynh_script_progression --message="Configuring $app..." --weight=25
-
-ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
-
-# Alias for php-cli execution command
-php_exec="ynh_exec_as $app php$phpversion "$install_dir/bin/console" --no-interaction --env=prod"
-
-# Set permissions to app files
-chown -R $app: $install_dir
-
-# Install dependencies and Wallabag
-ynh_exec_warn_less $php_exec wallabag:install
-
-# Add users to Wallabag
-for username in $(ynh_user_list)
-do
-	user_email=$(ynh_user_get_info --username="$username" --key=mail)
-	user_pass=$(ynh_string_random)
-	$php_exec fos:user:create "$username" "$user_email" "$user_pass"
-done
-
-# Set admin user
-$php_exec fos:user:promote --super "$admin"
-
-# Configure Wallabag instance URL
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
-
-#=================================================
-# SETUP HOOKS
-#=================================================
-
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Set permissions to app files
-chown -R $app:www-data $install_dir
-chmod -R g=u,g-w,o-rwx $install_dir
-
-# Restrict rights to Wallabag user only
-chmod 600 $install_dir/app/config/parameters.yml
-if [ -e $install_dir/var/cache/prod/appProdProjectContainer.php ]; then
-	chmod 700 $install_dir/var/cache/prod/appProdProjectContainer.php
-fi
-
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Configuring log rotation..." --weight=1
-
 # Use logrotate to manage application logfile(s)
-touch "$install_dir/var/logs/prod.log"
 ynh_use_logrotate "$install_dir/var/logs/prod.log"
-chown $app:www-data "$install_dir/var/logs/prod.log"
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-ynh_script_progression --message="Configuring Fail2Ban..."
-
-# Create the log file is not already existing during install
-mkdir -p "$install_dir/var/logs/"
-touch "$install_dir/var/logs/prod.log"
-chown $app: "$install_dir/var/logs/prod.log"
 
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5

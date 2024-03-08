@@ -1,8 +1,6 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC START
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
@@ -10,7 +8,7 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# REMOVE SYSTEMD SERVICE 
+# REMOVE SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
 

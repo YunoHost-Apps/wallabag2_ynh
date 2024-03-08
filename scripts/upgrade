@@ -1,8 +1,6 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC START
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
@@ -10,82 +8,43 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# CHECK VERSION
-#=================================================
-
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Upgrading source files..." --weight=6
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Upgrading source files..." --weight=6
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir" --keep="app/config/parameters.yml" --full_replace=1
 
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$install_dir" --keep="app/config/parameters.yml" --full_replace=1
+mkdir -p "$install_dir/var/logs/"
+touch "$install_dir/var/logs/prod.log"
 
-	# Clear cache
-	ynh_secure_remove --file="$install_dir/var/cache"
-	mkdir "$install_dir/var/cache"
+# Set permissions to app files
+chown -R "$app:www-data" "$install_dir"
+
+# Restrict rights to Wallabag user only
+if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
+    chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
 fi
 
 #=================================================
-# REAPPLY SYSTEM CONFIGURATIONS
+# UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression --message="Reconfiguring $app..." --weight=1
 
-# Create a dedicated PHP-FPM config
-ynh_add_fpm_config
+# Copy and set Wallabag dist configuration
+# ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+chmod 600 "$install_dir/app/config/parameters.yml"
 
-# Create a dedicated NGINX config
-ynh_add_nginx_config
+# Alias for php-cli execution command
+php_exec=(ynh_exec_as "$app" "php$phpversion" "$install_dir/bin/console" --no-interaction --env=prod)
 
-# Set-up Fail2Ban
-# Create the log file is not already existing
-if [ ! -f "$install_dir/var/logs/prod.log" ]
-then
-  mkdir -p "$install_dir/var/logs/"
-  touch "$install_dir/var/logs/prod.log"
-  chown $app: "$install_dir/var/logs/prod.log"
-fi
+# Upgrade database and clear the cache
+"${php_exec[@]}" doctrine:migrations:migrate
+"${php_exec[@]}" cache:clear
 
-# Add Fail2Ban config
-ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
-
-ynh_use_logrotate --non-append
-
-#=================================================
-# SPECIFIC UPGRADE
-#=================================================
-# CONFIGURE WALLABAG
-#=================================================
-
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Reconfiguring $app..." --weight=1
-
-	# Copy and set Wallabag dist configuration
-	#ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
-
-	#=================================================
-	# UPGRADE WALLABAG
-	#=================================================
-
-	# Alias for php-cli execution command
-	php_exec="ynh_exec_as $app php$phpversion "$install_dir/bin/console" --no-interaction --env=prod"
-
-	# Set permissions to app files
-	chown -R $app: $install_dir
-
-	# Upgrade database and clear the cache
-	$php_exec doctrine:migrations:migrate
-	$php_exec cache:clear
-
-	# Configure Wallabag instance URL
-	ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
-fi
+# Configure Wallabag instance URL
+ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+    <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
 #=================================================
 # SETUP HOOKS
@@ -95,18 +54,21 @@ ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_fil
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
 
 #=================================================
-# SECURE FILES AND DIRECTORIES
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
+ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
 
-# Set permissions to app files
-chown -R $app:www-data $install_dir
-chmod -R g=u,g-w,o-rwx $install_dir
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
-# Restrict rights to Wallabag user only
-chmod 600 $install_dir/app/config/parameters.yml
-if [ -e $install_dir/var/cache/prod/appProdProjectContainer.php ]; then
-	chmod 700 $install_dir/var/cache/prod/appProdProjectContainer.php
-fi
+# Create a dedicated PHP-FPM config
+ynh_add_fpm_config
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate "$install_dir/var/logs/prod.log"
+
+# Create a dedicated Fail2Ban config
+ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
 
 #=================================================
 # END OF SCRIPT
