@@ -24,7 +24,7 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=6
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$install_dir" --keep="app/config/parameters.yml"
+	ynh_setup_source --dest_dir="$install_dir" --keep="app/config/parameters.yml" --full_replace=1
 
 	# Clear cache
 	ynh_secure_remove --file="$install_dir/var/cache"
