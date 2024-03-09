@@ -1,0 +1,61 @@
+packaging_format = 2
+
+id = "wallabag2"
+name = "Wallabag"
+description.en = "Save and classify articles. Read them later"
+description.fr = "Enregistrez et classez les articles. Lisez-les plus tard"
+
+version = "2.6.8~ynh1"
+
+maintainers = ["lapineige"]
+
+[upstream]
+license = "MIT"
+website = "https://www.wallabag.org"
+demo = "https://demo.yunohost.org/wallabag/"
+admindoc = "https://doc.wallabag.org/en/"
+code = "https://github.com/wallabag/wallabag"
+
+[integration]
+yunohost = ">= 11.2"
+architectures = "all"
+multi_instance = true
+ldap = true
+sso = true
+disk = "200M"
+ram.build = "150M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/wallabag"
+
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
+    [install.admin]
+    type = "user"
+
+[resources]
+        [resources.sources.main]
+        url = "https://github.com/wallabag/wallabag/releases/download/2.6.8/wallabag-2.6.8.tar.gz"
+        sha256 = "a6641769faa9779ad3c012181bd367c0820fb5ae8493b89868f687bf3d6ce79d"
+        autoupdate.strategy = "latest_github_tag"
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.apt]
+    packages = "mariadb-server, php8.2-cli, php8.2-mysql, php8.2-gd, php8.2-tidy, php8.2-curl, php8.2-gettext, php8.2-redis, php8.2-xml, php8.2-mbstring, php8.2-ldap, php8.2-intl"
+
+    [resources.database]
+    type = "mysql"
