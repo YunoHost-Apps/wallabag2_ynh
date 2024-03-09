@@ -28,7 +28,7 @@ ynh_replace_string --match_string="domain_name: .*" --replace_string="domain_nam
 
 # If "Download images locally" option has been enabled in Internal Settings
 download_images_enabled=$(ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
-  <<< "SELECT value from internal_setting WHERE name='download_images_enabled '" | tail -n 1)
+    <<< "SELECT value from internal_setting WHERE name='download_images_enabled '" | tail -n 1)
 
 if [ "$download_images_enabled" = "1" ]; then
     ynh_print_info --message="Updating images URL; this operation may take a while..."
