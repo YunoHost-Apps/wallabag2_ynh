@@ -10,7 +10,15 @@ source /usr/share/yunohost/helpers
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-# ynh_script_progression --message="Ensuring downward compatibility..."
+ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+
+if ynh_compare_current_package_version --comparison lt --version "2.4~ynh1"; then
+    # Migrate old (erroneous) database scheme (see: https://github.com/YunoHost-Apps/wallabag2_ynh/pull/125#issuecomment-1041426972)
+    ynh_script_progression --message="Migrating old (pre-2018) database scheme..." --weight=11
+
+    ynh_exec_warn_less ynh_mysql_execute_file_as_root --database="$db_name" --file="../conf/foreign-keys-removal.sql"
+    ynh_script_progression --message="Database migration done. Resuming normal upgrade process" --weight=11
+fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
