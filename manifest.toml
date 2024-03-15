@@ -7,7 +7,7 @@ name = "Wallabag"
 description.en = "Save and classify articles. Read them later"
 description.fr = "Enregistrez et classez les articles. Lisez-les plus tard"
 
-version = "2.5.4~ynh3"
+version = "2.6.8~ynh1"
 
 maintainers = ["lapineige"]
 
@@ -47,8 +47,8 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources.main]
-    url = "https://github.com/wallabag/wallabag/releases/download/2.5.4/wallabag-2.5.4.tar.gz"
-    sha256 = "c953105e3181f18bf592541a1c46c318c6663ad00d4687052676b02a7d74c618"
+    url = "https://github.com/wallabag/wallabag/releases/download/2.6.8/wallabag-2.6.8.tar.gz"
+    sha256 = "a6641769faa9779ad3c012181bd367c0820fb5ae8493b89868f687bf3d6ce79d"
 
     autoupdate.strategy = "latest_github_release"
 
@@ -62,18 +62,18 @@ ram.runtime = "50M"
     [resources.apt]
     packages = [
         "mariadb-server",
-        "php7.4-cli",
-        "php7.4-curl",
-        "php7.4-gd",
-        "php7.4-gettext",
-        "php7.4-intl",
-        "php7.4-json",
-        "php7.4-ldap",
-        "php7.4-mbstring",
-        "php7.4-mysql",
-        "php7.4-redis",
-        "php7.4-tidy",
-        "php7.4-xml",
+        "php8.2-cli",
+        "php8.2-curl",
+        "php8.2-gd",
+        "php8.2-gettext",
+        "php8.2-intl",
+        "php8.2-json",
+        "php8.2-ldap",
+        "php8.2-mbstring",
+        "php8.2-mysql",
+        "php8.2-redis",
+        "php8.2-tidy",
+        "php8.2-xml",
     ]
 
     [resources.database]
