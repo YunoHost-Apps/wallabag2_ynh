@@ -1,8 +1,6 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC START
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
@@ -10,138 +8,67 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
+# INITIALIZE AND STORE SETTINGS
 #=================================================
 
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
-# RETRIEVE ARGUMENTS FROM THE MANIFEST
-#=================================================
-
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
-
-app=$YNH_APP_INSTANCE_NAME
-
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-ynh_script_progression --message="Validating installation parameters..." --weight=2
-
-final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-
-# Register (book) web path
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
-
-#=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-ynh_script_progression --message="Storing installation settings..."
-
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=admin --value=$admin
-
-#=================================================
-# STANDARD MODIFICATIONS
-#=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=12
-
-ynh_install_app_dependencies $pkg_dependencies
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..." --weight=2
-
-# Create a system user
-ynh_system_user_create --username=$app --home_dir="$final_path"
-
-#=================================================
-# CREATE A MYSQL DATABASE
-#=================================================
-ynh_script_progression --message="Creating a MySQL database..."
-
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+# Generate random DES key & password
+deskey=$(ynh_string_random --length=24)
+ynh_app_setting_set --app="$app" --key="deskey" --value="$deskey"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=6
 
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path"
+ynh_setup_source --dest_dir="$install_dir"
 
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --weight=2
+# Create log dir/file FIXME: is it useless?
+mkdir -p "$install_dir/var/logs/"
+touch "$install_dir/var/logs/prod.log"
 
-# Create a dedicated NGINX config
-ynh_add_nginx_config
+chown -R "$app:www-data" "$install_dir"
 
-#=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
-
-# Create a dedicated PHP-FPM config
-ynh_add_fpm_config --phpversion=$YNH_PHP_VERSION
-
-#=================================================
-# SPECIFIC SETUP
 #=================================================
 # CONFIGURE WALLABAG
 #=================================================
 ynh_script_progression --message="Configuring wallabag..." --weight=35
 
 # Copy and set Wallabag dist configuration
-wb_conf=$final_path/app/config/parameters.yml
-cp $final_path/app/config/parameters.yml.dist $wb_conf
+cp "$install_dir/app/config/parameters.yml.dist" "$wb_conf"
 
-ynh_replace_string --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false" --target_file=$wb_conf
-ynh_replace_string --match_string="database_name: wallabag" --replace_string="database_name:  $db_name" --target_file=$wb_conf
-ynh_replace_string --match_string="database_user: root" --replace_string="database_user: $db_user" --target_file=$wb_conf
-ynh_replace_string --match_string="database_password: ~" --replace_string="database_password: $db_pwd" --target_file=$wb_conf
-ynh_replace_string --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null" --target_file=$wb_conf
-# Generate random DES key & password
-deskey=$(ynh_string_random --length=24)
-ynh_app_setting_set --app=$app --key=deskey --value=$deskey
-ynh_replace_string --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey" --target_file=$wb_conf
-ynh_replace_string --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path_url" --target_file=$wb_conf
+ynh_replace_string --target_file="$wb_conf" --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false"
+ynh_replace_string --target_file="$wb_conf" --match_string="database_name: wallabag" --replace_string="database_name: $db_name"
+ynh_replace_string --target_file="$wb_conf" --match_string="database_user: root" --replace_string="database_user: $db_user"
+ynh_replace_string --target_file="$wb_conf" --match_string="database_password: ~" --replace_string="database_password: $db_pwd"
+ynh_replace_string --target_file="$wb_conf" --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null"
+ynh_replace_string --target_file="$wb_conf" --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey"
+ynh_replace_string --target_file="$wb_conf" --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path"
+
+chown -R "$app:www-data" "$install_dir"
 
 # Alias for php-cli execution command
-php_exec="ynh_exec_as $app php$YNH_PHP_VERSION "$final_path/bin/console" --no-interaction --env=prod"
-
-# Set permissions to app files
-chown -R $app: $final_path
+php_exec=(ynh_exec_as "$app" "php$YNH_PHP_VERSION" "$install_dir/bin/console" --no-interaction --env=prod)
 
 # Install dependencies and Wallabag
-$php_exec wallabag:install
+ynh_exec_as "$app" "${php_exec[@]}" wallabag:install
 
 # Add users to Wallabag
-for username in $(ynh_user_list)
-do
-	user_email=$(ynh_user_get_info --username="$username" --key=mail)
-	user_pass=$(ynh_string_random)
-	$php_exec fos:user:create "$username" "$user_email" "$user_pass"
+for username in $(ynh_user_list); do
+    user_email=$(ynh_user_get_info --username="$username" --key=mail)
+    # We don't care about that thanks to LDAP
+    user_pass=$(ynh_string_random)
+    ynh_exec_as "$app" "${php_exec[@]}" fos:user:create "$username" "$user_email" "$user_pass"
 done
 
 # Set admin user
-$php_exec fos:user:promote --super "$admin"
+ynh_exec_as "$app" "${php_exec[@]}" fos:user:promote --super "$admin"
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name <<< "UPDATE internal_setting SET value = 'https://$domain$path_url' WHERE name = 'wallabag_url'"
+ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+    <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
+
+set_permissions
 
 #=================================================
 # SETUP HOOKS
@@ -151,49 +78,21 @@ ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_fil
 ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
 
 #=================================================
-# GENERIC FINALIZATION
+# SYSTEM CONFIGURATION
 #=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
+ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
 
-set_permissions
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
-#=================================================
-# SETUP LOGROTATE
-#=================================================
+# Create a dedicated PHP-FPM config
+ynh_add_fpm_config
 
-ynh_script_progression --message="Configuring log rotation..."
 # Use logrotate to manage application logfile(s)
-touch "$final_path/var/logs/prod.log"
-ynh_use_logrotate "$final_path/var/logs/prod.log"
-chown $app:www-data "$final_path/var/logs/prod.log"
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-ynh_script_progression --message="Configuring Fail2Ban..."
-
-# Create the log file is not already existing during install
-mkdir -p "/var/www/$app/var/logs/"
-touch "/var/www/$app/var/logs/prod.log"
-chown $app: "/var/www/$app/var/logs/prod.log"
+ynh_use_logrotate --logfile="$install_dir/var/logs/prod.log"
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/www/$app/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Configuring permissions..."
-
-ynh_permission_update --permission="main" --add="visitors"
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
-
-ynh_systemd_action --service_name=nginx --action=reload
+ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
 
 #=================================================
 # END OF SCRIPT
