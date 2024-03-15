@@ -37,6 +37,11 @@ if [ "$download_images_enabled" = "1" ]; then
         <<< "UPDATE entry SET content = REPLACE(content, '$old_domain$old_path', '$new_domain$new_path');"
 fi
 
+# Clear assets cache
+ynh_secure_remove --file="$install_dir/var/cache"
+mkdir "$install_dir/var/cache"
+chown "$app:www-data" "$install_dir/var/cache"
+
 #=================================================
 # END OF SCRIPT
 #=================================================
