@@ -48,7 +48,7 @@ ynh_replace_string --target_file="$wb_conf" --match_string="domain_name: https:/
 chown -R "$app:www-data" "$install_dir"
 
 # Alias for php-cli execution command
-php_exec=(ynh_exec_as "$app" "php$YNH_PHP_VERSION" "$install_dir/bin/console" --no-interaction --env=prod)
+php_exec=("php$YNH_PHP_VERSION" "$install_dir/bin/console" --no-interaction --env=prod)
 
 # Install dependencies and Wallabag
 ynh_exec_as "$app" "${php_exec[@]}" wallabag:install
