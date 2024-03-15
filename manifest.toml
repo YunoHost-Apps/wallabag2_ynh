@@ -38,6 +38,10 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     type = "path"
     default = "/wallabag"
 
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
     [install.admin]
     type = "user"
 
