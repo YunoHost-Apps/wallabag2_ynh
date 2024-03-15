@@ -27,12 +27,18 @@ ynh_setup_source --dest_dir="$install_dir"
 mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
 
+# Set permissions to app files
 chown -R "$app:www-data" "$install_dir"
 
+# Restrict rights to Wallabag user only
+if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
+    chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
+fi
+
 #=================================================
-# CONFIGURE WALLABAG
+# APP INITIAL CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring wallabag..." --weight=35
+ynh_script_progression --message="Adding $app's configuration files..." --weight=1
 
 # Copy and set Wallabag dist configuration
 cp "$install_dir/app/config/parameters.yml.dist" "$wb_conf"
@@ -45,13 +51,14 @@ ynh_replace_string --target_file="$wb_conf" --match_string="database_table_prefi
 ynh_replace_string --target_file="$wb_conf" --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey"
 ynh_replace_string --target_file="$wb_conf" --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path"
 
+chmod 600 "$wb_conf"
 chown -R "$app:www-data" "$install_dir"
 
 # Alias for php-cli execution command
-php_exec=("php$YNH_PHP_VERSION" "$install_dir/bin/console" --no-interaction --env=prod)
+php_exec=("php$phpversion" "$install_dir/bin/console" --no-interaction --env=prod)
 
 # Install dependencies and Wallabag
-ynh_exec_as "$app" "${php_exec[@]}" wallabag:install
+ynh_exec_warn_less ynh_exec_as "$app" "${php_exec[@]}" wallabag:install
 
 # Add users to Wallabag
 for username in $(ynh_user_list); do
@@ -68,7 +75,8 @@ ynh_exec_as "$app" "${php_exec[@]}" fos:user:promote --super "$admin"
 ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
     <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
-set_permissions
+# Set permissions to app files
+chown -R "$app:www-data" "$install_dir"
 
 #=================================================
 # SETUP HOOKS

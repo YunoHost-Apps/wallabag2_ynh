@@ -24,12 +24,18 @@ ynh_setup_source --dest_dir="$install_dir" --full_replace=1 --keep="app/config/p
 mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
 
+# Set permissions to app files
 chown -R "$app:www-data" "$install_dir"
 
+# Restrict rights to Wallabag user only
+if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
+    chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
+fi
+
 #=================================================
-# CONFIGURE WALLABAG
+# UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Reconfiguring wallabag..." --weight=11
+ynh_script_progression --message="Reconfiguring $app..." --weight=1
 
 # Copy and set Wallabag dist configuration
 cp "$install_dir/app/config/parameters.yml.dist" "$wb_conf"
@@ -42,20 +48,19 @@ ynh_replace_string --target_file="$wb_conf" --match_string="database_table_prefi
 ynh_replace_string --target_file="$wb_conf" --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey"
 ynh_replace_string --target_file="$wb_conf" --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path"
 
+chmod 600 "$wb_conf"
 chown -R "$app:www-data" "$install_dir"
 
 # Alias for php-cli execution command
-php_exec=("php$YNH_PHP_VERSION" "$install_dir/bin/console" --no-interaction --env=prod)
+php_exec=("php$phpversion" "$install_dir/bin/console" --no-interaction --env=prod)
 
 # Upgrade database and clear the cache
 ynh_exec_as "$app" "${php_exec[@]}" doctrine:migrations:migrate
 ynh_exec_as "$app" "${php_exec[@]}" cache:clear
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name"\
+ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
     <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
-
-set_permissions
 
 #=================================================
 # SETUP HOOKS
@@ -75,7 +80,7 @@ ynh_add_nginx_config
 # Create a dedicated PHP-FPM config
 ynh_add_fpm_config
 
-ynh_use_logrotate --non-append
+ynh_use_logrotate --non-append --logfile="$install_dir/var/logs/prod.log"
 
 # Add fail2ban config
 ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config

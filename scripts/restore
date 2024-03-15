@@ -15,7 +15,15 @@ ynh_script_progression --message="Restoring the app main directory..."
 
 ynh_restore_file --origin_path="$install_dir"
 
-set_permissions
+# Set permissions to app files
+chown -R "$app:www-data" "$install_dir"
+
+# Restrict rights to Wallabag user only
+if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
+    chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
+fi
+
+chmod 600 "$wb_conf"
 
 #=================================================
 # RESTORE THE MYSQL DATABASE

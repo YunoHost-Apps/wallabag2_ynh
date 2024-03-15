@@ -8,8 +8,6 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD MODIFICATIONS
-#=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
 ynh_script_progression --message="Updating NGINX web server configuration..." --weight=2

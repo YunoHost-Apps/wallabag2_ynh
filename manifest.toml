@@ -4,12 +4,12 @@ packaging_format = 2
 
 id = "wallabag2"
 name = "Wallabag"
-description.en = "A self hostable read-it-later app"
-description.fr = "Une application de lecture-plus-tard auto-hébergeable"
+description.en = "Save and classify articles. Read them later"
+description.fr = "Enregistrez et classez les articles. Lisez-les plus tard"
 
 version = "2.5.4~ynh3"
 
-maintainers = ["Lapineige"]
+maintainers = ["lapineige"]
 
 [upstream]
 license = "MIT"
@@ -25,8 +25,8 @@ yunohost = ">= 11.2"
 architectures = "all"
 multi_instance = true
 ldap = true
-sso = false
-disk = "50M"
+sso = true
+disk = "200M"
 ram.build = "150M"
 ram.runtime = "50M"
 
@@ -61,19 +61,19 @@ ram.runtime = "50M"
 
     [resources.apt]
     packages = [
-        "php7.4-cli",
-        "php7.4-mysql",
-        "php7.4-json",
-        "php7.4-gd",
-        "php7.4-tidy",
-        "php7.4-curl",
-        "php7.4-gettext",
-        "php7.4-redis",
-        "php7.4-xml",
-        "php7.4-mbstring",
-        "php7.4-ldap",
-        "php7.4-intl",
         "mariadb-server",
+        "php7.4-cli",
+        "php7.4-curl",
+        "php7.4-gd",
+        "php7.4-gettext",
+        "php7.4-intl",
+        "php7.4-json",
+        "php7.4-ldap",
+        "php7.4-mbstring",
+        "php7.4-mysql",
+        "php7.4-redis",
+        "php7.4-tidy",
+        "php7.4-xml",
     ]
 
     [resources.database]
