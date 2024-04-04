@@ -7,7 +7,7 @@ name = "Wallabag"
 description.en = "Save and classify articles. Read them later"
 description.fr = "Enregistrez et classez les articles. Lisez-les plus tard"
 
-version = "2.6.8~ynh1"
+version = "2.6.9~ynh1"
 
 maintainers = ["lapineige"]
 
@@ -47,8 +47,8 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources.main]
-    url = "https://github.com/wallabag/wallabag/releases/download/2.6.8/wallabag-2.6.8.tar.gz"
-    sha256 = "a6641769faa9779ad3c012181bd367c0820fb5ae8493b89868f687bf3d6ce79d"
+    url = "https://github.com/wallabag/wallabag/archive/refs/tags/2.6.9.tar.gz"
+    sha256 = "1a4698efcf19648e1f9dcf7b1d92433e7e8d50b4b74f173e0abbc3ec96390202"
 
     autoupdate.strategy = "latest_github_release"
 
