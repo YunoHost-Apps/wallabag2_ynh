@@ -18,7 +18,7 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Upgrading source files..." --weight=6
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir" --full_replace=1 --keep="app/config/parameters.yml var/logs"
+ynh_setup_source --dest_dir="$install_dir" --full_replace=1 --keep="app/config/parameters.yml var/logs web/assets/images"
 
 # Create log dir/file FIXME: is it useless?
 mkdir -p "$install_dir/var/logs/"
