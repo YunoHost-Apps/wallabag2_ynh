@@ -51,6 +51,7 @@ ram.runtime = "50M"
     sha256 = "c953105e3181f18bf592541a1c46c318c6663ad00d4687052676b02a7d74c618"
 
     autoupdate.strategy = "latest_github_release"
+    autoupdate.asset = ".*\\.tar\\.gz"
 
     [resources.system_user]
 
