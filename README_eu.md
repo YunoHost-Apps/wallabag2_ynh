@@ -22,7 +22,7 @@ It provides a web interface, browser (Firefox/Chrome/Opera) add-ons, mobile apps
 Upgrade from the YunoHost [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh) app requires a manual operation. That's why it's provided as a new package. For the migration process, please refer to the [Wallabag official documentation](https://doc.wallabag.org/en/user/import/wallabagv1.html).
 
 
-**Paketatutako bertsioa:** 2.5.4~ynh3
+**Paketatutako bertsioa:** 2.5.4~ynh4
 
 **Demoa:** <https://demo.yunohost.org/wallabag/>
 
