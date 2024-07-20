@@ -8,11 +8,6 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# ENSURE DOWNWARD COMPATIBILITY
-#=================================================
-# ynh_script_progression --message="Ensuring downward compatibility..."
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Upgrading source files..." --weight=6
