@@ -8,6 +8,19 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+
+if ynh_compare_current_package_version --comparison lt --version "2.4~ynh1"; then
+    # Migrate old (erroneous) database scheme (see: https://github.com/YunoHost-Apps/wallabag2_ynh/pull/125#issuecomment-1041426972)
+    ynh_script_progression --message="Migrating old (pre-2018) database scheme..." --weight=11
+
+    ynh_exec_warn_less ynh_mysql_execute_file_as_root --database="$db_name" --file="../conf/foreign-keys-removal.sql"
+    ynh_script_progression --message="Database migration done. Resuming normal upgrade process" --weight=11
+fi
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Upgrading source files..." --weight=6
@@ -28,9 +41,26 @@ if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
 fi
 
 #=================================================
+# INSTALL SYMFONY LDAP
+#=================================================
+ynh_script_progression --message="Installing dependencies for LDAP..." --weight=1
+
+# Some trick to actually not run composer install…
+ynh_install_composer --install_args="--dry-run"
+ynh_composer_exec --commands="require symfony/ldap"
+# SYMFONY_ENV=prod ynh_composer_exec --commands="install --no-dev"
+
+chown -R "$app:www-data" "$install_dir"
+
+#=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Reconfiguring $app..." --weight=1
+
+ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+
+chmod 600 "$install_dir/app/config/parameters.yml"
+chown "$app:$app" "$install_dir/app/config/parameters.yml"
 
 # Upgrade database and clear the cache
 php_exec doctrine:migrations:migrate
