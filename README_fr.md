@@ -22,7 +22,7 @@ Sont disponibles une interface web, des add-ons pour navigateurs (Firefox/Chrome
 La mise à niveau depuis le paquet YunoHost de [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh) demande une opération manuelle, c'est pourquoi un nouveau paquet est fournit. Pour le processus de migration, merci de vous référer à [la documentation officiel de Wallabag](https://doc.wallabag.org/fr/user/import/wallabagv1.html).
 
 
-**Version incluse :** 2.6.1~ynh1
+**Version incluse :** 2.6.9~ynh1
 
 **Démo :** <https://demo.yunohost.org/wallabag/>
 
