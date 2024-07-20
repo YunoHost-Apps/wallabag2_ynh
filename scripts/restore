@@ -23,8 +23,6 @@ if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
     chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
 fi
 
-chmod 600 "$wb_conf"
-
 #=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================
