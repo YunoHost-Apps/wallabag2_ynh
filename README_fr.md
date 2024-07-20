@@ -5,7 +5,7 @@ Il NE doit PAS être modifié à la main.
 
 # Wallabag pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![Niveau d’intégration](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
 
 [![Installer Wallabag avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 
