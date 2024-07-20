@@ -26,13 +26,7 @@ parameters:
     domain_name: https://__DOMAIN____PATH__
     server_name: "Your wallabag instance"
 
-    mailer_transport:  smtp
-    mailer_user:       __APP__
-    mailer_password:   __MAIL_PWD__
-    mailer_host:       127.0.0.1
-    mailer_port:       25
-    mailer_encryption: ~
-    mailer_auth_mode:  ~
+    mailer_dsn: smtp://__APP__:__MAIL_PWD__@__DOMAIN__:25
 
     locale: en
 
