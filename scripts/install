@@ -40,19 +40,10 @@ fi
 #=================================================
 ynh_script_progression --message="Adding $app's configuration files..." --weight=1
 
-# Copy and set Wallabag dist configuration
-cp "$install_dir/app/config/parameters.yml.dist" "$wb_conf"
+ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
-ynh_replace_string --target_file="$wb_conf" --match_string="fosuser_registration: true" --replace_string="fosuser_registration: false"
-ynh_replace_string --target_file="$wb_conf" --match_string="database_name: wallabag" --replace_string="database_name: $db_name"
-ynh_replace_string --target_file="$wb_conf" --match_string="database_user: root" --replace_string="database_user: $db_user"
-ynh_replace_string --target_file="$wb_conf" --match_string="database_password: ~" --replace_string="database_password: $db_pwd"
-ynh_replace_string --target_file="$wb_conf" --match_string="database_table_prefix: wallabag_" --replace_string="database_table_prefix: null"
-ynh_replace_string --target_file="$wb_conf" --match_string="secret: ovmpmAWXRCabNlMgzlzFXDYmCFfzGv" --replace_string="secret: $deskey"
-ynh_replace_string --target_file="$wb_conf" --match_string="domain_name: https://your-wallabag-url-instance.com" --replace_string="domain_name: https://$domain$path"
-
-chmod 600 "$wb_conf"
-chown -R "$app:www-data" "$install_dir"
+chmod 600 "$install_dir/app/config/parameters.yml"
+chown "$app:$app" "$install_dir/app/config/parameters.yml"
 
 # Alias for php-cli execution command
 php_exec=("php$phpversion" "$install_dir/bin/console" --no-interaction --env=prod)

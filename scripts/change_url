@@ -24,7 +24,7 @@ ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name
     <<< "UPDATE internal_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
 
 # Change domain name in parameters.yml
-ynh_replace_string --target_file="$wb_conf" --match_string="domain_name: .*" --replace_string="domain_name: https://$new_domain$new_path"
+ynh_replace_string --target_file="$install_dir/app/config/parameters.yml" --match_string="domain_name: .*" --replace_string="domain_name: https://$new_domain$new_path"
 
 # If "Download images locally" option has been enabled in Internal Settings
 download_images_enabled=$(ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
