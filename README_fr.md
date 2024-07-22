@@ -5,7 +5,7 @@ Il NE doit PAS être modifié à la main.
 
 # Wallabag pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/wallabag2.svg)](https://dash.yunohost.org/appci/app/wallabag2) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![Niveau d’intégration](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
 
 [![Installer Wallabag avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 
@@ -22,7 +22,7 @@ Sont disponibles une interface web, des add-ons pour navigateurs (Firefox/Chrome
 La mise à niveau depuis le paquet YunoHost de [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh) demande une opération manuelle, c'est pourquoi un nouveau paquet est fournit. Pour le processus de migration, merci de vous référer à [la documentation officiel de Wallabag](https://doc.wallabag.org/fr/user/import/wallabagv1.html).
 
 
-**Version incluse :** 2.5.4~ynh3
+**Version incluse :** 2.5.4~ynh4
 
 **Démo :** <https://demo.yunohost.org/wallabag/>
 

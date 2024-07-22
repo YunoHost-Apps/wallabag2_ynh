@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
 app="__APP__"
 user="__APP__"
 install_dir=$(ynh_app_setting_get --app="$app" --key=install_dir)
@@ -8,9 +11,6 @@ phpversion=$(ynh_app_setting_get --app="$app" --key=phpversion)
 # Retrieve arguments
 username=$1
 user_email=$2
-
-# Source YunoHost helpers
-source /usr/share/yunohost/helpers
 
 # Generate a random password
 user_pass=$(ynh_string_random)
