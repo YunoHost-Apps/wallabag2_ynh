@@ -13,12 +13,12 @@ source /usr/share/yunohost/helpers
 
 # Generate random DES key & password
 deskey=$(ynh_string_random --length=24)
-ynh_app_setting_set --app="$app" --key="deskey" --value="$deskey"
+ynh_app_setting_set --key="deskey" --value="$deskey"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --weight=6
+ynh_script_progression "Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
@@ -28,8 +28,7 @@ mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
 
 # Set permissions to app files
-chown -R "$app:www-data" "$install_dir"
-
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:www-data" "$install_dir"
 # Restrict rights to Wallabag user only
 if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
     chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
@@ -38,12 +37,12 @@ fi
 #=================================================
 # APP INITIAL CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding $app's configuration files..." --weight=1
+ynh_script_progression "Adding $app's configuration files..."
 
-ynh_add_config --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+ynh_config_add --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
-chmod 600 "$install_dir/app/config/parameters.yml"
-chown "$app:$app" "$install_dir/app/config/parameters.yml"
+#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 600 "$install_dir/app/config/parameters.yml"
+#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown "$app:$app" "$install_dir/app/config/parameters.yml"
 
 # Install dependencies and Wallabag
 php_exec wallabag:install
@@ -60,38 +59,37 @@ done
 php_exec fos:user:promote --super "$admin"
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+ynh_mysql_db_shell \
     <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
 # Set permissions to app files
-chown -R "$app:www-data" "$install_dir"
-
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:www-data" "$install_dir"
 #=================================================
 # SETUP HOOKS
 #=================================================
 
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
+ynh_replace --match="__APP__" --replace="$app" --file="../hooks/post_user_create"
+ynh_replace --match="__APP__" --replace="$app" --file="../hooks/post_user_delete"
 
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
+ynh_script_progression "Adding system configurations related to $app..."
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_config_add_nginx
 
 # Create a dedicated PHP-FPM config
-ynh_add_fpm_config
+ynh_config_add_phpfpm
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile="$install_dir/var/logs/prod.log"
+ynh_config_add_logrotate "$install_dir/var/logs/prod.log"
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5
+ynh_config_add_fail2ban --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"'
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --last
+ynh_script_progression "Installation of $app completed"

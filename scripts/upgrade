@@ -10,18 +10,17 @@ source /usr/share/yunohost/helpers
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Upgrading source files..." --weight=6
+ynh_script_progression "Upgrading source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir" --full_replace=1 --keep="app/config/parameters.yml var/logs web/assets/images"
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="app/config/parameters.yml var/logs web/assets/images"
 
 # Create log dir/file FIXME: is it useless?
 mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
 
 # Set permissions to app files
-chown -R "$app:www-data" "$install_dir"
-
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:www-data" "$install_dir"
 # Restrict rights to Wallabag user only
 if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
     chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
@@ -30,41 +29,41 @@ fi
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Reconfiguring $app..." --weight=1
+ynh_script_progression "Reconfiguring $app..."
 
 # Upgrade database and clear the cache
 php_exec doctrine:migrations:migrate
 php_exec cache:clear
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+ynh_mysql_db_shell \
     <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
 #=================================================
 # SETUP HOOKS
 #=================================================
 
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_create"
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_user_delete"
+ynh_replace --match="__APP__" --replace="$app" --file="../hooks/post_user_create"
+ynh_replace --match="__APP__" --replace="$app" --file="../hooks/post_user_delete"
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression "Upgrading system configurations related to $app..."
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_config_add_nginx
 
 # Create a dedicated PHP-FPM config
-ynh_add_fpm_config
+ynh_config_add_phpfpm
 
-ynh_use_logrotate --non-append --logfile="$install_dir/var/logs/prod.log"
+ynh_config_add_logrotate "$install_dir/var/logs/prod.log"
 
 # Add fail2ban config
-ynh_add_fail2ban_config --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"' --max_retry=5 # same as install config
+ynh_config_add_fail2ban --logpath="$install_dir/var/logs/prod.log" --failregex='app.ERROR: Authentication failure for user "([\w]+)?", from IP "<HOST>"'  # same as install config
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"

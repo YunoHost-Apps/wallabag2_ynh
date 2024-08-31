@@ -10,22 +10,22 @@ source /usr/share/yunohost/helpers
 #=================================================
 # REMOVE SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
+ynh_script_progression "Removing system configurations related to $app..."
 
 # Remove the app-specific logrotate config
-ynh_remove_logrotate
+ynh_config_remove_logrotate
 
 # Remove the dedicated NGINX config
-ynh_remove_nginx_config
+ynh_config_remove_nginx
 
 # Remove the dedicated PHP-FPM config
-ynh_remove_fpm_config
+ynh_config_remove_phpfpm
 
 # Remove the dedicated Fail2Ban config
-ynh_remove_fail2ban_config
+ynh_config_remove_fail2ban
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Removal of $app completed" --last
+ynh_script_progression "Removal of $app completed"
