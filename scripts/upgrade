@@ -15,7 +15,7 @@ ynh_script_progression "Upgrading source files..."
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="app/config/parameters.yml var/logs web/assets/images"
 
-# Create log dir/file FIXME: is it useless?
+# Create log dir/file  is it useless?
 mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
 
@@ -35,8 +35,7 @@ php_exec doctrine:migrations:migrate
 php_exec cache:clear
 
 # Configure Wallabag instance URL
-ynh_mysql_db_shell \
-    <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
+ynh_mysql_db_shell <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
 #=================================================
 # SETUP HOOKS

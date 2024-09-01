@@ -16,7 +16,6 @@ ynh_script_progression "Restoring the app main directory..."
 ynh_restore "$install_dir"
 
 # Set permissions to app files
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:www-data" "$install_dir"
 # Restrict rights to Wallabag user only
 if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
     chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
