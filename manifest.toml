@@ -7,7 +7,7 @@ name = "Wallabag"
 description.en = "Save and classify articles. Read them later"
 description.fr = "Enregistrez et classez les articles. Lisez-les plus tard"
 
-version = "2.5.4~ynh4"
+version = "2.5.4~ynh5"
 
 maintainers = ["lapineige"]
 
