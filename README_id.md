@@ -34,7 +34,7 @@ Upgrade from the YunoHost [Wallabag v1](https://github.com/YunoHost-Apps/wallaba
 
 - Website aplikasi resmi: <https://www.wallabag.org>
 - Dokumentasi admin resmi: <https://doc.wallabag.org/en/>
-- Depot kode aplikasi hulu: <https://github.com/wallabag/wallabag>
+- Repositori kode aplikasi hulu: <https://github.com/wallabag/wallabag>
 - Gudang YunoHost: <https://apps.yunohost.org/app/wallabag2>
 - Laporkan bug: <https://github.com/YunoHost-Apps/wallabag2_ynh/issues>
 
