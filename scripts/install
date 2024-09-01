@@ -23,12 +23,11 @@ ynh_script_progression "Setting up source files..."
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
 
-# Create log dir/file FIXME: is it useless?
+# Create log dir/file  is it useless?
 mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
 
 # Set permissions to app files
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:www-data" "$install_dir"
 # Restrict rights to Wallabag user only
 if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
     chmod 700 "$install_dir/var/cache/prod/appProdProjectContainer.php"
@@ -40,9 +39,6 @@ fi
 ynh_script_progression "Adding $app's configuration files..."
 
 ynh_config_add --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
-
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 600 "$install_dir/app/config/parameters.yml"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown "$app:$app" "$install_dir/app/config/parameters.yml"
 
 # Install dependencies and Wallabag
 php_exec wallabag:install
@@ -62,8 +58,6 @@ php_exec fos:user:promote --super "$admin"
 ynh_mysql_db_shell \
     <<< "UPDATE internal_setting SET value = 'https://$domain$path' WHERE name = 'wallabag_url'"
 
-# Set permissions to app files
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:www-data" "$install_dir"
 #=================================================
 # SETUP HOOKS
 #=================================================
