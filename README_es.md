@@ -40,7 +40,7 @@ Upgrade from the YunoHost [Wallabag v1](https://github.com/YunoHost-Apps/wallaba
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/wallabag2_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 
