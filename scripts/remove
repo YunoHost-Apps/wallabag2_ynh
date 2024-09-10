@@ -12,16 +12,12 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Removing system configurations related to $app..."
 
-# Remove the app-specific logrotate config
 ynh_config_remove_logrotate
 
-# Remove the dedicated NGINX config
 ynh_config_remove_nginx
 
-# Remove the dedicated PHP-FPM config
 ynh_config_remove_phpfpm
 
-# Remove the dedicated Fail2Ban config
 ynh_config_remove_fail2ban
 
 #=================================================
