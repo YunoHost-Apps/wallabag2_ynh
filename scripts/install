@@ -69,13 +69,10 @@ ynh_replace --match="__APP__" --replace="$app" --file="../hooks/post_user_delete
 #=================================================
 ynh_script_progression "Adding system configurations related to $app..."
 
-# Create a dedicated NGINX config
 ynh_config_add_nginx
 
-# Create a dedicated PHP-FPM config
 ynh_config_add_phpfpm
 
-# Use logrotate to manage application logfile(s)
 ynh_config_add_logrotate "$install_dir/var/logs/prod.log"
 
 # Create a dedicated Fail2Ban config
