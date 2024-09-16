@@ -1,0 +1,46 @@
+diff --git a/app/config/security.yml b/app/config/security.yml
+index 02afc9ea..5a3f7a34 100644
+--- a/app/config/security.yml
++++ b/app/config/security.yml
+@@ -13,6 +13,14 @@ security:
+                 property: username
+         fos_userbundle:
+             id: fos_user.user_provider.username_email
++        yunohost_users:
++            ldap:
++                service: yunohost.ldap
++                base_dn: ou=users,dc=yunohost,dc=org
++                search_dn:
++                search_password:
++                filter: (&(uid={username})(objectClass=posixAccount))
++                default_roles: ROLE_USER
+
+     # the main part of the security, where you can set up firewalls
+     # for specific sections of your app
+@@ -38,6 +46,9 @@ security:
+
+         secured_area:
+             pattern: ^/
++            http_basic_ldap:
++                service: yunohost.ldap
++                dn_string: "uid={username},ou=users,dc=yunohost,dc=org"
+             form_login:
+                 provider: fos_userbundle
+                 csrf_token_generator: security.csrf.token_manager
+diff --git a/app/config/services.yml b/app/config/services.yml
+index 7b85d846..f23961c5 100644
+--- a/app/config/services.yml
++++ b/app/config/services.yml
+@@ -43,6 +43,10 @@ services:
+         tags:
+             - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
+
++    yunohost.ldap:
++        class: Symfony\Component\Ldap\LdapClient
++        arguments: ["localhost"]
++
+     craue_config_cache_provider:
+         class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+         public: false
+--
+2.17.1
