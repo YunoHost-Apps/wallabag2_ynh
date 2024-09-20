@@ -10,35 +10,35 @@ source /usr/share/yunohost/helpers
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_script_progression --message="Updating NGINX web server configuration..." --weight=2
+ynh_script_progression "Updating NGINX web server configuration..."
 
-ynh_change_url_nginx_config
+ynh_config_change_url_nginx
 
 #=================================================
 # UPDATE CONFIGURATION
 #=================================================
-ynh_script_progression --message="Updating wallabag configuration..."
+ynh_script_progression "Updating wallabag configuration..."
 
 # Configure Wallabag instance URL
-ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+ynh_mysql_db_shell \
     <<< "UPDATE internal_setting SET value = 'https://$new_domain$new_path' WHERE name = 'wallabag_url'"
 
 # Change domain name in parameters.yml
-ynh_replace_string --target_file="$install_dir/app/config/parameters.yml" --match_string="domain_name: .*" --replace_string="domain_name: https://$new_domain$new_path"
+ynh_replace --file="$install_dir/app/config/parameters.yml" --match="domain_name: .*" --replace="domain_name: https://$new_domain$new_path"
 
 # If "Download images locally" option has been enabled in Internal Settings
-download_images_enabled=$(ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+download_images_enabled=$(ynh_mysql_db_shell \
     <<< "SELECT value from internal_setting WHERE name='download_images_enabled '" | tail -n 1)
 
 if [ "$download_images_enabled" = "1" ]; then
-    ynh_print_info --message="Updating images URL; this operation may take a while..."
+    ynh_print_info "Updating images URL; this operation may take a while..."
     # Query/replace the domain/path in every entry.content in mysql database
-    ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" \
+    ynh_mysql_db_shell \
         <<< "UPDATE entry SET content = REPLACE(content, '$old_domain$old_path', '$new_domain$new_path');"
 fi
 
 # Clear assets cache
-ynh_secure_remove --file="$install_dir/var/cache"
+ynh_safe_rm "$install_dir/var/cache"
 mkdir "$install_dir/var/cache"
 chown "$app:www-data" "$install_dir/var/cache"
 
@@ -46,4 +46,4 @@ chown "$app:www-data" "$install_dir/var/cache"
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Change of URL completed for $app" --last
+ynh_script_progression "Change of URL completed for $app"
