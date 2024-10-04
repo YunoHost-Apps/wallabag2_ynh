@@ -1,31 +1,40 @@
+From 711f4a49fa7d4c471cd905870fecaa6f83156d46 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?F=C3=A9lix=20Pi=C3=A9dallu?= <felix@piedallu.me>
+Date: Tue, 11 Jun 2024 11:52:33 +0200
+Subject: [PATCH 2/3] Configure a custom logout success handler for yunohost
+ ldap
+
+---
+ app/config/security.yml                       |  2 +-
+ app/config/services.yml                       |  3 +++
+ .../Security/LogoutSuccessHandler.php         | 27 +++++++++++++++++++
+ 3 files changed, 31 insertions(+), 1 deletion(-)
+ create mode 100644 src/Wallabag/YunoHostBundle/Security/LogoutSuccessHandler.php
+
 diff --git a/app/config/security.yml b/app/config/security.yml
-index 5a3f7a34..1720e741 100644
+index f4ea3d47..de6b705b 100644
 --- a/app/config/security.yml
 +++ b/app/config/security.yml
-@@ -62,7 +62,7 @@ security:
-
+@@ -64,7 +64,7 @@ security:
+ 
              logout:
                  path:   /logout
 -                target: /
 +                success_handler: yunohost.logout_success_handler
-
-     access_control:
-         - { path: ^/api/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+ 
+             two_factor:
+                 provider: fos_userbundle
 diff --git a/app/config/services.yml b/app/config/services.yml
-index f23961c5..f266e6d1 100644
+index c67341e8..7057ca42 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
-@@ -43,6 +43,10 @@ services:
-         tags:
-             - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
-
+@@ -401,3 +401,6 @@ services:
+     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
+         arguments:
+             - host: localhost
++
 +    yunohost.logout_success_handler:
 +        class: Wallabag\YunoHostBundle\Security\LogoutSuccessHandler
-+
-+
-     yunohost.ldap:
-         class: Symfony\Component\Ldap\LdapClient
-         arguments: ["localhost"]
 diff --git a/src/Wallabag/YunoHostBundle/Security/LogoutSuccessHandler.php b/src/Wallabag/YunoHostBundle/Security/LogoutSuccessHandler.php
 new file mode 100644
 index 00000000..b3268243
@@ -59,5 +68,6 @@ index 00000000..b3268243
 +        return new RedirectResponse($url);
 +    }
 +}
---
-2.17.1
+-- 
+2.45.1
+
