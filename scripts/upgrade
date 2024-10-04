@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -17,6 +13,8 @@ ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="app/config/par
 # Create log dir/file  is it useless?
 mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
+
+chown -R "$app:www-data" "$install_dir"
 
 # Set permissions to app files
 # Restrict rights to Wallabag user only
