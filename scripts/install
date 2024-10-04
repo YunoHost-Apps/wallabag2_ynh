@@ -27,6 +27,8 @@ ynh_setup_source --dest_dir="$install_dir"
 mkdir -p "$install_dir/var/logs/"
 touch "$install_dir/var/logs/prod.log"
 
+chown -R "$app:www-data" "$install_dir"
+
 # Set permissions to app files
 # Restrict rights to Wallabag user only
 if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
