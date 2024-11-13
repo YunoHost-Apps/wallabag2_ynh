@@ -32,6 +32,18 @@ if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
 fi
 
 #=================================================
+# INSTALL SYMFONY LDAP
+#=================================================
+ynh_script_progression --message="Installing dependencies for LDAP..." --weight=1
+
+# Some trick to actually not run composer install…
+ynh_install_composer --install_args="--dry-run"
+ynh_composer_exec --commands="require symfony/ldap"
+# SYMFONY_ENV=prod ynh_composer_exec --commands="install --no-dev"
+
+chown -R "$app:www-data" "$install_dir"
+
+#=================================================
 # APP INITIAL CONFIGURATION
 #=================================================
 ynh_script_progression "Adding $app's configuration files..."
