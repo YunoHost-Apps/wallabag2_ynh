@@ -5,7 +5,9 @@ Ini TIDAK boleh diedit dengan tangan.
 
 # Wallabag untuk YunoHost
 
-[![Tingkat integrasi](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![Status kerja](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Status pemeliharaan](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![Tingkat integrasi](https://apps.yunohost.org/badge/integration/wallabag2)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+![Status kerja](https://apps.yunohost.org/badge/state/wallabag2)
+![Status pemeliharaan](https://apps.yunohost.org/badge/maintained/wallabag2)
 
 [![Pasang Wallabag dengan YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 

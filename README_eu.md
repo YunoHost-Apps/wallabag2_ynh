@@ -5,7 +5,9 @@ EZ editatu eskuz.
 
 # Wallabag YunoHost-erako
 
-[![Integrazio maila](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![Integrazio maila](https://apps.yunohost.org/badge/integration/wallabag2)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+![Funtzionamendu egoera](https://apps.yunohost.org/badge/state/wallabag2)
+![Mantentze egoera](https://apps.yunohost.org/badge/maintained/wallabag2)
 
 [![Instalatu Wallabag YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 

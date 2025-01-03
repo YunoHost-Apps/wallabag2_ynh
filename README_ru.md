@@ -5,7 +5,9 @@
 
 # Wallabag для YunoHost
 
-[![Уровень интеграции](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![Состояние работы](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Состояние сопровождения](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![Уровень интеграции](https://apps.yunohost.org/badge/integration/wallabag2)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+![Состояние работы](https://apps.yunohost.org/badge/state/wallabag2)
+![Состояние сопровождения](https://apps.yunohost.org/badge/maintained/wallabag2)
 
 [![Установите Wallabag с YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 

@@ -5,7 +5,9 @@ Hij mag NIET handmatig aangepast worden.
 
 # Wallabag voor Yunohost
 
-[![Integratieniveau](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![Mate van functioneren](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Onderhoudsstatus](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![Integratieniveau](https://apps.yunohost.org/badge/integration/wallabag2)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+![Mate van functioneren](https://apps.yunohost.org/badge/state/wallabag2)
+![Onderhoudsstatus](https://apps.yunohost.org/badge/maintained/wallabag2)
 
 [![Wallabag met Yunohost installeren](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 

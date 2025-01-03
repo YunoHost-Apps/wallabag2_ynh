@@ -5,7 +5,9 @@
 
 # YunoHost 上的 Wallabag
 
-[![集成程度](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![工作状态](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![集成程度](https://apps.yunohost.org/badge/integration/wallabag2)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+![工作状态](https://apps.yunohost.org/badge/state/wallabag2)
+![维护状态](https://apps.yunohost.org/badge/maintained/wallabag2)
 
 [![使用 YunoHost 安装 Wallabag](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 
