@@ -1,11 +1,25 @@
---- a/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php      2016-02-22 13:57:55.000000000 +0000
-+++ b/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php      2017-04-13 17:16:06.298501506 +0000
-@@ -170,7 +170,7 @@
-         if (null !== $user) {
-             $encoder = $this->encoderFactory->getEncoder($user);
+From 85c26ff4df2191bf3494491f27e2922aa6b569c8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?F=C3=A9lix=20Pi=C3=A9dallu?= <felix@piedallu.me>
+Date: Tue, 11 Jun 2024 11:54:25 +0200
+Subject: [PATCH 3/3] OAuthStorage workaround
 
--            if ($encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
-+            if (true) {
-                 return array(
-                     'data' => $user,
-                 );
+---
+ .../oauth-server-bundle/Storage/OAuthStorage.php                | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php b/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php
+index 5ab6b7c9..7cb77913 100644
+--- a/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php
++++ b/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php
+@@ -158,7 +158,7 @@ class OAuthStorage implements IOAuth2RefreshTokens, IOAuth2GrantUser, IOAuth2Gra
+         }
+ 
+         $encoder = $this->encoderFactory->getEncoder($user);
+-        if ($encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
++        if (true) {
+             return [
+                 'data' => $user,
+             ];
+-- 
+2.45.1
+
