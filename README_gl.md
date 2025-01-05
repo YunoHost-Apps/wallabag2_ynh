@@ -5,7 +5,9 @@ NON debe editarse manualmente.
 
 # Wallabag para YunoHost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/wallabag2.svg)](https://ci-apps.yunohost.org/ci/apps/wallabag2/) ![Estado de funcionamento](https://ci-apps.yunohost.org/ci/badges/wallabag2.status.svg) ![Estado de mantemento](https://ci-apps.yunohost.org/ci/badges/wallabag2.maintain.svg)
+[![Nivel de integración](https://apps.yunohost.org/badge/integration/wallabag2)](https://ci-apps.yunohost.org/ci/apps/wallabag2/)
+![Estado de funcionamento](https://apps.yunohost.org/badge/state/wallabag2)
+![Estado de mantemento](https://apps.yunohost.org/badge/maintained/wallabag2)
 
 [![Instalar Wallabag con YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wallabag2)
 
@@ -22,7 +24,7 @@ It provides a web interface, browser (Firefox/Chrome/Opera) add-ons, mobile apps
 Upgrade from the YunoHost [Wallabag v1](https://github.com/YunoHost-Apps/wallabag_ynh) app requires a manual operation. That's why it's provided as a new package. For the migration process, please refer to the [Wallabag official documentation](https://doc.wallabag.org/en/user/import/wallabagv1.html).
 
 
-**Versión proporcionada:** 2.5.4~ynh9
+**Versión proporcionada:** 2.5.4~ynh11
 
 **Demo:** <https://demo.yunohost.org/wallabag/>
 

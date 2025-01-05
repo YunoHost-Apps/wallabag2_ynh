@@ -6,7 +6,8 @@ id = "wallabag2"
 name = "Wallabag"
 description.en = "Save and classify articles. Read them later"
 description.fr = "Enregistrez et classez les articles. Lisez-les plus tard"
-version = "2.5.4~ynh9"
+
+version = "2.5.4~ynh11"
 
 maintainers = ["lapineige"]
 
@@ -20,12 +21,14 @@ cpe = "cpe:2.3:a:wallabag:wallabag"
 fund = "https://liberapay.com/wallabag"
 
 [integration]
-yunohost = ">= 11.2.30"
+yunohost = ">= 12.0.9"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
+
 ldap = true
 sso = true
+
 disk = "200M"
 ram.build = "150M"
 ram.runtime = "50M"
