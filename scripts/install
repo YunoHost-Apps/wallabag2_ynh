@@ -34,7 +34,7 @@ fi
 #=================================================
 # INSTALL SYMFONY LDAP
 #=================================================
-ynh_script_progression --message="Installing dependencies for LDAP..." --weight=1
+ynh_script_progression "Installing dependencies for LDAP..."
 
 ynh_composer_install
 ynh_composer_exec require symfony/ldap
