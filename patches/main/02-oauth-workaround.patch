@@ -1,11 +1,13 @@
---- a/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php      2016-02-22 13:57:55.000000000 +0000
-+++ b/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php      2017-04-13 17:16:06.298501506 +0000
-@@ -170,7 +170,7 @@
-         if (null !== $user) {
-             $encoder = $this->encoderFactory->getEncoder($user);
-
--            if ($encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
-+            if (true) {
-                 return array(
-                     'data' => $user,
-                 );
+diff --git a/Storage/OAuthStorage.php b/Storage/OAuthStorage.php
+index 5ab6b7c..7cb7791 100644
+--- a/Storage/OAuthStorage.php
++++ b/Storage/OAuthStorage.php
+@@ -158,7 +158,7 @@ class OAuthStorage implements IOAuth2RefreshTokens, IOAuth2GrantUser, IOAuth2Gra
+         }
+ 
+         $encoder = $this->encoderFactory->getEncoder($user);
+-        if ($encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
++        if (true) {
+             return [
+                 'data' => $user,
+             ];
