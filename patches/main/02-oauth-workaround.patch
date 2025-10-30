@@ -1,7 +1,7 @@
 diff --git a/Storage/OAuthStorage.php b/Storage/OAuthStorage.php
 index 5ab6b7c..7cb7791 100644
---- a/Storage/OAuthStorage.php
-+++ b/Storage/OAuthStorage.php
+--- a/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php
++++ b/vendor/friendsofsymfony/oauth-server-bundle/Storage/OAuthStorage.php
 @@ -158,7 +158,7 @@ class OAuthStorage implements IOAuth2RefreshTokens, IOAuth2GrantUser, IOAuth2Gra
          }
  
