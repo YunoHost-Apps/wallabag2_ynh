@@ -1,5 +1,5 @@
 diff --git a/app/config/security.yml b/app/config/security.yml
-index bced6bf20..89174ad38 100644
+index bced6bf20..e95a88fd9 100644
 --- a/app/config/security.yml
 +++ b/app/config/security.yml
 @@ -13,6 +13,15 @@ security:
@@ -23,7 +23,7 @@ index bced6bf20..89174ad38 100644
          secured_area:
              pattern: ^/
 +            http_basic_ldap:
-+                provider: fos_userbundle
++                provider: yunohost_users
 +                service: yunohost.ldap
 +                dn_string: "uid={username},ou=users,dc=yunohost,dc=org"
              form_login:
