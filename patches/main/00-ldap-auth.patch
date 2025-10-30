@@ -22,7 +22,6 @@ index 02afc9ea..5a3f7a34 100644
          secured_area:
              pattern: ^/
 +            http_basic_ldap:
-+                provider: fos_userbundle
 +                service: yunohost.ldap
 +                dn_string: "uid={username},ou=users,dc=yunohost,dc=org"
              form_login:
