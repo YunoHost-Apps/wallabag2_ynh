@@ -1,74 +1,50 @@
-# This file is a "template" of what your parameters.yml file should look like
 parameters:
-    # Uncomment these settings or manually update your parameters.yml
-    # to use docker-compose
-    #
-    # database_driver: %env.database_driver%
-    # database_host: %env.database_host%
-    # database_port: %env.database_port%
-    # database_name: %env.database_name%
-    # database_user: %env.database_user%
-    # database_password: %env.database_password%
+    database_driver: ${DATABASE_DRIVER:-pdo_mysql}
+    database_host: ${DATABASE_HOST:-127.0.0.1}
+    database_port: ${DATABASE_PORT:-~}
+    database_name: ${DATABASE_NAME:- _DB_NAME__}
+    database_user: ${DATABASE_USER:-__DB_USER__}
+    database_password: ${DATABASE_PASSWORD:-__DB_PWD__}
+    database_path: ${DATABASE_PATH:-"%kernel.project_dir%/data/db/wallabag.sqlite"}
+    database_table_prefix: ${DATABASE_TABLE_PREFIX:-__APP___}
+    database_socket: ${DATABASE_SOCKET:-~}
+    database_charset: ${DATABASE_CHARSET:-utf8mb4}
 
-    database_driver: pdo_mysql
-    database_host: 127.0.0.1
-    database_port: ~
-    database_name: __DB_NAME__
-    database_user: __DB_USER__
-    database_password: __DB_PWD__
-    # For SQLite, database_path should be "%kernel.project_dir%/data/db/wallabag.sqlite"
-    database_path: null
-    database_table_prefix: null
-    database_socket: null
-    # with PostgreSQL and SQLite, you must set "utf8"
-    database_charset: utf8mb4
+    domain_name: ${DOMAIN_NAME:-https://www.example.com}
+    server_name: ${SERVER_NAME:-"Your wallabag instance"}
 
-    domain_name: https://__DOMAIN____PATH__
-    server_name: "Your wallabag instance"
+    mailer_dsn: ${MAILER_DSN:-"smtp://127.0.0.1"}
 
-    mailer_transport:  smtp
-    mailer_user:       ~
-    mailer_password:   ~
-    mailer_host:       127.0.0.1
-    mailer_port:       false
-    mailer_encryption: ~
-    mailer_auth_mode:  ~
-
-    locale: en
+    locale: ${LOCALE:-en}
 
     # A secret key that's used to generate certain security-related tokens
     secret: __DESKEY__
 
     # two factor stuff
-    twofactor_auth: true
-    twofactor_sender: no-reply@wallabag.org
+    twofactor_sender: ${TWOFACTOR_SENDER:-__APP__@__DOMAIN__}
 
     # fosuser stuff
-    fosuser_registration: false
-    fosuser_confirmation: true
+    fosuser_registration: ${FOSUSER_REGISTRATION:-false}
+    fosuser_confirmation: ${FOSUSER_CONFIRMATION:-true}
 
-    # how long the access token should live in seconds for the API
-    fos_oauth_server_access_token_lifetime: 3600
-    # how long the refresh token should life in seconds for the API
-    fos_oauth_server_refresh_token_lifetime: 1209600
+    fos_oauth_server_access_token_lifetime: ${FOS_OAUTH_SERVER_ACCESS_TOKEN_LIFETIME:-3600}
+    fos_oauth_server_refresh_token_lifetime: ${FOS_OAUTH_SERVER_REFRESH_TOKEN_LIFETIME:-1209600}
 
-    from_email: no-reply@wallabag.org
-
-    rss_limit: 50
+    from_email: ${FROM_EMAIL:-__APP__@__DOMAIN__}
 
     # RabbitMQ processing
-    rabbitmq_host: localhost
-    rabbitmq_port: 5672
-    rabbitmq_user: guest
-    rabbitmq_password: guest
-    rabbitmq_prefetch_count: 10
+    rabbitmq_host: ${RABBITMQ_HOST:-localhost}
+    rabbitmq_port: ${RABBITMQ_PORT:-5672}
+    rabbitmq_user: ${RABBITMQ_USER:-guest}
+    rabbitmq_password: ${RABBITMQ_PASSWORD:-guest}
+    rabbitmq_prefetch_count: ${RABBITMQ_PREFETCH_COUNT:-10}
 
     # Redis processing
-    redis_scheme: tcp
-    redis_host: localhost
-    redis_port: 6379
-    redis_path: null
-    redis_password: null
+    redis_scheme: ${REDIS_SCHEME:-tcp}
+    redis_host: ${REDIS_HOST:-localhost}
+    redis_port: ${REDIS_PORT:-6379}
+    redis_path: ${REDIS_PATH:-~}
+    redis_password: ${REDIS_PASSWORD:-~}
 
-    # sentry logging
-    sentry_dsn: ~
+    # Sentry
+    sentry_dsn: ${SENTRY_DSN:-~}
