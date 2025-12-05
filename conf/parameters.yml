@@ -26,7 +26,7 @@ parameters:
     domain_name: https://__DOMAIN____PATH__
     server_name: "Your wallabag instance"
 
-    mailer_dsn: smtp://127.0.0.1
+    mailer_dsn: smtp://__APP__:__MAIL_PWD__@127.0.0.1:587
 
     wallabag_user_agent: "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.92 Safari/535.2"
 
@@ -36,7 +36,7 @@ parameters:
     secret: __DESKEY__
 
     # two factor stuff
-    twofactor_sender: no-reply@wallabag.org
+    twofactor_sender: __APP__@__DOMAIN__
 
     # fosuser stuff
     fosuser_registration: false
@@ -47,7 +47,7 @@ parameters:
     # how long the refresh token should life in seconds for the API
     fos_oauth_server_refresh_token_lifetime: 1209600
 
-    from_email: no-reply@wallabag.org
+    from_email: __APP__@__DOMAIN__
 
     # RabbitMQ processing
     rabbitmq_host: localhost
