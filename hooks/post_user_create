@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Source YunoHost helpers
+YNH_HELPERS_VERSION=2.1
 source /usr/share/yunohost/helpers
 
 app="__APP__"
 user="__APP__"
 install_dir=$(ynh_app_setting_get --app="$app" --key=install_dir)
-phpversion=$(ynh_app_setting_get --app="$app" --key=phpversion)
+php_version=$(ynh_app_setting_get --app="$app" --key=php_version)
 
 # Retrieve arguments
 username=$1
@@ -16,7 +17,7 @@ user_email=$2
 user_pass=$(ynh_string_random)
 
 # Create the new user in Wallabag
-pushd "$install_dir" || ynh_die
-    sudo -u "$user" "php$phpversion" "bin/console" --no-interaction --env=prod \
+pushd "$install_dir"
+    ynh_exec_as_app php${php_version} bin/console --no-interaction --env=prod \
         fos:user:create "$username" "$user_email" "$user_pass"
-popd || ynh_die
+popd
