@@ -1,7 +1,7 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
     # Uncomment these settings or manually update your parameters.yml
-    # to use docker-compose
+    # to use Docker Compose
     #
     # database_driver: %env.database_driver%
     # database_host: %env.database_host%
@@ -12,7 +12,7 @@ parameters:
 
     database_driver: pdo_mysql
     database_host: 127.0.0.1
-    database_port: ~
+    database_port: null
     database_name: __DB_NAME__
     database_user: __DB_USER__
     database_password: __DB_PWD__
@@ -23,10 +23,12 @@ parameters:
     # with PostgreSQL and SQLite, you must set "utf8"
     database_charset: utf8mb4
 
-    domain_name: https://__DOMAIN____PATH__
-    server_name: "Your wallabag instance"
+    domain_name: 'https://__DOMAIN____PATH__'
+    server_name: 'Your wallabag instance'
 
-    mailer_dsn: smtp://127.0.0.1
+    mailer_dsn: 'smtp://__APP__:__MAIL_PWD__@127.0.0.1:587'
+
+    wallabag_user_agent: "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.92 Safari/535.2"
 
     locale: en
 
@@ -46,7 +48,7 @@ parameters:
     # how long the refresh token should life in seconds for the API
     fos_oauth_server_refresh_token_lifetime: 1209600
 
-    from_email: no-reply@wallabag.org
+    from_email: __APP__@__DOMAIN__
 
     rss_limit: 50
 
@@ -65,4 +67,4 @@ parameters:
     redis_password: null
 
     # sentry logging
-    sentry_dsn: ~
+    sentry_dsn: null
