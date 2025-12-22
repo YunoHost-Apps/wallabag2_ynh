@@ -1,15 +1,6 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
-    # Uncomment these settings or manually update your parameters.yml
-    # to use Docker Compose
-    #
-    # database_driver: %env.database_driver%
-    # database_host: %env.database_host%
-    # database_port: %env.database_port%
-    # database_name: %env.database_name%
-    # database_user: %env.database_user%
-    # database_password: %env.database_password%
-
+    
     database_driver: pdo_mysql
     database_host: 127.0.0.1
     database_port: null
@@ -37,7 +28,7 @@ parameters:
 
     # two factor stuff
     twofactor_auth: true
-    twofactor_sender: no-reply@wallabag.org
+    twofactor_sender: __APP__@__DOMAIN__
 
     # fosuser stuff
     fosuser_registration: false
