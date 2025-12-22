@@ -80,6 +80,10 @@ ram.runtime = "50M"
         "php8.4-redis",
         "php8.4-tidy",
         "php8.4-xml",
+        
+        "php8.4-bcmath",
+        "php8.4-simplexml",
+        "php8.4-dom",
     ]
 
     [resources.database]

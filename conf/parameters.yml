@@ -33,7 +33,7 @@ parameters:
     locale: en
 
     # A secret key that's used to generate certain security-related tokens
-    secret: __DESKEY__
+    secret: '__DESKEY__'
 
     # two factor stuff
     twofactor_auth: true
