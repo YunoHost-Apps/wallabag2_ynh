@@ -80,7 +80,7 @@ ram.runtime = "50M"
         "php8.4-redis",
         "php8.4-tidy",
         "php8.4-xml",
-        
+
         "php8.4-bcmath",
         "php8.4-simplexml",
         "php8.4-dom",
@@ -88,3 +88,6 @@ ram.runtime = "50M"
 
     [resources.database]
     type = "mysql"
+
+    [resources.composer]
+    version = "2.9.2"

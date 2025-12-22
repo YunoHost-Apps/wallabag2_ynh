@@ -36,7 +36,6 @@ fi
 #=================================================
 ynh_script_progression "Installing dependencies for LDAP..."
 
-ynh_composer_install
 ynh_composer_exec require symfony/ldap
 # SYMFONY_ENV=prod ynh_composer_exec install --no-dev
 
