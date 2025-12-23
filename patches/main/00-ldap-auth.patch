@@ -32,7 +32,7 @@ index 9ab51621..f4ea3d47 100644
          secured_area:
              pattern: ^/
 +            http_basic_ldap:
-+                provider: yunohost_users
++                provider: fos_userbundle
 +                service: Symfony\Component\Ldap\Ldap
 +                dn_string: "uid={username},ou=users,dc=yunohost,dc=org"
              form_login:
