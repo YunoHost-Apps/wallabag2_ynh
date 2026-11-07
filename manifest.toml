@@ -7,7 +7,7 @@ name = "Wallabag"
 description.en = "Save and classify articles. Read them later"
 description.fr = "Enregistrez et classez les articles. Lisez-les plus tard"
 
-version = "2.6.14~ynh1"
+version = "2.6.15~ynh1"
 
 maintainers = ["lapineige"]
 
@@ -21,7 +21,7 @@ cpe = "cpe:2.3:a:wallabag:wallabag"
 fund = "https://liberapay.com/wallabag"
 
 [integration]
-yunohost = ">= 12.1.38"
+yunohost = ">= 12.1.40"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
@@ -50,8 +50,8 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources.main]
-    url = "https://github.com/wallabag/wallabag/releases/download/2.6.14/wallabag-2.6.14.tar.gz"
-    sha256 = "0049345aec597dace8e2be2c85c2b8e7744217fe15fd5303bcab3811719eff0d"
+    url = "https://github.com/wallabag/wallabag/releases/download/2.6.15/wallabag-2.6.15.tar.gz"
+    sha256 = "f9e1ae0be18c2569f3fd52b9a686b7cfd0d65a46bb5db0da9bef3581c8da45bd"
 
     autoupdate.strategy = "latest_github_release"
     autoupdate.asset = ".*\\.tar\\.gz"
@@ -68,25 +68,25 @@ ram.runtime = "50M"
     [resources.apt]
     packages = [
         "mariadb-server",
-        "php8.3-cli",
-        "php8.3-curl",
-        "php8.3-gd",
-        "php8.3-gettext",
-        "php8.3-intl",
-        "php8.3-json",
-        "php8.3-ldap",
-        "php8.3-mbstring",
-        "php8.3-mysql",
-        "php8.3-redis",
-        "php8.3-tidy",
-        "php8.3-xml",
-        "php8.3-bcmath",
-        "php8.3-simplexml",
-        "php8.3-dom",
+        "php8.4-cli",
+        "php8.4-curl",
+        "php8.4-gd",
+        "php8.4-gettext",
+        "php8.4-intl",
+        "php8.4-json",
+        "php8.4-ldap",
+        "php8.4-mbstring",
+        "php8.4-mysql",
+        "php8.4-redis",
+        "php8.4-tidy",
+        "php8.4-xml",
+        "php8.4-bcmath",
+        "php8.4-simplexml",
+        "php8.4-dom",
     ]
 
     [resources.database]
     type = "mysql"
 
     [resources.composer]
-    version = "2.9.2"
+    version = "2.11.1"
