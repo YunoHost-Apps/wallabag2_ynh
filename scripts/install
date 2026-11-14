@@ -32,6 +32,13 @@ if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
 fi
 
 #=================================================
+# APP INITIAL CONFIGURATION
+#=================================================
+ynh_script_progression "Adding $app's configuration files..."
+
+ynh_config_add --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
+
+#=================================================
 # INSTALL SYMFONY LDAP
 #=================================================
 ynh_script_progression "Installing dependencies for LDAP..."
@@ -43,19 +50,11 @@ ynh_script_progression "version php $php_version"
 ynh_composer_exec require symfony/ldap --no-scripts
 # run the scripts defined in composer.json with php_exec
 php_exec cache:clear --no-warmup
-
+php_exec assets:install web --symlink --relative
 # SYMFONY_ENV=prod ynh_composer_exec install --no-dev
-
-#=================================================
-# APP INITIAL CONFIGURATION
-#=================================================
-ynh_script_progression "Adding $app's configuration files..."
-
-ynh_config_add --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
 # Install dependencies and Wallabag
 php_exec wallabag:install
-# php_exec assets:install web --symlink --relative
 
 
 # Add users to Wallabag
