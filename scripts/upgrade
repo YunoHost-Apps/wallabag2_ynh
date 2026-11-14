@@ -23,14 +23,6 @@ if [ -e "$install_dir/var/cache/prod/appProdProjectContainer.php" ]; then
 fi
 
 #=================================================
-# INSTALL SYMFONY LDAP
-#=================================================
-ynh_script_progression "Installing dependencies for LDAP..."
-
-ynh_composer_exec require symfony/ldap
-# SYMFONY_ENV=prod ynh_composer_exec install --no-dev
-
-#=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression "Reconfiguring $app..."
@@ -38,7 +30,22 @@ ynh_script_progression "Reconfiguring $app..."
 ynh_config_add --template="parameters.yml" --destination="$install_dir/app/config/parameters.yml"
 
 chmod 600 "$install_dir/app/config/parameters.yml"
-chown "$app:$app" "$install_dir/app/config/parameters.yml"
+chown "$app:$app" "$install_dir/app/config/parameters.yml" 
+
+#=================================================
+# INSTALL SYMFONY LDAP
+#=================================================
+ynh_script_progression "Installing dependencies for LDAP..."
+
+# test: check php version
+ynh_script_progression "version php $php_version"
+
+# skip execution of scripts defined in composer.json.
+ynh_hide_warnings ynh_composer_exec require symfony/ldap --no-scripts
+# run the scripts defined in composer.json with php_exec
+ynh_hide_warnings php_exec cache:clear --no-warmup
+ynh_hide_warnings php_exec assets:install web --symlink --relative
+# SYMFONY_ENV=prod ynh_composer_exec install --no-dev
 
 # Upgrade database and clear the cache
 php_exec doctrine:migrations:migrate
