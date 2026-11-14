@@ -55,7 +55,7 @@ ynh_config_add --template="parameters.yml" --destination="$install_dir/app/confi
 
 # Install dependencies and Wallabag
 php_exec wallabag:install
-php_exec assets:install web --symlink --relative
+# php_exec assets:install web --symlink --relative
 
 
 # Add users to Wallabag
