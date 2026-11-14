@@ -27,7 +27,14 @@ fi
 #=================================================
 ynh_script_progression "Installing dependencies for LDAP..."
 
-ynh_composer_exec require symfony/ldap
+# test: check php version
+ynh_script_progression "version php $php_version"
+
+# skip execution of scripts defined in composer.json.
+ynh_composer_exec require symfony/ldap --no-scripts
+# run the scripts defined in composer.json with php_exec
+php_exec cache:clear --no-warmup
+php_exec assets:install web --symlink --relative
 # SYMFONY_ENV=prod ynh_composer_exec install --no-dev
 
 #=================================================
