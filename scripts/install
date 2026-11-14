@@ -36,6 +36,8 @@ fi
 #=================================================
 ynh_script_progression "Installing dependencies for LDAP..."
 
+ynh_script_progression "version php $php_version"
+
 ynh_composer_exec require symfony/ldap
 # SYMFONY_ENV=prod ynh_composer_exec install --no-dev
 
@@ -78,6 +80,8 @@ ynh_script_progression "Adding system configurations related to $app..."
 ynh_config_add_nginx
 
 ynh_config_add_phpfpm
+
+ynh_script_progression "version php $php_version"
 
 ynh_config_add_logrotate "$install_dir/var/logs/prod.log"
 
